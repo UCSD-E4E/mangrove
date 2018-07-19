@@ -25,4 +25,5 @@ SSH into a running container:
 `docker exec -it <container name> /bin/bash`
  
 Run docker image with gpu
-nvidia-docker run -i dockerfile
+`nvidia-docker run -i dockerfile`
+`docker exec -it <container name> /bin/bash`
