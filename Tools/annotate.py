@@ -7,6 +7,13 @@ import tensorflow as tf
 import argparse
 import os
 
+def load_labels(label_file):
+  label = []
+  proto_as_ascii_lines = tf.gfile.GFile(label_file).readlines()
+  for l in proto_as_ascii_lines:
+    label.append(l.rstrip())
+return label
+
 def load_graph(model_file):
 	graph = tf.Graph()
 	graph_def = tf.GraphDef()
