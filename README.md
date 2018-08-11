@@ -23,6 +23,9 @@ Start docker container
 
 SSH into a running container:
 `docker exec -it <container name> /bin/bash`
+
+Run docker container with volume attached
+docker run -v /directory/on/host/:/directory/on/container -i dockerfile
  
 Run docker image with gpu
 `nvidia-docker run -i dockerfile`
