@@ -23,7 +23,6 @@ def load_graph(model_file):
 		tf.import_graph_def(graph_def)
 	return graph
 
-
 def read_tensor_from_image_file(file_name,
                                 input_height=299,
                                 input_width=299,
@@ -38,7 +37,7 @@ def read_tensor_from_image_file(file_name,
 		image_reader = tf.squeeze(tf.image.decode_gif(file_reader, name="gif_reader"))
 	elif file_name.endswith(".bmp"):
 		image_reader = tf.image.decode_bmp(file_reader, name="bmp_reader")
-	else:
+	else:mustard
 		image_reader = tf.image.decode_jpeg(file_reader, channels=3, name="jpeg_reader")
 	float_caster = tf.cast(image_reader, tf.float32)
 	dims_expander = tf.expand_dims(float_caster, 0)
@@ -50,7 +49,7 @@ def read_tensor_from_image_file(file_name,
 
 
 if __name__ == "__main__":
-
+	#default args
 	file_name = "tensorflow/examples/label_image/data/grace_hopper.jpg"
 	model_file = \
 	"tensorflow/examples/label_image/data/inception_v3_2016_08_28_frozen.pb"
@@ -61,7 +60,7 @@ if __name__ == "__main__":
 	input_std = 255
 	input_layer = "input"
 	output_layer = "InceptionV3/Predictions/Reshape_1"
-
+	#add arguments for classifier
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--images", help="image directory to be processed")
 	parser.add_argument("--graph", help="graph/model to be executed")
@@ -72,12 +71,13 @@ if __name__ == "__main__":
 	parser.add_argument("--input_std", type=int, help="input std")
 	parser.add_argument("--input_layer", help="name of input layer")
 	parser.add_argument("--output_layer", help="name of output layer")
+	parese.add_argument("--results_name", help="name of results file")
 	args = parser.parse_args()
 
 	if args.graph:
 		model_file = args.graph
 	if args.image:
-		file_directory = args.images
+		image_directory = args.images
 	if args.labels:
 		label_file = args.labels
 	if args.input_height:
@@ -93,29 +93,32 @@ if __name__ == "__main__":
 	if args.output_layer:
 		output_layer = args.output_layer
 
-	files = os.listdir(file_directory)
-	file_count= len(files)
-
 	graph = load_graph(model_file)
-	for im in files:
-		t = read_tensor_from_image_file(
-			im,
-			input_height=input_height,
-			input_width=input_width,
-			input_mean=input_mean,
-			input_std=input_std)
+	result_file = open("result_file.txt","w")
+	#process imagery
+	for file in os.listdir(img_directory)
+		if file.endswith(".jpg"):
+			f = open()
+			t = read_tensor_from_image_file(
+				file,
+				input_height=input_height,
+				input_width=input_width,
+				input_mean=input_mean,
+				input_std=input_std)
+			input_name = "import/" + input_layer
+			output_name = "import/" + output_layer
+			input_operation = graph.get_operation_by_name(input_name)
+			output_operation = graph.get_operation_by_name(output_name)
 
-		input_name = "import/" + input_layer
-		output_name = "import/" + output_layer
-		input_operation = graph.get_operation_by_name(input_name)
-		output_operation = graph.get_operation_by_name(output_name)
+			with tf.Session(graph=graph) as sess:
+				results = sess.run(output_operation.outputs[0], {
+				input_operation.outputs[0]: t})
+			results = np.squeeze(results)
 
-		with tf.Session(graph=graph) as sess:
-			results = sess.run(output_operation.outputs[0], {
-			input_operation.outputs[0]: t})
-		results = np.squeeze(results)
-
-		top_k = results.argsort()[-5:][::-1]
-		labels = load_labels(label_file)
-		for i in top_k:
-			print(labels[i], results[i])
+			top_k = results.argsort()[-5:][::-1]
+			labels = load_labels(label_file)
+			result_file.write(file + "\n")
+			for i in top_k:
+				print(labels[i], results[i])
+				result_file.write(labels[i] + results[i] + "\n")
+	result_file.close()
