@@ -26,6 +26,6 @@ if __name__ == "__main__":
 		result_file = args.result_file
 	result_file =  open("result_file.txt","r")
 	class_list = get_topk(result_file)
-	print(test_accuracy(class_list, class_name))
+	print(test_accuracy(class_list, classoi))
 
 
