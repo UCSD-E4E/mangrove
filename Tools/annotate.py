@@ -37,7 +37,7 @@ def read_tensor_from_image_file(file_name,
 		image_reader = tf.squeeze(tf.image.decode_gif(file_reader, name="gif_reader"))
 	elif file_name.endswith(".bmp"):
 		image_reader = tf.image.decode_bmp(file_reader, name="bmp_reader")
-	else:mustard
+	else:
 		image_reader = tf.image.decode_jpeg(file_reader, channels=3, name="jpeg_reader")
 	float_caster = tf.cast(image_reader, tf.float32)
 	dims_expander = tf.expand_dims(float_caster, 0)
@@ -71,12 +71,11 @@ if __name__ == "__main__":
 	parser.add_argument("--input_std", type=int, help="input std")
 	parser.add_argument("--input_layer", help="name of input layer")
 	parser.add_argument("--output_layer", help="name of output layer")
-	parese.add_argument("--results_name", help="name of results file")
 	args = parser.parse_args()
 
 	if args.graph:
 		model_file = args.graph
-	if args.image:
+	if args.images:
 		image_directory = args.images
 	if args.labels:
 		label_file = args.labels
@@ -96,9 +95,8 @@ if __name__ == "__main__":
 	graph = load_graph(model_file)
 	result_file = open("result_file.txt","w")
 	#process imagery
-	for file in os.listdir(img_directory)
+	for file in os.listdir(image_directory):
 		if file.endswith(".jpg"):
-			f = open()
 			t = read_tensor_from_image_file(
 				file,
 				input_height=input_height,
@@ -120,5 +118,5 @@ if __name__ == "__main__":
 			result_file.write(file + "\n")
 			for i in top_k:
 				print(labels[i], results[i])
-				result_file.write(labels[i] + results[i] + "\n")
+				result_file.write(labels[i] + " " + str(results[i]) + "\n")
 	result_file.close()
