@@ -30,3 +30,5 @@ Run docker container with volume attached
 Run docker image with gpu
 `nvidia-docker run -i dockerfile`
 `docker exec -it <container name> /bin/bash`
+
+To use annotate.py and accuracy.py use the argument -h to get a list of arguments needed to run each script
