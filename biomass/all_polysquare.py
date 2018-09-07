@@ -3,7 +3,7 @@ import utm
 import csv
 
 
-def makePoly(lat, lon, name, date, loc, seen):
+def makePoly(lat, lon, name, date, height, seen):
     #   makes a square with (lat, lon) as center coordinate
     w = shapefile.Writer(shapefile.POLYGON)
     seen.append(name)
@@ -16,17 +16,17 @@ def makePoly(lat, lon, name, date, loc, seen):
                    utm_downright[1]], [utm_downleft[0], utm_downleft[1]],
                   [utm_upleft[0], utm_upleft[1]]]])
     w.field('Quadrat', 'C')
-    w.field('Location', 'C')
     w.field('Date', 'C')
     w.field('Latitude', 'N', decimal=10)
     w.field('Longitude', 'N', decimal=10)
-    w.record(Quadrat=name, Date=date, Location=loc, Latitude=lat,
-             Longitude=lon)
+    w.field('Max_Height', 'N', decimal=2)
+    w.record(Quadrat=name, Date=date, Latitude=lat,
+             Longitude=lon, Max_Height=height)
     # w.record(Latitude=lat, Longitude=lon)
     w.save('shapefiles/polygon')
 
 
-def editPoly(lat, lon, name, date, loc, seen):
+def editPoly(lat, lon, name, date, height, seen):
     # checks for duplicates
     for names in seen:
         if names == name:
@@ -42,8 +42,8 @@ def editPoly(lat, lon, name, date, loc, seen):
     e.poly(parts=[[[utm_upright[0], utm_upright[1]], [utm_downright[0],
                    utm_downright[1]], [utm_downleft[0], utm_downleft[1]],
                   [utm_upleft[0], utm_upleft[1]]]])
-    e.record(Quadrat=name, Date=date, Location=loc, Latitude=lat,
-             Longitude=lon)
+    e.record(Quadrat=name, Date=date, Latitude=lat,
+             Longitude=lon, Max_Height=height)
     # e.record(Latitude=lat, Longitude=lon)
     e.save('shapefiles/polygon')
 
@@ -63,10 +63,10 @@ with open(file_name, mode='r') as f:
             num += 1
             name = row['Polygon']
             date = row['Trip']
-            loc = row['Location']
+            height = row['Max Canopy Height']
             lat = float(row['Latitude'])
             lon = float(row['Longitude'])
             if num == 1:
-                makePoly(lat, lon, name, date, loc, seen)
+                makePoly(lat, lon, name, date, height, seen)
             else:
-                editPoly(lat, lon, name, date, loc, seen)
+                editPoly(lat, lon, name, date, height, seen)
