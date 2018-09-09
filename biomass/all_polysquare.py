@@ -1,32 +1,56 @@
 import shapefile
+import math
 import utm
 import csv
 
 
-def makePoly(lat, lon, name, date, height, seen):
-    #   makes a square with (lat, lon) as center coordinate
+# Set Coordinate System
+#   0 = Use Latitude and Longitude
+#   1 = Use UTM
+use_utm = 0
+
+
+def get_quadrat():
+    #   Create 2 meter bounding coordinates for a quadrat.
+    if use_utm:
+        center = utm.from_latlon(lat, lon)
+        x_offset = 1
+        y_offset = 1
+        upright = [center[0] + y_offset, center[1] + x_offset]
+        downright = [center[0] + y_offset, center[1] - x_offset]
+        upleft = [center[0] - y_offset, center[1] + x_offset]
+        downleft = [center[0] - y_offset, center[1] - x_offset]
+    else:
+        center = [lat, lon]
+        x_offset = 1 / (111111 * math.cos(lat))
+        y_offset = 1 / 111111
+        upright = [center[1] + x_offset, center[0] + y_offset]
+        downright = [center[1] + x_offset, center[0] - y_offset]
+        upleft = [center[1] - x_offset, center[0] + y_offset]
+        downleft = [center[1] - x_offset, center[0] - y_offset]
+    return upleft, upright, downright, downleft
+
+
+def make_poly():
+    #   makes a square with (lat, lon) as center coordinate and loops num times
     w = shapefile.Writer(shapefile.POLYGON)
     seen.append(name)
-    utm_center = utm.from_latlon(lat, lon)
-    utm_upright = [utm_center[0] + 1, utm_center[1] + 1]
-    utm_downright = [utm_center[0] + 1, utm_center[1] - 1]
-    utm_upleft = [utm_center[0] - 1, utm_center[1] + 1]
-    utm_downleft = [utm_center[0] - 1, utm_center[1] - 1]
-    w.poly(parts=[[[utm_upright[0], utm_upright[1]], [utm_downright[0],
-                   utm_downright[1]], [utm_downleft[0], utm_downleft[1]],
-                  [utm_upleft[0], utm_upleft[1]]]])
+    upleft, upright, downright, downleft = get_quadrat()
+    w.poly(parts=[[[upright[0], upright[1]], [downright[0],
+                   downright[1]], [downleft[0], downleft[1]],
+                  [upleft[0], upleft[1]]]])
     w.field('Quadrat', 'C')
     w.field('Date', 'C')
     w.field('Latitude', 'N', decimal=10)
     w.field('Longitude', 'N', decimal=10)
     w.field('Max_Height', 'N', decimal=2)
-    w.record(Quadrat=name, Date=date, Latitude=lat,
-             Longitude=lon, Max_Height=height)
-    # w.record(Latitude=lat, Longitude=lon)
+    w.record(Quadrat=name, Date=date, Latitude=lat, Longitude=lon,
+             Max_Height=height)
     w.save('shapefiles/polygon')
+    w = None
 
 
-def editPoly(lat, lon, name, date, height, seen):
+def edit_poly():
     # checks for duplicates
     for names in seen:
         if names == name:
@@ -34,18 +58,15 @@ def editPoly(lat, lon, name, date, height, seen):
     seen.append(name)
     # adds more shapes to current shapefile
     e = shapefile.Editor(shapefile="shapefiles/polygon.shp")
-    utm_center = utm.from_latlon(lat, lon)
-    utm_upright = [utm_center[0] + 1, utm_center[1] + 1]
-    utm_downright = [utm_center[0] + 1, utm_center[1] - 1]
-    utm_upleft = [utm_center[0] - 1, utm_center[1] + 1]
-    utm_downleft = [utm_center[0] - 1, utm_center[1] - 1]
-    e.poly(parts=[[[utm_upright[0], utm_upright[1]], [utm_downright[0],
-                   utm_downright[1]], [utm_downleft[0], utm_downleft[1]],
-                  [utm_upleft[0], utm_upleft[1]]]])
-    e.record(Quadrat=name, Date=date, Latitude=lat,
-             Longitude=lon, Max_Height=height)
+    upleft, upright, downright, downleft = get_quadrat()
+    e.poly(parts=[[[upright[0], upright[1]], [downright[0],
+                   downright[1]], [downleft[0], downleft[1]],
+                  [upleft[0], upleft[1]]]])
+    e.record(Quadrat=name, Date=date, Latitude=lat, Longitude=lon,
+             Max_Height=height)
     # e.record(Latitude=lat, Longitude=lon)
     e.save('shapefiles/polygon')
+    e = None
 
 
 file_name = input('Import csv file: ')
@@ -67,6 +88,6 @@ with open(file_name, mode='r') as f:
             lat = float(row['Latitude'])
             lon = float(row['Longitude'])
             if num == 1:
-                makePoly(lat, lon, name, date, height, seen)
+                make_poly()
             else:
-                editPoly(lat, lon, name, date, height, seen)
+                edit_poly()
