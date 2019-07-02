@@ -12,7 +12,7 @@ def load_labels(label_file):
 	return label
 
 def get_topk(result_file, n):
-    file = open(result_file,"r")
+	file = open(result_file,"r")
 	lines = file.readlines()
 	topk = lines[1::n+1]
 	files = lines[0::n+1]
@@ -23,7 +23,7 @@ def get_topk(result_file, n):
 
 def mkdir(labels, output_dir):
 	for line in labels:
-		final_directory = os.path.join(output_dir, line)
+		final_directory = os.path.join(output_dir, line.strip())
 		if not os.path.exists(final_directory):
 			os.makedirs(final_directory)
 			print("Successfully made directory at" + final_directory)
