@@ -32,14 +32,15 @@ def mkdir(labels, output_dir):
 			sys.exit()
 
 def movefiles(files,classes,output_dir):
-        names = []
+	names = []
+	count = 0
 	for file in files:
 		names.append(os.path.basename(file))
 	for i in range(len(files)):
-                file = str(files[i])
-                print(file)
-		shutil.move(file[:-1], os.path.join(str(output_dir) + "/" + str(classes[i]), str(names[i]))) 
-
+		file = str(files[i])
+		print(file)
+		shutil.move(file[:-1], os.path.join(str(output_dir) + "/" + str(classes[i]), str(names[i])))
+		
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--labels", help="location of label file")
