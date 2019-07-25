@@ -1,11 +1,13 @@
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing import image
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.manifold import TSNE
 import cv2
 import joblib
 import numpy as np
 import h5py
 import os
+import matplotlib.pyplot as plt
 
 class CNNFeatureExtractor:
     '''
@@ -45,26 +47,32 @@ if __name__=='__main__':
     num_images = 0
     for d in train_labels:
         num_images += len(os.listdir(os.path.join(train_path, d)))
-    
+
+    num_images = 2000
+
     features = np.zeros((num_images, 512))
     i = 0
     for d in train_labels:
+        print(d)
         files = os.listdir(os.path.join(train_path, d))
         for f in files:
             imfile = os.path.join(train_path, d, f)
-            if i % 1 == 0:
+            if (i+1) % 10 == 0:
                 print('Processed {}/{}'.format(i+1, num_images))
             img = image.load_img(imfile)
             img = image.img_to_array(img)
             features[i] = extractor.extract(img)
             labels.append(d)
+            if i >= (train_labels.index(d)*(num_images/2) + (num_images/2-1)):
+                i += 1
+                break
             i += 1
     
     le = LabelEncoder()
     labels = le.fit_transform(labels)
     sc = StandardScaler()
     features = sc.fit_transform(features)
-    
+    print(len(labels))
     print('[STATUS] Saving data...')
     data_file = h5py.File(os.path.join(out_path, 'labeled.h5'), 'w')
     data_file.create_dataset('features', data=features)
