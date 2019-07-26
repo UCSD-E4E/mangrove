@@ -45,10 +45,8 @@ if __name__=='__main__':
     extractor = CNNFeatureExtractor()
     le = joblib.load(os.path.join(out_path, 'le.joblib'))
     sc = joblib.load(os.path.join(out_path, 'sc.joblib'))
-    data_file = h5py.File(os.path.join(out_path, 'labeled.h5'), 'r')
-    features = np.array(data_file['features'])
-    labels = np.array(data_file['labels'])
-    data_file.close()
+    features = np.load(os.path.join(out_path, 'features.npy'))
+    labels = np.load(os.path.join(out_path, 'labels.npy'))
 
     # labels = le.inverse_transform(labels)
     # reduced = TSNE(n_components=2, random_state=6).fit_transform(features).T
