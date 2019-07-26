@@ -16,6 +16,7 @@ import glob
 
 
 # Works OK with VGG16 output (~90%m, >95%nm), but very confidently wrong (>70%)
+# Accuracy is 90-95%, but consistent
 
 
 def grid_search_params(grid, svc, data, target):
@@ -60,7 +61,7 @@ if __name__=='__main__':
         elif args.model=='knn':
             clf = KNeighborsClassifier()
         elif args.model=='svm':
-            clf = SVC(gamma='auto', probability=True)
+            clf = SVC(gamma='auto')
         print(labels.shape)
         print(features.shape)
         clf.fit(features, labels)
@@ -93,12 +94,12 @@ if __name__=='__main__':
                 prediction = clf.predict(feature)
                 prediction_label = le.inverse_transform(prediction)[0]
                 im_count += 1
-                if d == prediction_label:
+                if d == prediction_label or (d=='nm' and prediction_label=='water'):
                     correct += 1
                 if im_count % 10 ==0:
                     print(im_count)
                 if args.show:
-                    print(clf.predict_proba(feature))
+                    # print(clf.predict_proba(feature))
                     cv2.putText(img_bgr, prediction_label, (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,255), 3)
                     cv2.imshow('image', img_bgr)
                     if cv2.waitKey(0) & 0xFF == ord('q'):

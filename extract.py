@@ -1,5 +1,6 @@
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing import image
+from keras.models import Model
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
 import numpy as np
@@ -13,14 +14,18 @@ class CNNFeatureExtractor:
     '''
     Class to represent a CNN-based feature extractor. This abstracts all the details of the CNN away from the classifier.
     '''
-    def __init__(self, shape=(256, 256, 3)):
+    def __init__(self, shape=(256, 256, 3), layer=None):
         '''
         Initializes a CNNFeatureExtractor using the VGG16 CNN.
 
         Arguments:
             shape: the shape of the imput images
         '''
-        self.model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
+        if layer is None:
+            self.model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
+        else:
+            full_model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
+            self.model = Model(inputs=full_model.input, outputs=full_model.get_layer(layer).output)
     
     def extract(self, img):
         '''
