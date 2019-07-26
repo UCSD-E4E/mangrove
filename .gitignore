@@ -1,3 +1,4 @@
 models/
 output/
 __pycache__/
+*.tar.xz

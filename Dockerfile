@@ -1,12 +1,13 @@
 FROM tensorflow/tensorflow:latest-gpu
 
 RUN apt-get install git -y
-RUN pip install keras sklearn h5py
-RUN mkdir work/
-WORKDIR work/
+RUN pip install keras sklearn h5py numpy
+WORKDIR cnn-features/
 
 VOLUME /dataset
 VOLUME /output
-VOLUME /models
 
 ADD extract.py .
+ADD classify.py .
+
+CMD ["/bin/bash"]

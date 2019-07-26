@@ -9,12 +9,10 @@ from sklearn.manifold import TSNE, MDS
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
 import argparse
 import glob
-import cv2
 
 
 # Works OK with VGG16 output (~90%m, >95%nm), but very confidently wrong (>70%)
@@ -37,6 +35,8 @@ if __name__=='__main__':
     parser.add_argument('--analyze', action='store_true')
     parser.add_argument('--gs', action='store_true', help='grid search SVM params')
     args = parser.parse_args()
+    if args.show:
+        import cv2
 
     train_path = '/home/sam/Documents/e4e/mvnm_feature_based/dataset/train'
     out_path = os.path.abspath('output/')
@@ -108,6 +108,7 @@ if __name__=='__main__':
                         break
             print('Actual {}: {}/{} ({}%) labeled as {}'.format(d, correct, im_count, correct/im_count*100, d))
     elif args.analyze:
+        import matplotlib.pyplot as plt
         # pca = PCA()
         # pca.fit(features)
         # print(np.cumsum(pca.explained_variance_ratio_))
