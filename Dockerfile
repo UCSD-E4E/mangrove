@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-gpu
+FROM tensorflow/tensorflow:1.13.2-gpu-py3
 
 RUN apt-get install git -y
 RUN pip install keras sklearn h5py numpy
