@@ -5,7 +5,7 @@ from keras.preprocessing import image
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
 import os
-from sklearn.manifold import TSNE
+from sklearn.manifold import TSNE, MDS
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.decomposition import PCA
@@ -15,6 +15,10 @@ from sklearn.model_selection import cross_val_score, KFold, GridSearchCV
 import argparse
 import glob
 import cv2
+
+
+# Works OK with VGG16 output (~90%m, >95%nm), but very confidently wrong (>70%)
+
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=5)
@@ -58,7 +62,9 @@ if __name__=='__main__':
         elif args.model=='knn':
             clf = KNeighborsClassifier()
         elif args.model=='svm':
-            clf = SVC(gamma='auto')
+            clf = SVC(gamma='auto', probability=True)
+        print(labels.shape)
+        print(features.shape)
         clf.fit(features, labels)
     else:
         if args.model=='rf':
@@ -94,6 +100,7 @@ if __name__=='__main__':
                 if im_count % 10 ==0:
                     print(im_count)
                 if args.show:
+                    print(clf.predict_proba(feature))
                     cv2.putText(img_bgr, prediction_label, (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,255), 3)
                     cv2.imshow('image', img_bgr)
                     if cv2.waitKey(0) & 0xFF == ord('q'):
@@ -101,9 +108,12 @@ if __name__=='__main__':
                         break
             print('Actual {}: {}/{} ({}%) labeled as {}'.format(d, correct, im_count, correct/im_count*100, d))
     elif args.analyze:
-        for v in features:
-            if np.allclose(v, np.zeros_like(v)):
-                print(v)
+        # pca = PCA()
+        # pca.fit(features)
+        # print(np.cumsum(pca.explained_variance_ratio_))
+        # for v in features:
+        #     if np.allclose(v, np.zeros_like(v)):
+        #         print(v)
         labels = le.inverse_transform(labels)
         reduced = TSNE(n_components=2, random_state=6).fit_transform(features)
         for l in list(le.classes_):
@@ -111,7 +121,7 @@ if __name__=='__main__':
             m_reduced = reduced[labels==l].T
             plt.scatter(m_reduced[0], m_reduced[1])
         plt.show()
-        print(features)
+        # print(features)
     elif args.gs and args.model=='svm':
         grid = {'gamma':[0.0001, 0.001, 0.01, 0.1, 1], 'C':[0.1, 1, 10]}
         grid_search_params(grid, svc=clf, data=features, target=labels)

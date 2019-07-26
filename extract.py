@@ -49,13 +49,15 @@ if __name__=='__main__':
     labels = []
     images_per_dir = 4*batchsize
 
-    features = np.zeros((len(train_labels), images_per_dir, 512))
+    features = []
+    dirnum = 0      # directory number, 0 indexed
     for d in train_labels:
         files = os.listdir(os.path.join(train_path, d))
-        j = 0
-        i = 0
+        j = 0       # number of image in batch, 1 indexed
+        i = 0       # number of image in directory, 1 indexed
         batch = []
         fnames = []
+        dir_features = np.zeros((min(len(files), images_per_dir), 512))
         for f in files:
             j += 1
             i += 1
@@ -64,18 +66,17 @@ if __name__=='__main__':
             img = image.img_to_array(img)
             batch.append(img)
             labels.append(d)
-            fnames.append(f)
-            if j == batchsize:
-                print('processing batch')
+            if j == batchsize or i == len(files):
                 batch = np.array(batch)
-                features[i//images_per_dir,i-batchsize:i] = extractor.extract(batch)
-                print(features[i//images_per_dir,i-batchsize:i].shape)
-                print(fnames)
-                fnames=[]
+                print(i)
+                dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
+                # dir_features[i-batch.shape[0]:i] = np.ones((batch.shape[0], 512))
                 batch = []
                 j = 0
-            if i == images_per_dir:
+            if i==images_per_dir:
                 break
+        dirnum += 1
+        features.append(dir_features)
     
     features = np.vstack(features)
     le = LabelEncoder()
