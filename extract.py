@@ -1,8 +1,6 @@
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing import image
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.manifold import TSNE
-import cv2
 import joblib
 import numpy as np
 import h5py
