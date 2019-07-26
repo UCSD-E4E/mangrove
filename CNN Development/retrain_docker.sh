@@ -13,7 +13,7 @@ python3 cnn_retrain2.py \
     --how_many_training_steps=$epochs \
     --learning_rate=$learning_rate \
     --train_batch_size=$batch_size \
-    --flip_left_right=10 \
+    --flip_left_right \
     --random_crop=10 \
     --random_scale=10 \
     --random_brightness=10
