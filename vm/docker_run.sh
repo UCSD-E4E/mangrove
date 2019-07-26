@@ -1,3 +1,5 @@
+docker pull awmaucsd/retrain
+
 echo "Note: GPUs are typicall indexed starting at 1, i.e. 2 GPUS will be 0,1"
 read -p "Which GPU: " gpu_num
 
