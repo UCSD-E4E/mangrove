@@ -4,11 +4,8 @@ from keras.models import Model
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
 import numpy as np
-import h5py
 import os
-import matplotlib.pyplot as plt
-
-batchsize = 250
+import argparse
 
 class CNNFeatureExtractor:
     '''
@@ -45,12 +42,21 @@ class CNNFeatureExtractor:
 
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--nbatches', type=int, help='the number of batches per directory', default=512)
+    parser.add_argument('-b', '--batchsize', type=int, default=30, help='images per batch')
+    parser.add_argument('--layer', help='the layer name to use (default last)')
+    parser.add_argument('-i', '--input', help='input directory')
+    parser.add_argument('-o', '--output', help='output directory')
+    args = parser.parse_args()
+
     extractor = CNNFeatureExtractor()
-    train_path = '/home/sam/Documents/e4e/mvnm_feature_based/dataset/train'
-    out_path = os.path.abspath('output/')
+    train_path = os.path.abspath(args.input)
+    out_path = os.path.abspath(args.output)
     train_labels = os.listdir(train_path)
+    batchsize = args.batchsize
     labels = []
-    images_per_dir = 4*batchsize
+    images_per_dir = batchsize*args.nbatches
 
     features = []
     dirnum = 0      # directory number, 0 indexed
