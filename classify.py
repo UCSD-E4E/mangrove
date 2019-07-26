@@ -58,7 +58,7 @@ if __name__=='__main__':
         elif args.model=='knn':
             clf = KNeighborsClassifier()
         elif args.model=='svm':
-            clf = SVC(gamma=0.001, C=10)
+            clf = SVC(gamma='auto')
         clf.fit(features, labels)
     else:
         if args.model=='rf':
@@ -77,8 +77,6 @@ if __name__=='__main__':
         in_dirs = os.listdir(in_path)
         in_dirs.sort()
         for d in in_dirs:
-            if d == 'm':
-                continue
             images = glob.glob(os.path.join(in_path, d, '*.jpg',))
             im_count = 0
             correct = 0
@@ -103,15 +101,19 @@ if __name__=='__main__':
                         break
             print('Actual {}: {}/{} ({}%) labeled as {}'.format(d, correct, im_count, correct/im_count*100, d))
     elif args.analyze:
+        for v in features:
+            if np.allclose(v, np.zeros_like(v)):
+                print(v)
         labels = le.inverse_transform(labels)
         reduced = TSNE(n_components=2, random_state=6).fit_transform(features)
-        m_reduced = reduced[labels=='m'].T
-        nm_reduced = reduced[labels=='nm'].T
-        plt.scatter(m_reduced[0], m_reduced[1])
-        plt.scatter(nm_reduced[0], nm_reduced[1])
+        for l in list(le.classes_):
+            print(l)
+            m_reduced = reduced[labels==l].T
+            plt.scatter(m_reduced[0], m_reduced[1])
         plt.show()
+        print(features)
     elif args.gs and args.model=='svm':
-        grid = {'kernel':['rbf', 'poly']}
+        grid = {'gamma':[0.0001, 0.001, 0.01, 0.1, 1], 'C':[0.1, 1, 10]}
         grid_search_params(grid, svc=clf, data=features, target=labels)
                 
     if args.retrain:

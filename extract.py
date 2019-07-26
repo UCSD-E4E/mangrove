@@ -9,6 +9,8 @@ import h5py
 import os
 import matplotlib.pyplot as plt
 
+batchsize = 250
+
 class CNNFeatureExtractor:
     '''
     Class to represent a CNN-based feature extractor. This abstracts all the details of the CNN away from the classifier.
@@ -33,7 +35,8 @@ class CNNFeatureExtractor:
             np.array: the feature vector, with shape (1, n), where n is the length of the CNN output
         '''
         img = preprocess_input(img)
-        img = np.expand_dims(img, axis=0)
+        if len(img.shape)==3:
+            img = np.expand_dims(img, axis=0)
         feature = self.model.predict(img)
         return feature
 
@@ -44,35 +47,41 @@ if __name__=='__main__':
     out_path = os.path.abspath('output/')
     train_labels = os.listdir(train_path)
     labels = []
-    num_images = 0
-    for d in train_labels:
-        num_images += len(os.listdir(os.path.join(train_path, d)))
+    images_per_dir = 4*batchsize
 
-    num_images = 2000
-
-    features = np.zeros((num_images, 512))
-    i = 0
+    features = np.zeros((len(train_labels), images_per_dir, 512))
     for d in train_labels:
-        print(d)
         files = os.listdir(os.path.join(train_path, d))
+        j = 0
+        i = 0
+        batch = []
+        fnames = []
         for f in files:
+            j += 1
+            i += 1
             imfile = os.path.join(train_path, d, f)
-            if (i+1) % 10 == 0:
-                print('Processed {}/{}'.format(i+1, num_images))
             img = image.load_img(imfile)
             img = image.img_to_array(img)
-            features[i] = extractor.extract(img)
+            batch.append(img)
             labels.append(d)
-            if i >= (train_labels.index(d)*(num_images/2) + (num_images/2-1)):
-                i += 1
+            fnames.append(f)
+            if j == batchsize:
+                print('processing batch')
+                batch = np.array(batch)
+                features[i//images_per_dir,i-batchsize:i] = extractor.extract(batch)
+                print(features[i//images_per_dir,i-batchsize:i].shape)
+                print(fnames)
+                fnames=[]
+                batch = []
+                j = 0
+            if i == images_per_dir:
                 break
-            i += 1
     
+    features = np.vstack(features)
     le = LabelEncoder()
     labels = le.fit_transform(labels)
     sc = StandardScaler()
     features = sc.fit_transform(features)
-    print(len(labels))
     print('[STATUS] Saving data...')
     data_file = h5py.File(os.path.join(out_path, 'labeled.h5'), 'w')
     data_file.create_dataset('features', data=features)
