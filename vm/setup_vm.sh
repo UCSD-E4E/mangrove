@@ -42,9 +42,8 @@ curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.li
 sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker 
 
-# grabbing script to run docker container + change file permissions
+# grabbing scripts for running/using docker container + change file permissions
 curl -O https://raw.githubusercontent.com/UCSD-E4E/mangrove/master/vm/run_docker.sh
 chmod +x run_docker.sh
-
-# adding user to docker group (might need to reboot vm)
-sudo usermod -aG docker e4e
+curl -O https://raw.githubusercontent.com/UCSD-E4E/mangrove/master/vm/get_output.sh
+chmod +x get_output.sh
