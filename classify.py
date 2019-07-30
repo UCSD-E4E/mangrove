@@ -5,6 +5,7 @@ from keras.preprocessing import image
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
 import os
+from sklearn.metrics import classification_report
 from sklearn.manifold import TSNE, MDS
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -15,9 +16,8 @@ import argparse
 import glob
 
 
-# Works OK with VGG16 output (~90%m, >95%nm), but very confidently wrong (>70%)
-# Accuracy is 90-95%, but consistent
-
+# 78%m recall on site 8
+# 89%m recall on site 7
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=5)
@@ -35,6 +35,7 @@ if __name__=='__main__':
     parser.add_argument('--show', action='store_true', help='show the images with their predicted labels')
     parser.add_argument('--analyze', action='store_true')
     parser.add_argument('--gs', action='store_true', help='grid search SVM params')
+    parser.add_argument('--vp', action='store_true', help='validate preprocessed')
     args = parser.parse_args()
     if args.show:
         import cv2
@@ -125,6 +126,11 @@ if __name__=='__main__':
     elif args.gs and args.model=='svm':
         grid = {'gamma':[0.0001, 0.001, 0.01, 0.1, 1], 'C':[0.1, 1, 10]}
         grid_search_params(grid, svc=clf, data=features, target=labels)
+    elif args.vp:
+        x_test = np.load(os.path.join(in_path, 'features.npy'))
+        y_test = np.load(os.path.join(in_path, 'labels.npy'))
+        y_pred = clf.predict(x_test)
+        print(classification_report(y_test.reshape(-1, 1), y_pred, digits=6))
                 
     if args.retrain:
         if args.model=='rf':

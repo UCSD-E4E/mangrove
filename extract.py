@@ -50,7 +50,7 @@ if __name__=='__main__':
     parser.add_argument('-o', '--output', help='output directory')
     args = parser.parse_args()
 
-    extractor = CNNFeatureExtractor(layer='block2_pool')
+    extractor = CNNFeatureExtractor()
     train_path = os.path.abspath(args.input)
     out_path = os.path.abspath(args.output)
     train_labels = os.listdir(train_path)

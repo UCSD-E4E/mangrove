@@ -2,3 +2,5 @@ models/
 output/
 __pycache__/
 *.tar.xz
+output-site7/
+output-site8/
