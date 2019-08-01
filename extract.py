@@ -42,7 +42,6 @@ class CNNFeatureExtractor:
         feature = self.model.predict(img)
         return feature
 
-
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--nbatches', type=int, help='the number of batches per directory', default=512)
@@ -51,12 +50,16 @@ if __name__=='__main__':
     parser.add_argument('-i', '--input', help='input directory')
     parser.add_argument('-o', '--output', help='output directory')
     parser.add_argument('-f','--savefnames', action='store_true', help='save filenames')
+    parser.add_argument('-u', '--unlabeled', action='store_true', help='flag data as unlabeled')
     args = parser.parse_args()
 
     extractor = CNNFeatureExtractor()
     train_path = os.path.abspath(args.input)
     out_path = os.path.abspath(args.output)
-    train_labels = os.listdir(train_path)
+    if not args.unlabeled:
+        train_labels = os.listdir(train_path)
+    else:
+        train_labels = ['']     # if unlabeled, all images are in train_path directly
     batchsize = args.batchsize
     labels = []
     images_per_dir = batchsize*args.nbatches
@@ -79,18 +82,19 @@ if __name__=='__main__':
             batch.append(img)
             labels.append(d)
             if args.savefnames:
-                fnames.append(d + '/' + f)
+                fnames.append(os.path.relpath(os.path.join(d, f)))
+                print(fnames[-1])
             if j == batchsize or i == len(files):
                 batch = np.array(batch)
                 print(i)
                 dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
-                # dir_features[i-batch.shape[0]:i] = np.ones((batch.shape[0], 512))
                 batch = []
                 j = 0
             if i==images_per_dir:
                 break
         dirnum += 1
         features.append(dir_features)
+
     
     features = np.vstack(features)
     le = LabelEncoder()
