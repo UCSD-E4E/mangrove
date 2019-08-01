@@ -5,7 +5,7 @@ from keras.preprocessing import image
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
 import os
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.manifold import TSNE, MDS
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -18,6 +18,8 @@ import glob
 
 # 78%m recall on site 8
 # 89%m recall on site 7
+# 67%m recall on site 9
+# Overall, slightly worse than train_fc, but much more consistent (b/c no randomness in training)
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=5)
@@ -30,7 +32,8 @@ if __name__=='__main__':
     parser.add_argument('--xv', action='store_true', help='10-fold cross-validation')
     parser.add_argument('-v', '--validate', action='store_true', help='validate the model on a dataset')
     parser.add_argument('-m', '--model', default='svm', help = 'the model to use (svm, rf, knn')
-    parser.add_argument('-i', '--input', help='the input directory')
+    parser.add_argument('--train', help='train directory')
+    parser.add_argument('--test', help='test directory')
     parser.add_argument('-r', '--retrain', action='store_true', help='retrain the model and save it')
     parser.add_argument('--show', action='store_true', help='show the images with their predicted labels')
     parser.add_argument('--analyze', action='store_true')
@@ -40,15 +43,14 @@ if __name__=='__main__':
     if args.show:
         import cv2
 
-    train_path = '/home/sam/Documents/e4e/mvnm_feature_based/dataset/train'
-    out_path = os.path.abspath('output/')
-    in_path = args.input
+    train_path = os.path.abspath(args.train)
+    test_path = os.path.abspath(args.test)
     train_labels = os.listdir(train_path)
     extractor = CNNFeatureExtractor()
-    le = joblib.load(os.path.join(out_path, 'le.joblib'))
-    sc = joblib.load(os.path.join(out_path, 'sc.joblib'))
-    features = np.load(os.path.join(out_path, 'features.npy'))
-    labels = np.load(os.path.join(out_path, 'labels.npy'))
+    le = joblib.load(os.path.join(train_path, 'le.joblib'))
+    sc = joblib.load(os.path.join(train_path, 'sc.joblib'))
+    features = np.load(os.path.join(train_path, 'features.npy'))
+    labels = np.load(os.path.join(train_path, 'labels.npy'))
 
     # labels = le.inverse_transform(labels)
     # reduced = TSNE(n_components=2, random_state=6).fit_transform(features).T
@@ -68,11 +70,11 @@ if __name__=='__main__':
         clf.fit(features, labels)
     else:
         if args.model=='rf':
-            clf = joblib.load(os.path.join(out_path, 'rf.joblib'))
+            clf = joblib.load(os.path.join(train_path, 'rf.joblib'))
         elif args.model=='knn':
-            clf = joblib.load(os.path.join(out_path, 'knn.joblib'))
+            clf = joblib.load(os.path.join(train_path, 'knn.joblib'))
         elif args.model=='svm':
-            clf = joblib.load(os.path.join(out_path, 'svm.joblib'))
+            clf = joblib.load(os.path.join(train_path, 'svm.joblib'))
 
     if args.xv:
         kfold = KFold(n_splits=10)
@@ -80,10 +82,10 @@ if __name__=='__main__':
         msg = "%f (%f)" % (cv_results.mean(), cv_results.std())
         print(msg)
     elif args.validate:
-        in_dirs = os.listdir(in_path)
+        in_dirs = os.listdir(test_path)
         in_dirs.sort()
         for d in in_dirs:
-            images = glob.glob(os.path.join(in_path, d, '*.jpg',))
+            images = glob.glob(os.path.join(test_path, d, '*.jpg',))
             im_count = 0
             correct = 0
             for f in images:
@@ -127,16 +129,17 @@ if __name__=='__main__':
         grid = {'gamma':[0.0001, 0.001, 0.01, 0.1, 1], 'C':[0.1, 1, 10]}
         grid_search_params(grid, svc=clf, data=features, target=labels)
     elif args.vp:
-        x_test = np.load(os.path.join(in_path, 'features.npy'))
-        y_test = np.load(os.path.join(in_path, 'labels.npy'))
+        x_test = np.load(os.path.join(test_path, 'features.npy'))
+        y_test = np.load(os.path.join(test_path, 'labels.npy'))
         y_pred = clf.predict(x_test)
         print(classification_report(y_test.reshape(-1, 1), y_pred, digits=6))
+        print(confusion_matrix(y_test.reshape(-1, 1), y_pred))
                 
     if args.retrain:
         if args.model=='rf':
-            joblib.dump(clf, os.path.join(out_path, 'rf.joblib'))
+            joblib.dump(clf, os.path.join(train_path, 'rf.joblib'))
         elif args.model=='knn':
-            joblib.dump(clf, os.path.join(out_path, 'knn.joblib'))
+            joblib.dump(clf, os.path.join(train_path, 'knn.joblib'))
         elif args.model=='svm':
-            joblib.dump(clf, os.path.join(out_path, 'svm.joblib'))
+            joblib.dump(clf, os.path.join(train_path, 'svm.joblib'))
     
