@@ -14,22 +14,45 @@ import matplotlib.pyplot as plt
 # presence of water as a separate class improves m recall by 1-2% on average
 # goes to 83%m recall on site 8 w/ 2 dense layer-dropout pairs
 # Training on site 8 is >95% for 7 and 9, but bad for the training set even w/o water
+# Training on sites 4 and 8, with water from site 4, gives consistent ~94% accuracy
+
+def remove_water(x_test, y_test, le):
+    '''
+    Remove vectors labeled as water from a dataset.
+    '''
+    if 'water' in le.classes_:
+        water_index = le.transform(['water'])[0]
+        return x_test[y_test!=water_index], y_test[y_test!=water_index]
+    return x_test, y_test
+    
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input', help='path to directory with output of CNN feature extractor')
+    parser.add_argument('--train', help='train directory', default='output-site8/')
+    parser.add_argument('--test', help='test directory')
     parser.add_argument('-r', '--retrain', action='store_true', help='retrain the model')
     args = parser.parse_args()
-    input_path = args.input
-    features = np.load(os.path.join(input_path, 'features.npy'))
-    labels = np.load(os.path.join(input_path, 'labels.npy'))
+
+    train_path = os.path.abspath(args.train)
+    test_path = os.path.abspath(args.test)
+    features = np.load(os.path.join(train_path, 'features.npy'))
+    labels = np.load(os.path.join(train_path, 'labels.npy'))
+    features2 = np.load('output/features.npy')
+    labels2 = np.load('output/labels.npy')
+    features = np.vstack([features, features2])
+    labels = np.concatenate([labels, labels2])
+
     data = np.hstack([features, labels.reshape(-1, 1)])
     np.random.shuffle(data)
     features = data[:,:-1]
     labels = data[:,-1:]
-    le = joblib.load(os.path.join(input_path, 'le.joblib'))
-    x_test = np.load(os.path.abspath('output-site5/features.npy'))
-    y_test = np.load('output-site5/labels.npy')
+
+    le_test = joblib.load(os.path.join(test_path, 'le.joblib'))
+    x_test = np.load(os.path.join(test_path, 'features.npy'))
+    y_test = np.load(os.path.join(test_path, 'labels.npy'))
+    # print(le_train.inverse_transform([0, 1, 2]))
+    # print(le_test.inverse_transform([0, 1, 2]))
+    # x_test, y_test = remove_water(x_test, y_test, le_test)
 
     oh = OneHotEncoder()
     labels = oh.fit_transform(labels.reshape(-1, 1))
@@ -37,19 +60,28 @@ if __name__=='__main__':
     if args.retrain:
         inputs = tf.keras.Input(shape=(512,))
         x = layers.Dense(256, activation='relu')(inputs)
-        x = layers.Dropout(rate=0.1, noise_shape=(256,))(x)
+        x = layers.Dropout(rate=0.5, noise_shape=(256,))(x)
         x = layers.Dense(256, activation='relu')(x)
-        x = layers.Dropout(rate=0.1, noise_shape=(256,))(x)
-        outputs = layers.Dense(3, activation='softmax')(x)
+        x = layers.Dropout(rate=0.5, noise_shape=(256,))(x)
+        outputs = layers.Dense(labels.shape[1], activation='softmax')(x)
         model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
-        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.RMSprop(),
+        model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(),
             metrics=['accuracy'])
-        history = model.fit(features, labels, batch_size=64, epochs=10, validation_split=0.1)
+        history = model.fit(features, labels, batch_size=64, epochs=10, validation_split=0.25)
     else:
-        model = tf.keras.models.load_model(os.path.join(input_path, 'fc_model.h5'))
+        model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
     y_pred = np.argmax(model.predict(x_test), axis=1)
-    print(np.unique(y_pred))
-    print(classification_report(np.argmax(y_test, axis=1), y_pred, digits=6))
-    print(confusion_matrix(np.argmax(y_test, axis=1), y_pred))
+    print(le_test.classes_)
+    cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
+    n_samples = y_pred.shape[0]
+    m_recall = cm[0,0]/np.sum(cm[0])
+    nm_recall = np.sum(cm[1:, 1:])/np.sum(cm[1]+cm[2])     # sum of nm classified as nm and nm classified as water
+    m_precision = cm[0, 0]/np.sum(cm[:,0])
+    nm_precision = np.sum(cm[1:, 1:])/np.sum(cm[:,1:])
+    print(cm)
+    print('m recall:', m_recall)
+    print('m precision:', m_precision)
+    print('nm recall:', nm_recall)
+    print('nm precision', nm_precision)
     if args.retrain:
-        model.save(os.path.join(input_path, 'fc_model.h5'))
+        model.save(os.path.join(train_path, 'fc_model.h5'))
