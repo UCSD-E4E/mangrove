@@ -31,6 +31,9 @@ if __name__=='__main__':
     parser.add_argument('--train', help='train directory', default='output-site8/')
     parser.add_argument('--test', help='test directory')
     parser.add_argument('-r', '--retrain', action='store_true', help='retrain the model')
+    parser.add_argument('--outdir', help='directory to output sorted images')
+    parser.add_argument('--sort', action='store_true', help='sort unlabeled images')
+    parser.add_argument('-v', '--validate', action='store_true', help='test on preprocessed data')
     args = parser.parse_args()
 
     train_path = os.path.abspath(args.train)
@@ -70,18 +73,22 @@ if __name__=='__main__':
         history = model.fit(features, labels, batch_size=64, epochs=10, validation_split=0.25)
     else:
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
-    y_pred = np.argmax(model.predict(x_test), axis=1)
-    print(le_test.classes_)
-    cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
-    n_samples = y_pred.shape[0]
-    m_recall = cm[0,0]/np.sum(cm[0])
-    nm_recall = np.sum(cm[1:, 1:])/np.sum(cm[1]+cm[2])     # sum of nm classified as nm and nm classified as water
-    m_precision = cm[0, 0]/np.sum(cm[:,0])
-    nm_precision = np.sum(cm[1:, 1:])/np.sum(cm[:,1:])
-    print(cm)
-    print('m recall:', m_recall)
-    print('m precision:', m_precision)
-    print('nm recall:', nm_recall)
-    print('nm precision', nm_precision)
+    
+    if args.validate:
+        y_pred = np.argmax(model.predict(x_test), axis=1)
+        print(le_test.classes_)
+        cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
+        n_samples = y_pred.shape[0]
+        m_recall = cm[0,0]/np.sum(cm[0])
+        nm_recall = np.sum(cm[1:, 1:])/np.sum(cm[1]+cm[2])     # sum of nm classified as nm and nm classified as water
+        m_precision = cm[0, 0]/np.sum(cm[:,0])
+        nm_precision = np.sum(cm[1:, 1:])/np.sum(cm[:,1:])
+        print(cm)
+        print('m recall:', m_recall)
+        print('m precision:', m_precision)
+        print('nm recall:', nm_recall)
+        print('nm precision', nm_precision)
+    elif args.sort:
+        fnames = joblib.load(os.path.join(train_path, 'fnames.joblib'))
     if args.retrain:
         model.save(os.path.join(train_path, 'fc_model.h5'))

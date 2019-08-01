@@ -1,3 +1,4 @@
+import tensorflow as tf
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing import image
 from keras.models import Model
@@ -20,6 +21,7 @@ class CNNFeatureExtractor:
         '''
         if layer is None:
             self.model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
+            self.model = tf.keras.utils.multi_gpu_model(self.model, gpus=2)
         else:
             full_model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
             self.model = Model(inputs=full_model.input, outputs=full_model.get_layer(layer).output)
@@ -48,6 +50,7 @@ if __name__=='__main__':
     parser.add_argument('--layer', help='the layer name to use (default last)')
     parser.add_argument('-i', '--input', help='input directory')
     parser.add_argument('-o', '--output', help='output directory')
+    parser.add_argument('-f','--savefnames', action='store_true', help='save filenames')
     args = parser.parse_args()
 
     extractor = CNNFeatureExtractor()
@@ -60,12 +63,12 @@ if __name__=='__main__':
 
     features = []
     dirnum = 0      # directory number, 0 indexed
+    fnames = []
     for d in train_labels:
         files = os.listdir(os.path.join(train_path, d))
         j = 0       # number of image in batch, 1 indexed
         i = 0       # number of image in directory, 1 indexed
         batch = []
-        fnames = []
         dir_features = np.zeros((min(len(files), images_per_dir), 512))
         for f in files:
             j += 1
@@ -75,6 +78,8 @@ if __name__=='__main__':
             img = image.img_to_array(img)
             batch.append(img)
             labels.append(d)
+            if args.savefnames:
+                fnames.append(d + '/' + f)
             if j == batchsize or i == len(files):
                 batch = np.array(batch)
                 print(i)
@@ -98,3 +103,5 @@ if __name__=='__main__':
     print('[STATUS] Saving scaler and label encoder...')
     joblib.dump(le, os.path.join(out_path, 'le.joblib'))
     joblib.dump(sc, os.path.join(out_path, 'sc.joblib'))
+    if args.savefnames:
+        joblib.dump(fnames, os.path.join(out_path, 'fnames.joblib'))
