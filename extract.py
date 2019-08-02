@@ -21,7 +21,7 @@ class CNNFeatureExtractor:
         '''
         if layer is None:
             self.model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
-            self.model = tf.keras.utils.multi_gpu_model(self.model, gpus=2)
+            # self.model = tf.keras.utils.multi_gpu_model(self.model, gpus=2)
         else:
             full_model = VGG16(weights='imagenet', include_top=False, pooling='avg', input_shape=shape)
             self.model = Model(inputs=full_model.input, outputs=full_model.get_layer(layer).output)

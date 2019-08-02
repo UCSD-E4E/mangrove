@@ -19,7 +19,7 @@ import glob
 # 78%m recall on site 8
 # 89%m recall on site 7
 # 67%m recall on site 9
-# Overall, slightly worse than train_fc, but much more consistent (b/c no randomness in training)
+# Overall, when trained on site 8 and my custom set (4 and water from Dillon), slightly less precise in 3-class
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=5)
@@ -50,13 +50,11 @@ if __name__=='__main__':
     le = joblib.load(os.path.join(train_path, 'le.joblib'))
     sc = joblib.load(os.path.join(train_path, 'sc.joblib'))
     features = np.load(os.path.join(train_path, 'features.npy'))
+    features2 = np.load(os.path.abspath('output-site8/features.npy'))
     labels = np.load(os.path.join(train_path, 'labels.npy'))
-
-    # labels = le.inverse_transform(labels)
-    # reduced = TSNE(n_components=2, random_state=6).fit_transform(features).T
-    # plt.scatter(reduced[0,:1000], reduced[1,:1000])
-    # plt.scatter(reduced[0,1000:], reduced[1,1000:])
-    # plt.show()
+    labels2 = np.load(os.path.abspath('output-site8/labels.npy'))
+    features = np.vstack([features, features2])
+    labels = np.concatenate([labels, labels2])
 
     if args.retrain:
         if args.model=='rf':
@@ -132,8 +130,18 @@ if __name__=='__main__':
         x_test = np.load(os.path.join(test_path, 'features.npy'))
         y_test = np.load(os.path.join(test_path, 'labels.npy'))
         y_pred = clf.predict(x_test)
-        print(classification_report(y_test.reshape(-1, 1), y_pred, digits=6))
-        print(confusion_matrix(y_test.reshape(-1, 1), y_pred))
+        cm = confusion_matrix(y_test, y_pred)
+        n_samples = y_pred.shape[0]
+        m_recall = cm[0,0]/np.sum(cm[0])
+        nm_recall = np.sum(cm[1:, 1:])/np.sum(cm[1]+cm[2])     # sum of nm classified as nm and nm classified as water
+        m_precision = cm[0, 0]/np.sum(cm[:,0])
+        nm_precision = np.sum(cm[1:, 1:])/np.sum(cm[:,1:])
+        print(cm)
+        print('m recall:', m_recall)
+        print('m precision:', m_precision)
+        print('nm recall:', nm_recall)
+        print('nm precision', nm_precision)
+        print(cm)
                 
     if args.retrain:
         if args.model=='rf':

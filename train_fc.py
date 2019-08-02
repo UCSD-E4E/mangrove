@@ -8,6 +8,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 import os, argparse, joblib
 import matplotlib.pyplot as plt
+import shutil
 
 # 95%m, 97%nm site 7 recall with sparse categorical cross-entropy and 10 epochs
 # 76%m, 98%nm site 8 recall w/ 256 neurons, up to ~82%m recall w/ 0.1 dropout
@@ -31,6 +32,7 @@ if __name__=='__main__':
     parser.add_argument('--train', help='train directory', default='output-site8/')
     parser.add_argument('--test', help='test directory')
     parser.add_argument('-r', '--retrain', action='store_true', help='retrain the model')
+    parser.add_argument('--indir', help='directory of unlabeled images')
     parser.add_argument('--outdir', help='directory to output sorted images')
     parser.add_argument('--sort', action='store_true', help='sort unlabeled images')
     parser.add_argument('-v', '--validate', action='store_true', help='test on preprocessed data')
@@ -50,7 +52,7 @@ if __name__=='__main__':
     features = data[:,:-1]
     labels = data[:,-1:]
 
-    le_test = joblib.load(os.path.join(test_path, 'le.joblib'))
+    le_train = joblib.load(os.path.join('output/', 'le.joblib'))
     x_test = np.load(os.path.join(test_path, 'features.npy'))
     y_test = np.load(os.path.join(test_path, 'labels.npy'))
     # print(le_train.inverse_transform([0, 1, 2]))
@@ -59,7 +61,8 @@ if __name__=='__main__':
 
     oh = OneHotEncoder()
     labels = oh.fit_transform(labels.reshape(-1, 1))
-    y_test = oh.transform(y_test.reshape(-1, 1))
+    if not args.sort:
+        y_test = oh.transform(y_test.reshape(-1, 1))
     if args.retrain:
         inputs = tf.keras.Input(shape=(512,))
         x = layers.Dense(256, activation='relu')(inputs)
@@ -76,7 +79,6 @@ if __name__=='__main__':
     
     if args.validate:
         y_pred = np.argmax(model.predict(x_test), axis=1)
-        print(le_test.classes_)
         cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
         n_samples = y_pred.shape[0]
         m_recall = cm[0,0]/np.sum(cm[0])
@@ -89,6 +91,20 @@ if __name__=='__main__':
         print('nm recall:', nm_recall)
         print('nm precision', nm_precision)
     elif args.sort:
-        fnames = joblib.load(os.path.join(train_path, 'fnames.joblib'))
+        in_dir = os.path.abspath(args.indir)
+        if args.outdir is None:
+            out_dir = in_dir    # default to same location as in_dir
+        else:
+            out_dir = os.path.abspath(args.outdir)
+        fnames = joblib.load(os.path.join(test_path, 'fnames.joblib'))
+        y_pred = np.argmax(model.predict(x_test), axis=1)
+        y_labels = le_train.inverse_transform(y_pred)
+        for i in range(len(fnames)):
+            src = os.path.join(in_dir, fnames[i])
+            dst = os.path.join(out_dir, y_labels[i], fnames[i])
+            try:
+                shutil.move(src, dst)
+            except FileNotFoundError:
+                print('no such file '+src)
     if args.retrain:
         model.save(os.path.join(train_path, 'fc_model.h5'))
