@@ -47,14 +47,17 @@ if __name__=='__main__':
     test_path = os.path.abspath(args.test)
     train_labels = os.listdir(train_path)
     extractor = CNNFeatureExtractor()
-    le = joblib.load(os.path.join(train_path, 'le.joblib'))
-    sc = joblib.load(os.path.join(train_path, 'sc.joblib'))
+    if not args.xv:
+        le = joblib.load(os.path.join(train_path, 'le.joblib'))
+        sc = joblib.load(os.path.join(train_path, 'sc.joblib'))
     features = np.load(os.path.join(train_path, 'features.npy'))
     features2 = np.load(os.path.abspath('output-site8/features.npy'))
     labels = np.load(os.path.join(train_path, 'labels.npy'))
     labels2 = np.load(os.path.abspath('output-site8/labels.npy'))
     features = np.vstack([features, features2])
     labels = np.concatenate([labels, labels2])
+
+    
 
     if args.retrain:
         if args.model=='rf':
