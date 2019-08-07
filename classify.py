@@ -20,6 +20,8 @@ import glob
 # 89%m recall on site 7
 # 67%m recall on site 9
 # Overall, when trained on site 8 and my custom set (4 and water from Dillon), slightly less precise in 3-class
+# Also takes an order of magnitude longer to train, and prior research suggests it is less accurate than an NN
+# Good to note, but I think I will stick to the NN
 
 def grid_search_params(grid, svc, data, target):
     clf = GridSearchCV(svc, grid, cv=5)
