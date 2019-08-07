@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-docker run -it -v "/features-2/MVNM_Training_Images":/train \
--v "/features-2/MVNMv2":/test \
+docker run -it -v "/features-2/MVNM_Training_Data":/train \
+-v "/features-2/MVNMv2.5_TrainingImages":/test \
 -v "$(pwd)/save":/save \
 --runtime=nvidia --user 1000:1000 \
 features python train_test.py \

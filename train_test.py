@@ -41,6 +41,8 @@ def load_data(path):
             x[i] = img
             y_str.append(d)
             i += 1
+            if i%100==0:
+                print(i)
     return x, y_str
 
 
@@ -64,7 +66,7 @@ if __name__=='__main__':
         x = base_model.output
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.Dense(1024, activation='relu')(x)
-        pred = layers.Dense(2, activation='softmax')(x)
+        pred = layers.Dense(1, activation='softmax')(x)
         model = tf.keras.models.Model(inputs=base_model.input, outputs=pred)
         try:
             model = tf.keras.utils.multi_gpu_model(model, gpus=2)
@@ -78,6 +80,7 @@ if __name__=='__main__':
         model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(), metrics=['acc'])
 
         x_train, y_train_str = load_data(train_path)
+        print(y_train_str)
         lb = LabelBinarizer()
         y_train = lb.fit_transform(y_train_str)
         history = model.fit(x=x_train, y=y_train, batch_size=64, epochs=10)
