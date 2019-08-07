@@ -3,7 +3,7 @@ from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import Model
 from tensorflow.keras import layers
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report, confusion_matrix
 import joblib
 import numpy as np
@@ -78,22 +78,22 @@ if __name__=='__main__':
         model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(), metrics=['acc'])
 
         x_train, y_train_str = load_data(train_path)
-        oh = OneHotEncoder()
-        y_train = oh.fit_transform(y_train_str)
+        lb = LabelBinarizer()
+        y_train = lb.fit_transform(y_train_str)
         history = model.fit(x=x_train, y=y_train, batch_size=64, epochs=10)
 
         print('[STATUS] Saving model...')
         model.save(os.path.join(save_path, args.name+'.h5'))
-        print('[STATUS] Saving one-hot encoder...')
-        joblib.dump(oh, os.path.join(save_path, 'oh.joblib'))
+        print('[STATUS] Saving label binarizer...')
+        joblib.dump(lb, os.path.join(save_path, 'lb.joblib'))
     else:
         model = tf.keras.models.load_model(os.path.join(save_path, args.name+'.h5'))
-        oh = joblib.load(os.path.join(save_path, 'oh.joblib'))
+        lb = joblib.load(os.path.join(save_path, 'lb.joblib'))
     
     if args.labeled:
         test_path = os.path.abspath(args.test)
         x_test, y_test_str = load_data(test_path)
-        y_test = oh.transform(y_test_str)
+        y_test = lb.transform(y_test_str)
 
         y_pred = np.argmax(model.predict(x_test), axis=1)
         cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
