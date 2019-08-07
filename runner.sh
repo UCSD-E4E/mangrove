@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-docker run -it -v "$(pwd)/output-site10/":/output \
--v "/features-2/site10_labels":/dataset \
+docker run -it -v "/features-2/MVNM_Training_Images":/train \
+-v "/features-2/MVNMv2":/test \
+-v "$(pwd)/save":/save \
 --runtime=nvidia --user 1000:1000 \
-features python extract.py \
--i=/dataset -o=/output \
--uf -n=60 -b=512
+features python train_test.py \
+-lr --train=/train --test=/test --save=/save \
+--name=vgg16_1024

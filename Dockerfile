@@ -4,10 +4,10 @@ RUN pip install keras sklearn h5py numpy pillow
 RUN mkdir work/
 WORKDIR work/
 
-VOLUME /dataset
-VOLUME /output
+VOLUME /train
+VOLUME /test
+VOLUME /save
 
-ADD extract.py .
-ADD classify.py .
+ADD train_test.py .
 
 CMD ["/bin/bash"]

@@ -60,7 +60,7 @@ if __name__=='__main__':
         # Build a new model, train it, and save it
         train_path = os.path.abspath(args.train)
 
-        base_model = VGG16(weights='imagenet', input_shape=imshape, include_top=False)
+        base_model = VGG16(weights='imagenet', input_shape=(256, 256, 3), include_top=False)
         x = base_model.output
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.Dense(1024, activation='relu')(x)
