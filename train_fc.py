@@ -30,10 +30,9 @@ import shutil
 # Overall: Training set is by far the most important variable
 
 # 310 neurons, 2 dropouts at 0.3:
-# train on site7-11 gets 88-95% accuracy on site 1, which is below the Inceptionv3 95%
+# train on site7-11 gets 88-95% accuracy on site 1, which is below the Inceptionv3 96%
 # train on dataset/train gets up to 93% accuracy on output
-# wtf is going on
-# gets 
+# train with extracted Inceptionv3 gets about the same all around
 
 def remove_water(x_test, y_test, le):
     '''
@@ -45,7 +44,7 @@ def remove_water(x_test, y_test, le):
     return x_test, y_test
 
 def create_model():
-    inputs = tf.keras.Input(shape=(512,))
+    inputs = tf.keras.Input(shape=(2048,))
     x = layers.Dense(310, activation='relu')(inputs)
     x = layers.Dropout(rate=0.3, noise_shape=(310,))(x)
     x = layers.Dense(310, activation='relu')(x)
@@ -68,10 +67,13 @@ if __name__=='__main__':
     parser.add_argument('--xv', action='store_true', help='cross-validate')
     parser.add_argument('--analyze', action='store_true')
     args = parser.parse_args()
+    print('Are the train and test sets normalized the same way?')
 
     train_path = os.path.abspath(args.train)
     test_path = os.path.abspath(args.test)
     features = np.load(os.path.join(train_path, 'features.npy'))
+    sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
+    features = sc_train.inverse_transform(features)
     labels = np.load(os.path.join(train_path, 'labels.npy'))
 
     # Randomize the order of the training set so that the validation set is different each time
@@ -84,6 +86,8 @@ if __name__=='__main__':
     le_train = joblib.load(os.path.join('output/', 'le.joblib'))
     x_test = np.load(os.path.join(test_path, 'features.npy'))
     y_test = np.load(os.path.join(test_path, 'labels.npy'))
+    sc_test = joblib.load(os.path.join(test_path, 'sc.joblib'))
+    x_test = sc_test.inverse_transform(x_test)
 
     y_test = np.minimum(y_test, np.ones_like(y_test))    # label water (2) as nm (1)
     labels = np.minimum(labels, np.ones_like(labels))
