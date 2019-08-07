@@ -25,7 +25,7 @@ def load_data(path):
     n_images = 0
     imshape = (256, 256, 3)
 
-    for d in train_labels:
+    for d in labels:
         n_images += len(os.listdir(os.path.join(path, d)))    # tally up all image files
     
     x = np.zeros((n_images, *imshape))    # input images
@@ -71,6 +71,7 @@ if __name__=='__main__':
         except:
             print('[STATUS] Multiple GPUs not available, using CPU or single GPU...')
             model = tf.keras.models.Model(inputs=base_model.input, outputs=pred)
+        
         for layer in base_model.layers:
             layer.trainable = False
         
