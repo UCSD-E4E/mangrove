@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras import layers
-from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder, LabelBinarizer
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.decomposition import PCA
@@ -25,15 +25,13 @@ import shutil
 # Also doesn't matter if unlabeled data is mixed in as mangrove. It was site 10, which is unique, so it 
 # may have only affected the site 10 classifications.
 
-# Dropout layers reduce accuracy by about 0.4%
-# Removing the second dense layer is not statistically significant
-# Overall: Training set is by far the most important variable
-
 # 310 neurons, 2 dropouts at 0.3:
 # train on site7-11 gets 88-95% accuracy on site 1, which is below the Inceptionv3 95%
 # train on dataset/train gets up to 93% accuracy on output
 # wtf is going on
-# gets 
+
+# 1024 neurons, 2 dropouts at 0.5:
+# ~93%acc on site 1 when trained on site 7-11 with VGG16 and Inceptionv3
 
 def remove_water(x_test, y_test, le):
     '''
@@ -44,15 +42,15 @@ def remove_water(x_test, y_test, le):
         return x_test[y_test!=water_index], y_test[y_test!=water_index]
     return x_test, y_test
 
-def create_model():
-    inputs = tf.keras.Input(shape=(512,))
-    x = layers.Dense(310, activation='relu')(inputs)
-    x = layers.Dropout(rate=0.3, noise_shape=(310,))(x)
-    x = layers.Dense(310, activation='relu')(x)
-    x = layers.Dropout(rate=0.3, noise_shape=(310,))(x)
-    outputs = layers.Dense(labels.shape[1], activation='softmax')(x)
+def create_model(input_size):
+    inputs = tf.keras.Input(shape=(input_size,))
+    x = layers.Dense(512, activation='relu')(inputs)
+    # x = layers.Dropout(rate=0.5, noise_shape=(512,))(x)
+    x = layers.Dense(256, activation='relu')(inputs)
+    x = layers.Dropout(rate=0.5, noise_shape=(256,))(x)
+    outputs = layers.Dense(1, activation='sigmoid')(x)
     model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
-    model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.RMSprop(),
+    model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(momentum=0.1),
         metrics=['accuracy'])
     return model
     
@@ -79,30 +77,37 @@ if __name__=='__main__':
     np.random.shuffle(data)
     features = data[:,:-1]
     labels = data[:,-1:]
+    sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
+    features = sc_train.inverse_transform(features)
 
     # Load test set
     le_train = joblib.load(os.path.join('output/', 'le.joblib'))
     x_test = np.load(os.path.join(test_path, 'features.npy'))
     y_test = np.load(os.path.join(test_path, 'labels.npy'))
+    try:
+        sc_test = joblib.load(os.path.join(test_path, 'sc.joblib'))
+        x_test = sc_test.inverse_transform(x_test)
+    except:
+        pass
 
     y_test = np.minimum(y_test, np.ones_like(y_test))    # label water (2) as nm (1)
     labels = np.minimum(labels, np.ones_like(labels))
 
-    oh = OneHotEncoder()
-    labels = oh.fit_transform(labels.reshape(-1, 1))
+    lb = LabelBinarizer()
+    labels = lb.fit_transform(labels.reshape(-1, 1))
     if not args.sort:
-        y_test = oh.transform(y_test.reshape(-1, 1))
+        y_test = lb.transform(y_test.reshape(-1, 1))
+        print(y_test)
     if args.retrain:
-        model = create_model()
-        history = model.fit(features, labels, batch_size=64, epochs=15, validation_split=0.1)
+        model = create_model(features.shape[1])
+        history = model.fit(features, labels, batch_size=64, epochs=10)
     else:
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
-    
     if args.validate:
-        y_pred = np.argmax(model.predict(x_test), axis=1)
-        cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
+        y_pred = np.round(model.predict(x_test))
+        cm = confusion_matrix(y_test, y_pred)
         if np.unique(labels).shape[0] < 3:
-            print(classification_report(np.argmax(y_test, axis=1), y_pred, digits=6))
+            print(classification_report(y_test, y_pred, digits=6))
             print(cm)
         else:
             # Instead of using classification report, we compute our own statistics, due to the fact that water
@@ -137,7 +142,7 @@ if __name__=='__main__':
         kfold = KFold(n_splits=10)
         cvscores = []
         for train_index, test_index in kfold.split(features):
-            model = create_model()
+            model = create_model(features.shape[1])
             x_train, x_test = features[train_index], features[test_index]
             y_train, y_test = labels[train_index], labels[test_index]
             model.fit(x_train, y_train, batch_size=64, verbose=0, epochs=10)
