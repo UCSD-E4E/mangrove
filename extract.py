@@ -76,6 +76,7 @@ if __name__=='__main__':
         i = 0       # number of image in directory, 1 indexed
         batch = []
         for f in files:
+            i += 1
             imfile = os.path.join(train_path, d, f)
             img = image.load_img(imfile)
             img = image.img_to_array(img)
@@ -83,8 +84,7 @@ if __name__=='__main__':
                 # Only process the image if it is the right shape, to avoid some issues with tf.keras
                 batch.append(img)
                 labels.append(d)
-                j += 1
-                i += 1
+                j += 1      # update j here so all batches but the last have batchsize images (for speed)
                 if args.savefnames:
                     fnames.append(os.path.relpath(os.path.join(d, f)))
             else:
