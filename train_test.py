@@ -65,7 +65,7 @@ if __name__=='__main__':
 
         full_model = VGG16(weights='imagenet', input_shape=(256, 256, 3), include_top=False)
         if args.layer is not None:
-            base_model = VGG16(inputs=full_model.input, outputs=full_model.get_layer(args.layer).output)
+            base_model = Model(inputs=full_model.input, outputs=full_model.get_layer(args.layer).output)
         else:
             base_model = full_model
         x = base_model.output
