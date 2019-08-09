@@ -59,8 +59,6 @@ if __name__=='__main__':
     features = np.vstack([features, features2])
     labels = np.concatenate([labels, labels2])
 
-    
-
     if args.retrain:
         if args.model=='rf':
             clf = RandomForestClassifier(n_estimators=300, random_state=4)

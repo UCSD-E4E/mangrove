@@ -62,9 +62,9 @@ if __name__=='__main__':
     else:
         train_labels = ['']     # if unlabeled, all images are in train_path directly
     batchsize = args.batchsize
-    labels = []
     images_per_dir = batchsize*args.nbatches
 
+    labels = []
     features = []
     dirnum = 0      # directory number, 0 indexed
     fnames = []
@@ -91,7 +91,7 @@ if __name__=='__main__':
                 dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
                 batch = []
                 j = 0
-            if i==images_per_dir:
+            if i == images_per_dir:
                 break
         dirnum += 1
         features.append(dir_features)
@@ -100,13 +100,10 @@ if __name__=='__main__':
     features = np.vstack(features)
     le = LabelEncoder()
     labels = le.fit_transform(labels)
-    sc = StandardScaler()
-    features = sc.fit_transform(features)
     print('[STATUS] Saving data...')
     np.save(os.path.join(out_path, 'features.npy'), features)
     np.save(os.path.join(out_path, 'labels.npy'), labels)
-    print('[STATUS] Saving scaler and label encoder...')
+    print('[STATUS] Saving label encoder...')
     joblib.dump(le, os.path.join(out_path, 'le.joblib'))
-    joblib.dump(sc, os.path.join(out_path, 'sc.joblib'))
     if args.savefnames:
         joblib.dump(fnames, os.path.join(out_path, 'fnames.joblib'))

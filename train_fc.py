@@ -77,18 +77,20 @@ if __name__=='__main__':
     np.random.shuffle(data)
     features = data[:,:-1]
     labels = data[:,-1:]
-    sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
-    features = sc_train.inverse_transform(features)
 
     # Load test set
     le_train = joblib.load(os.path.join('output/', 'le.joblib'))
     x_test = np.load(os.path.join(test_path, 'features.npy'))
     y_test = np.load(os.path.join(test_path, 'labels.npy'))
-    try:
+
+    # If a scaler is saved with either dataset, use it to un-normalize the data.
+    # If one does not exist, the data is assumed to not be normalized.
+    if os.path.isfile(os.path.join(train_path, 'sc.joblib')):
+        sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
+        features = sc_train.inverse_transform(features)
+    if os.path.isfile(os.path.join(test_path, 'sc.joblib')):
         sc_test = joblib.load(os.path.join(test_path, 'sc.joblib'))
         x_test = sc_test.inverse_transform(x_test)
-    except:
-        pass
 
     y_test = np.minimum(y_test, np.ones_like(y_test))    # label water (2) as nm (1)
     labels = np.minimum(labels, np.ones_like(labels))
