@@ -9,6 +9,7 @@ import joblib
 import numpy as np
 import os
 import argparse
+from tqdm import tqdm
 
 def load_data(path):
     '''
@@ -33,7 +34,7 @@ def load_data(path):
     i = 0
     for d in labels:
         files = os.listdir(os.path.join(path, d))
-        for f in files:
+        for f in tqdm(files):
             imfile = os.path.join(train_path, d, f)
             img = image.load_img(imfile)
             img = image.img_to_array(img)
@@ -41,8 +42,6 @@ def load_data(path):
             x[i] = img
             y_str.append(d)
             i += 1
-            if i%100==0:
-                print(i)
     return x, y_str
 
 
