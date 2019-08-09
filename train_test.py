@@ -61,7 +61,7 @@ if __name__=='__main__':
     if args.retrain:
         # Build a new model, train it, and save it
         train_path = os.path.abspath(args.train)
-
+        print(args.layer)
         full_model = VGG16(weights='imagenet', input_shape=(256, 256, 3), include_top=False)
         if args.layer is not None:
             base_model = Model(inputs=full_model.input, outputs=full_model.get_layer(args.layer).output)
@@ -69,6 +69,7 @@ if __name__=='__main__':
             base_model = full_model
         x = base_model.output
         x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(1024, activation='relu')(x)
         x = layers.Dense(1024, activation='relu')(x)
         pred = layers.Dense(1, activation='sigmoid')(x)
         model = tf.keras.models.Model(inputs=base_model.input, outputs=pred)
@@ -84,7 +85,6 @@ if __name__=='__main__':
         model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(), metrics=['acc'])
 
         x_train, y_train_str = load_data(train_path)
-        print(y_train_str)
         lb = LabelBinarizer()
         y_train = lb.fit_transform(y_train_str)
         history = model.fit(x=x_train, y=y_train, batch_size=64, epochs=10)
