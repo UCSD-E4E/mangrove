@@ -73,7 +73,7 @@ if __name__=='__main__':
         j = 0       # number of image in batch, 1 indexed
         i = 0       # number of image in directory, 1 indexed
         batch = []
-        dir_features = np.zeros((min(len(files), images_per_dir), 512))
+        # dir_features = np.zeros((min(len(files), images_per_dir), 512))
         for f in files:
             j += 1
             i += 1
@@ -86,18 +86,15 @@ if __name__=='__main__':
                 fnames.append(os.path.relpath(os.path.join(d, f)))
                 print(fnames[-1])
             if j == batchsize or i == len(files):
-                for im in batch:
-                    print(im.shape)
                 batch = np.array(batch)
                 print(i)
-                dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
+                # dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
+                features.append(extractor.extract(batch))
                 batch = []
                 j = 0
             if i == images_per_dir:
                 break
         dirnum += 1
-        features.append(dir_features)
-
     
     features = np.vstack(features)
     le = LabelEncoder()
