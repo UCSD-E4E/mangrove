@@ -50,7 +50,7 @@ if __name__=='__main__':
     parser.add_argument('--layer', help='the layer name to use (default last)')
     parser.add_argument('-i', '--input', help='input directory')
     parser.add_argument('-o', '--output', help='output directory')
-    parser.add_argument('-f','--savefnames', action='store_true', help='save filenames')
+    parser.add_argument('-f', '--savefnames', action='store_true', help='save filenames')
     parser.add_argument('-u', '--unlabeled', action='store_true', help='flag data as unlabeled')
     args = parser.parse_args()
 
@@ -86,6 +86,8 @@ if __name__=='__main__':
                 fnames.append(os.path.relpath(os.path.join(d, f)))
                 print(fnames[-1])
             if j == batchsize or i == len(files):
+                for im in batch:
+                    print(im.shape)
                 batch = np.array(batch)
                 print(i)
                 dir_features[i-batch.shape[0]:i] = extractor.extract(batch)
