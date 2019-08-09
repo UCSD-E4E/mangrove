@@ -54,6 +54,7 @@ if __name__=='__main__':
     parser.add_argument('--name', help='name to save or load model as (e.g. vgg16_1024)')
     parser.add_argument('-r', '--retrain', action='store_true', help='retrain the model')
     parser.add_argument('-l', '--labeled', action='store_true', help='use labeled data')
+    parser.add_argument('--layer', help='layer to use')
     args = parser.parse_args()
 
     save_path = os.path.abspath(args.save)
@@ -62,7 +63,11 @@ if __name__=='__main__':
         # Build a new model, train it, and save it
         train_path = os.path.abspath(args.train)
 
-        base_model = VGG16(weights='imagenet', input_shape=(256, 256, 3), include_top=False)
+        full_model = VGG16(weights='imagenet', input_shape=(256, 256, 3), include_top=False)
+        if args.layer is not None:
+            base_model = VGG16(inputs=full_model.input, outputs=full_model.get_layer(args.layer).output)
+        else:
+            base_model = full_model
         x = base_model.output
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.Dense(1024, activation='relu')(x)
