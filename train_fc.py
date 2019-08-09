@@ -131,14 +131,18 @@ if __name__=='__main__':
         else:
             out_dir = os.path.abspath(args.outdir)
         fnames = joblib.load(os.path.join(test_path, 'fnames.joblib'))
-        y_pred = np.argmax(model.predict(x_test), axis=1)
+        y_pred = np.rint(model.predict(x_test)).astype(int)
+        print(y_pred)
         y_labels = le_train.inverse_transform(y_pred)
+        print(y_labels)
+        print(len(fnames))
         for i in range(len(fnames)):
             src = os.path.join(in_dir, fnames[i])
             dst = os.path.join(out_dir, y_labels[i], fnames[i])
             try:
                 shutil.move(src, dst)
             except FileNotFoundError:
+                # pass
                 print('no such file '+src)
     elif args.xv:
         kfold = KFold(n_splits=10)

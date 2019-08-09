@@ -76,19 +76,19 @@ if __name__=='__main__':
         i = 0       # number of image in directory, 1 indexed
         batch = []
         for f in files:
-            j += 1
-            i += 1
             imfile = os.path.join(train_path, d, f)
             img = image.load_img(imfile)
             img = image.img_to_array(img)
             if img.shape == imshape:
+                # Only process the image if it is the right shape, to avoid some issues with tf.keras
                 batch.append(img)
+                labels.append(d)
+                j += 1
+                i += 1
+                if args.savefnames:
+                    fnames.append(os.path.relpath(os.path.join(d, f)))
             else:
                 print("{} is not 256x256x3, but is {}".format(imfile, img.shape))
-            labels.append(d)
-            if args.savefnames:
-                fnames.append(os.path.relpath(os.path.join(d, f)))
-                print(fnames[-1])
             if j == batchsize or i == len(files):
                 batch = np.array(batch)
                 print(i)
