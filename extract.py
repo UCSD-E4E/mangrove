@@ -8,11 +8,13 @@ import numpy as np
 import os
 import argparse
 
+imshape = (256, 256, 3)
+
 class CNNFeatureExtractor:
     '''
     Class to represent a CNN-based feature extractor. This abstracts all the details of the CNN away from the classifier.
     '''
-    def __init__(self, shape=(256, 256, 3), layer=None):
+    def __init__(self, shape=imshape, layer=None):
         '''
         Initializes a CNNFeatureExtractor using the VGG16 CNN.
 
@@ -73,14 +75,16 @@ if __name__=='__main__':
         j = 0       # number of image in batch, 1 indexed
         i = 0       # number of image in directory, 1 indexed
         batch = []
-        # dir_features = np.zeros((min(len(files), images_per_dir), 512))
         for f in files:
             j += 1
             i += 1
             imfile = os.path.join(train_path, d, f)
             img = image.load_img(imfile)
             img = image.img_to_array(img)
-            batch.append(img)
+            if img.shape == imshape:
+                batch.append(img)
+            else:
+                print("{} is not 256x256x3, but is {}".format(imfile, img.shape))
             labels.append(d)
             if args.savefnames:
                 fnames.append(os.path.relpath(os.path.join(d, f)))
