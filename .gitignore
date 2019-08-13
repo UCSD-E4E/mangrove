@@ -5,3 +5,5 @@ __pycache__/
 output-*/
 dataset/
 psc*/
+site*/
+*.h5

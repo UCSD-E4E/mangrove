@@ -10,6 +10,9 @@ import numpy as np
 import os, argparse, joblib
 import matplotlib.pyplot as plt
 import shutil
+from tqdm import tqdm
+import yaml
+import sys
 
 # 95%m, 97%nm site 7 recall with sparse categorical cross-entropy and 10 epochs
 # 76%m, 98%nm site 8 recall w/ 256 neurons, up to ~82%m recall w/ 0.1 dropout
@@ -28,10 +31,11 @@ import shutil
 # 310 neurons, 2 dropouts at 0.3:
 # train on site7-11 gets 88-95% accuracy on site 1, which is below the Inceptionv3 95%
 # train on dataset/train gets up to 93% accuracy on output
-# wtf is going on
 
 # 1024 neurons, 2 dropouts at 0.5:
 # ~93%acc on site 1 when trained on site 7-11 with VGG16 and Inceptionv3
+
+# 512-256-0.5 dropout gives 96% acc on site 1, 98.5% acc on PSC site 3-4, and 93% acc on PSC site 9
 
 def remove_water(x_test, y_test, le):
     '''
@@ -65,32 +69,42 @@ if __name__=='__main__':
     parser.add_argument('-v', '--validate', action='store_true', help='test on preprocessed data')
     parser.add_argument('--xv', action='store_true', help='cross-validate')
     parser.add_argument('--analyze', action='store_true')
+    parser.add_argument('--cfg', help='config file')
     args = parser.parse_args()
-
-    train_path = os.path.abspath(args.train)
+    cfg = yaml.load(open(args.cfg, 'r'), Loader=yaml.SafeLoader)
+    print(cfg)
+    train_paths = cfg['train']
+    train_path = train_paths[0]
     test_path = os.path.abspath(args.test)
-    features = np.load(os.path.join(train_path, 'features.npy'))
-    labels = np.load(os.path.join(train_path, 'labels.npy'))
-
-    # Randomize the order of the training set so that the validation set is different each time
-    data = np.hstack([features, labels.reshape(-1, 1)])
-    np.random.shuffle(data)
-    features = data[:,:-1]
-    labels = data[:,-1:]
 
     # Load test set
     le_train = joblib.load(os.path.join('output/', 'le.joblib'))
     x_test = np.load(os.path.join(test_path, 'features.npy'))
     y_test = np.load(os.path.join(test_path, 'labels.npy'))
 
-    # If a scaler is saved with either dataset, use it to un-normalize the data.
-    # If one does not exist, the data is assumed to not be normalized.
-    if os.path.isfile(os.path.join(train_path, 'sc.joblib')):
-        sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
-        features = sc_train.inverse_transform(features)
+    # Load the training set. The data from each folder will be un-normalized with the scaler if it is
+    # present, or assumed to be un-normalized otherwise.
+    labels = []
+    features = []
+    for tp in train_paths:
+        labels.append(np.load(os.path.join(tp, 'labels.npy')))
+        if os.path.isfile(os.path.join(tp, 'sc.joblib')):
+            sc_train = joblib.load(os.path.join(tp, 'sc.joblib'))
+            features.append(sc_train.inverse_transform(np.load(os.path.join(tp, 'features.npy'))))
+        else:
+            features.append(np.load(os.path.join(tp, 'features.npy')))
+    labels = np.vstack(labels)
+    features = np.vstack(features)
+
     if os.path.isfile(os.path.join(test_path, 'sc.joblib')):
         sc_test = joblib.load(os.path.join(test_path, 'sc.joblib'))
         x_test = sc_test.inverse_transform(x_test)
+    
+    # Randomize the order of the training set so that the validation set is different each time
+    data = np.hstack([features, labels.reshape(-1, 1)])
+    np.random.shuffle(data)
+    features = data[:,:-1]
+    labels = data[:,-1:]
 
     y_test = np.minimum(y_test, np.ones_like(y_test))    # label water (2) as nm (1)
     labels = np.minimum(labels, np.ones_like(labels))
@@ -136,7 +150,7 @@ if __name__=='__main__':
         y_labels = le_train.inverse_transform(y_pred)
         print(y_labels)
         print(len(fnames))
-        for i in range(len(fnames)):
+        for i in tqdm(range(len(fnames))):
             src = os.path.join(in_dir, fnames[i])
             dst = os.path.join(out_dir, y_labels[i], fnames[i])
             try:
