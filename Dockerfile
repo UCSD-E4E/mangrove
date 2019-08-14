@@ -9,7 +9,7 @@ VOLUME /output
 
 ADD extract.py .
 ADD classify.py .
-ADD ../vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5 .
+ADD vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5 .
 RUN export KERAS_HOME="$(pwd)"
 
 CMD ["/bin/bash"]
