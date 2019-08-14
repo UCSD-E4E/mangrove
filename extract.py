@@ -8,13 +8,11 @@ import numpy as np
 import os
 import argparse
 
-imshape = (256, 256, 3)
-
 class CNNFeatureExtractor:
     '''
     Class to represent a CNN-based feature extractor. This abstracts all the details of the CNN away from the classifier.
     '''
-    def __init__(self, shape=imshape, layer=None):
+    def __init__(self, shape, layer=None):
         '''
         Initializes a CNNFeatureExtractor using the VGG16 CNN.
 
@@ -58,7 +56,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     imshape = (args.side, args.side, 3)
 
-    extractor = CNNFeatureExtractor()
+    extractor = CNNFeatureExtractor(shape=imshape)
     train_path = os.path.abspath(args.input)
     out_path = os.path.abspath(args.output)
     if not args.unlabeled:
