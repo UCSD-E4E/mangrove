@@ -54,7 +54,9 @@ if __name__=='__main__':
     parser.add_argument('-o', '--output', help='output directory')
     parser.add_argument('-f', '--savefnames', action='store_true', help='save filenames')
     parser.add_argument('-u', '--unlabeled', action='store_true', help='flag data as unlabeled')
+    parser.add_argument('-s', '--side', type=int, help='tile side length', default=256)
     args = parser.parse_args()
+    imshape = (args.side, args.side, 3)
 
     extractor = CNNFeatureExtractor()
     train_path = os.path.abspath(args.input)
