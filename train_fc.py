@@ -35,7 +35,8 @@ import sys
 # 1024 neurons, 2 dropouts at 0.5:
 # ~93%acc on site 1 when trained on site 7-11 with VGG16 and Inceptionv3
 
-# 512-256-0.5 dropout gives 96% acc on site 1, 98.5% acc on PSC site 3-4, and 93% acc on PSC site 9
+# 512-256-0.5 dropout gives 96% acc on site 1, 98.5% acc on PSC site 3-4, and ~92% acc on PSC site 9
+# Consistent ~87% accuracy on PSC sites 5-7 at 128px, independent of whether LP site 1 is in training set
 
 def remove_water(x_test, y_test, le):
     '''
@@ -87,13 +88,15 @@ if __name__=='__main__':
     labels = []
     features = []
     for tp in train_paths:
-        labels.append(np.load(os.path.join(tp, 'labels.npy')))
+        tp_labels = np.load(os.path.join(tp, 'labels.npy'))
+        print(tp_labels)
+        labels.append(tp_labels)
         if os.path.isfile(os.path.join(tp, 'sc.joblib')):
             sc_train = joblib.load(os.path.join(tp, 'sc.joblib'))
             features.append(sc_train.inverse_transform(np.load(os.path.join(tp, 'features.npy'))))
         else:
             features.append(np.load(os.path.join(tp, 'features.npy')))
-    labels = np.vstack(labels)
+    labels = np.concatenate(labels)
     features = np.vstack(features)
 
     if os.path.isfile(os.path.join(test_path, 'sc.joblib')):
@@ -116,7 +119,7 @@ if __name__=='__main__':
         print(y_test)
     if args.retrain:
         model = create_model(features.shape[1])
-        history = model.fit(features, labels, batch_size=64, epochs=10)
+        history = model.fit(features, labels, batch_size=32, epochs=10)
     else:
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
     if args.validate:

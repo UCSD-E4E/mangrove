@@ -88,7 +88,7 @@ if __name__=='__main__':
                 if args.savefnames:
                     fnames.append(os.path.relpath(os.path.join(d, f)))
             else:
-                print("{} is not 256x256x3, but is {}".format(imfile, img.shape))
+                print("{} is not {}, but is {}".format(imfile, , imshape, img.shape))
             if j == batchsize or i == len(files):
                 batch = np.array(batch)
                 print(i)
