@@ -37,6 +37,10 @@ import sys
 
 # 512-256-0.5 dropout gives 96% acc on site 1, 98.5% acc on PSC site 3-4, and ~92% acc on PSC site 9
 # Consistent ~87% accuracy on PSC sites 5-7 at 128px, independent of whether LP site 1 is in training set
+# Mixing 128 and 256 px tiles is a bad idea.
+
+# When training on a subset of LP 7-11 @ 128px, we get 96% on PSC 5-7 (after removing blurred tiles) and 98%
+# on PSC 3-4, about half of which is due to blur. It's lower when you remove black tiles though.
 
 def remove_water(x_test, y_test, le):
     '''
@@ -119,7 +123,7 @@ if __name__=='__main__':
         print(y_test)
     if args.retrain:
         model = create_model(features.shape[1])
-        history = model.fit(features, labels, batch_size=32, epochs=10)
+        history = model.fit(features, labels, batch_size=32, epochs=12, validation_data=(x_test, y_test))
     else:
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
     if args.validate:

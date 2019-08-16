@@ -4,6 +4,9 @@ import argparse
 import os
 import shutil
 import tqdm
+from pathlib import Path
+
+IMG_TYPES = ['**/.jpg', '**/*.tif', '**/*.JPG']
 
 class CoordinateStore():
     def __init__(self):
@@ -31,18 +34,24 @@ def grid_coord_to_section(image, grid_coord, grid):
     section = image[r_height*r:r_height*(r+1), c_width*c:c_width*(c+1)]
     return section
 
-def slice_all(indir, outdir):
-    for d in os.listdir(indir):
-        d_path = os.path.join(indir, d)
-        if not os.path.isdir(d_path):
-            continue
-        for f in tqdm.tqdm(os.listdir(d_path)):
-            image = cv2.imread(os.path.join(d_path, f))
-            img_base = os.path.splitext(f)[0]
-            all_coords = set([(0, 0), (0, 1), (1, 0), (1, 1)])
-            for c, r in all_coords:
-                section = grid_coord_to_section(image, (c, r), (2, 2))
-                cv2.imwrite(os.path.join(outdir, img_base+'_{}_{}_{}.jpg'.format(c, r, d)), section)
+def slice_all(indir, outdir, reindex=False):
+    # Generate list of all jpg or tif files in indir
+    paths = []
+    for p in IMG_TYPES:
+        paths.extend(Path(indir).glob(p))
+    # For each image, split it onto setions and then save the sections as new files
+    for i in tqdm.trange(len(paths)):
+        path = os.path.join(indir, paths[i])
+        image = cv2.imread(path)
+        img_base = os.path.splitext(path)[0]    # remove extension so we can preserve the base file name
+        all_coords = set([(0, 0), (0, 1), (1, 0), (1, 1)])
+        for c, r in all_coords:
+            if reindex:
+                out_name = f'{i}_{c}_{r}.jpg'   # if we don't care about the original image name, just use a number
+            else:   # put the original image name in the section filename, along with the label
+                out_name = img_base+'_{}_{}_{}.jpg'.format(c, r, path.split('/')[0])    # assumes only one level of subdirectories
+            section = grid_coord_to_section(image, (c, r), (2, 2))
+            cv2.imwrite(os.path.join(outdir, out_name), section)
 
 def classify_sections(indir, outdir):
     cv2.namedWindow('tile')
@@ -91,4 +100,4 @@ if __name__=='__main__':
     indir = os.path.abspath(args.indir)
     outdir = os.path.abspath(args.outdir)
     # classify_sections(indir, outdir)
-    slice_all(indir, outdir)
+    slice_all(indir, outdir, reindex=True)
