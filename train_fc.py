@@ -39,8 +39,13 @@ import sys
 # Consistent ~87% accuracy on PSC sites 5-7 at 128px, independent of whether LP site 1 is in training set
 # Mixing 128 and 256 px tiles is a bad idea.
 
-# When training on a subset of LP 7-11 @ 128px, we get 96% on PSC 5-7 (after removing blurred tiles) and 98%
+# When training on a subset of LP 7-11 @ 128px, we get 96.9% on PSC 5-7 (after removing blurred tiles) and 97%
 # on PSC 3-4, about half of which is due to blur. It's lower when you remove black tiles though.
+# 96-98% on PSC 3-4 polygon labeled set
+# Adding the polygon labeled PSC 3-4 helps a lot on other PSC sites; will stay in
+
+# Only got 91% on PSC 9, but when we train on that and test on PSC 3-4, we get 99%. I think PSC 9 goes better in
+# training b/c it's less similar to LP.
 
 def remove_water(x_test, y_test, le):
     '''
@@ -123,7 +128,7 @@ if __name__=='__main__':
         print(y_test)
     if args.retrain:
         model = create_model(features.shape[1])
-        history = model.fit(features, labels, batch_size=32, epochs=12, validation_data=(x_test, y_test))
+        history = model.fit(features, labels, batch_size=32, epochs=10, validation_data=(x_test, y_test))
     else:
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
     if args.validate:
