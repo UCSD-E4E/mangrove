@@ -47,6 +47,9 @@ import sys
 # Only got 91% on PSC 9, but when we train on that and test on PSC 3-4, we get 99%. I think PSC 9 goes better in
 # training b/c it's less similar to LP.
 
+# The low f1 scores for mangrove on LP are a bit concerning, but I think it's actually related to the threshhold
+# parameter in the slicer. It was 95 for PSC, but I turned it down to 55 for LP to get more tiles.
+
 def remove_water(x_test, y_test, le):
     '''
     Remove vectors labeled as water from a dataset.
