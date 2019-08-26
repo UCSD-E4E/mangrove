@@ -1,3 +1,8 @@
+"""
+Allows the user to click on sections of an image to classify them as mangrove or not.
+Used to shrink image tiles.
+"""
+
 import cv2
 import numpy as np
 import argparse

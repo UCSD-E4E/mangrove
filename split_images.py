@@ -1,3 +1,8 @@
+'''
+Splits a large directory of images into directories with fewer images in order to view thumbnails with less
+overhead.
+'''
+
 import shutil, os, sys
 from tqdm import tqdm, trange
 
