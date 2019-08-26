@@ -25,4 +25,12 @@ $ ./runner.sh <path to output directory with respect to pwd> <absolute path to i
 ```
 The reason one path is relative and another is absolute is to allow for effective use of tab completes, as input directory names can be quite long.
 
-#
+Arguments:
+- `-n <number of batches to use per directory>`
+- `-s <tile side length, in px >`
+
+#### `runner.sh`
+The only time you should need to modify this file is if you need to change the input tile size or switch between labeled and unlableled data.
+
+### `train_fc.py`
+This script uses the extracted features to classify tiles.

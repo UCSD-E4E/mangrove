@@ -45,14 +45,13 @@ class CNNFeatureExtractor:
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--nbatches', type=int, help='the number of batches per directory', default=512)
     parser.add_argument('-b', '--batchsize', type=int, default=30, help='images per batch')
     parser.add_argument('--layer', help='the layer name to use (default last)')
-    parser.add_argument('-i', '--input', help='input directory')
-    parser.add_argument('-o', '--output', help='output directory')
+    parser.add_argument('-i', '--input', help='path to input directory')
+    parser.add_argument('-o', '--output', help='path to output directory')
     parser.add_argument('-f', '--savefnames', action='store_true', help='save filenames')
     parser.add_argument('-u', '--unlabeled', action='store_true', help='flag data as unlabeled')
-    parser.add_argument('-s', '--side', type=int, help='tile side length', default=256)
+    parser.add_argument('-s', '--side', type=int, help='tile side length, in px', default=256)
     args = parser.parse_args()
     imshape = (args.side, args.side, 3)
 
@@ -64,7 +63,7 @@ if __name__=='__main__':
     else:
         train_labels = ['']     # if unlabeled, all images are in train_path directly
     batchsize = args.batchsize
-    images_per_dir = batchsize*args.nbatches
+    images_per_dir = max(map())
 
     labels = []
     features = []
@@ -88,7 +87,7 @@ if __name__=='__main__':
                 if args.savefnames:
                     fnames.append(os.path.relpath(os.path.join(d, f)))
             else:
-                print("{} is not {}, but is {}".format(imfile, , imshape, img.shape))
+                print("{} is not {}, but is {}".format(imfile, imshape, img.shape))
             if j == batchsize or i == len(files):
                 batch = np.array(batch)
                 print(i)

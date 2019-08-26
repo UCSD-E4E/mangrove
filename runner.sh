@@ -7,4 +7,4 @@ docker run -it -v "$(pwd)/$1/":/output \
 --runtime=nvidia --user 1000:1000 \
 features python extract.py \
 -i=/dataset -o=/output \
--n=400 -b=512
+-n=400 -b=512 -s=128
