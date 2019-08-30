@@ -24,7 +24,6 @@ def create_model(input_size):
         Model: An MLP model
     '''
     inputs = tf.keras.Input(shape=(input_size,))
-    x = layers.Dense(512, activation='relu')(inputs)
     x = layers.Dense(256, activation='relu')(inputs)
     x = layers.Dropout(rate=0.5, noise_shape=(256,))(x)
     outputs = layers.Dense(1, activation='sigmoid')(x)
@@ -99,7 +98,7 @@ if __name__=='__main__':
     else:
         # Load saved model
         model = tf.keras.models.load_model(os.path.join(train_path, 'fc_model.h5'))
-    
+    print(model.summary())
     if args.validate:
         y_pred = np.round(model.predict(x_test))    # Round sigmoid output to 0 or 1
         cm = confusion_matrix(y_test, y_pred)
