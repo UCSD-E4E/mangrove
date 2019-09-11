@@ -1,0 +1,8 @@
+models/
+output/
+__pycache__/
+*.tar.xz
+output-*/
+dataset/
+site*/
+*.h5
