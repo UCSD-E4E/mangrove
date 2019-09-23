@@ -115,7 +115,9 @@ def main():
 	count = 0
 	batch_time = time.time()
 	batch_times = []
-
+	labels = load_labels(label_file)
+	labels.append('file')
+	result_csv = pd.DataFrame(columns=labels)
 	#process imagery
 	for file in file_list:
 		if file.endswith(".jpg"):
@@ -125,18 +127,19 @@ def main():
 				input_width=input_width,
 				input_mean=input_mean,
 				input_std=input_std)
-
+			cur_result = pd.DataFrame(columns=labels)
 			with tf.Session(graph=graph) as sess:
 				results = sess.run(output_operation.outputs[0], {
 				input_operation.outputs[0]: t})
 			results = np.squeeze(results)
 
 			top_k = results.argsort()[-5:][::-1]
-			labels = load_labels(label_file)
-			result_file.write(file + "\n")
+			cur_result.set_value(0, 'file', file)  
 			for i in top_k:
-				print(labels[i], results[i])
-				result_file.write(labels[i] + " " + str(results[i]) + "\n")
+				cur_result.set_value(0, labels[i],  result[i])
+			print(cur_result)
+			result_csv = result_csv.append(cur_result)
+			result_csv.to_csv('results.csv')
 			
 			# for logs
 			count += 1

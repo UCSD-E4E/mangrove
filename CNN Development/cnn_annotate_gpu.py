@@ -7,6 +7,7 @@ import tensorflow as tf
 import argparse
 import os
 import time
+import pandas as pd
 
 ### NEEDS tensorflow-gpu in venv to work (using 1.14)### 
 
@@ -124,7 +125,6 @@ if __name__ == "__main__":
 
 	# Loading tf graph and creating list of files to process
 	graph = load_graph(model_file)
-	result_file = open(output_file,"w")
 	file_list = []
 	for root, dirs, files in os.walk(os.path.abspath(image_directory)):
 		for file in files:
@@ -143,6 +143,9 @@ if __name__ == "__main__":
 	count = 0
 	batch_time = time.time()
 	batch_times = []
+	labels = load_labels(label_file)
+	labels.append('file')
+	result_csv = pd.DataFrame(columns=labels)
 
 	# preprocess imagery
 	for i in range(num_batches):
@@ -153,18 +156,19 @@ if __name__ == "__main__":
 		with tf.compat.v1.Session(graph=graph) as sess:
 			results = sess.run(output_operation.outputs[0], {
 				input_operation.outputs[0]: image_batch})
-
 			# writing result files
 			file_num = 0
 			for result in results:
+				cur_result = pd.DataFrame(columns=labels)
 				top_k = result.argsort()[-5:][::-1]
-				labels = load_labels(label_file)
-				result_file.write(files[file_num] + "\n")
+				cur_result.set_value(0, 'file', files[file_num])  
 				file_num += 1
 				for i in top_k:
-					print(labels[i], result[i])
-					result_file.write(labels[i] + " " + str(result[i]) + "\n")
-
+					#print(labels[i], result[i])
+					cur_result.set_value(0, labels[i],  result[i])
+				print(cur_result)
+				result_csv = result_csv.append(cur_result)
+				result_csv.to_csv('results.csv')
 			# for logs
 			num_processed = len(image_batch)
 			count += num_processed
@@ -177,4 +181,3 @@ if __name__ == "__main__":
 	print("Script took %s seconds to execute" % (time.time() - start_time))
 	print("Batch times: ")
 	print(batch_times)
-	result_file.close()
