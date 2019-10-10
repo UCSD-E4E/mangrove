@@ -33,8 +33,8 @@ for filename in os.listdir(img_dir):
 		with Image.open(filepath) as im:
 			x, y = im.size
 			totalsize = x*y
-		if totalsize < 65536:
+		if totalsize < (int(out_width) * (int(out_width))):
 			os.remove(filepath)
 			print(filepath + "is smaller than the specified size")
-			print("Size:" + totalsize)
+			print("Size:" + str(totalsize))
 
