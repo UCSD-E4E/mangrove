@@ -189,24 +189,30 @@ if __name__ == "__main__":
 	print("Batch times: ")
 	print(batch_times)
 	labels.remove('file')
-	print(labels)
 	print("Finding highest probability classes")
 	result_df[labels] = result_df[labels].apply(pd.to_numeric, errors='coerce')
 	result_df['max'] = result_df[labels].idxmax(axis=1)
 	result_df.to_csv(output_file)
 	print("Done!")
 	
+	dest_folders = []
 	#Organize tiles into folders
 	for index, row in tqdm(result_df.iterrows()):
 		cur_file = row['file']
 		cur_file = cur_file.replace("jpg","tif",2)
 		classification = row['max'] 
 		dest_folder = os.path.join(os.path.abspath(image_directory),classification)
+		dest_folders.append(dest_folder)
 		if os.path.exists(dest_folder) == False:
 			os.mkdir(dest_folder)
 		dest = os.path.join(dest_folder,os.path.basename(cur_file))
 		src = cur_file
 		os.rename(src, dest)
+	
+	for dest in dest_folders:
+		call = "gdal_merge.py -o " + image_directory + " " + os.path.join(dest, "*")
+		print(call)
+		subprocess.call(call, shell=True)
 	
 
 	
