@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-mkdir -p "$1"
-
-docker run -it -v "$(pwd)/$1/":/output \
--v "$2":/dataset \
+docker run -it -v "/features-2/MVNM_Training_Data":/train \
+-v "/features-2/MVNMv2.5_TrainingImages":/test \
+-v "$(pwd)/save":/save \
 --runtime=nvidia --user 1000:1000 \
-features python extract.py \
--i=/dataset -o=/output \
--n=400 -b=512 -s=128
+features python train_test.py \
+-lr --train=/train --test=/test --save=/save \
+--name=vgg16_1024 --layer=block2_conv2

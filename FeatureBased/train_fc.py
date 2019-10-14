@@ -13,20 +13,44 @@ from tqdm import tqdm
 import yaml
 import sys
 
-def create_model(input_size):
+# 95%m, 97%nm site 7 recall with sparse categorical cross-entropy and 10 epochs
+# 76%m, 98%nm site 8 recall w/ 256 neurons, up to ~82%m recall w/ 0.1 dropout
+# presence of water as a separate class improves m recall by 1-2% on average
+# goes to 83%m recall on site 8 w/ 2 dense layer-dropout pairs
+# Training on site 8 is >95% for 7 and 9, but bad for the training set even w/o water
+# Training on sites 4 and 8, with water from site 4, gives consistent ~94% accuracy
+
+# When I mix all of the data together and then train on half, we get ~98% for everthing when testing
+# on the other half (with water). The variance of each metric is also an order of magnitude smaller.
+# Water does not seem to affect the accuracy significantly, but I should test this rigourously.
+# It doesn't make a difference if multiple scalings are present, which is a bit worrying.
+# Also doesn't matter if unlabeled data is mixed in as mangrove. It was site 10, which is unique, so it 
+# may have only affected the site 10 classifications.
+
+# Dropout layers reduce accuracy by about 0.4%
+# Removing the second dense layer is not statistically significant
+# Overall: Training set is by far the most important variable
+
+# 310 neurons, 2 dropouts at 0.3:
+# train on site7-11 gets 88-95% accuracy on site 1, which is below the Inceptionv3 96%
+# train on dataset/train gets up to 93% accuracy on output
+# train with extracted Inceptionv3 gets about the same all around
+
+def remove_water(x_test, y_test, le):
+    '''
+    Remove vectors labeled as water from a dataset.
+    '''
+
+def create_model():
     '''
     Create an MLP model with input of a given size.
-
-    Arguments:
-        input_size: the length of the input vector
-    
-    Returns:
-        Model: An MLP model
     '''
-    inputs = tf.keras.Input(shape=(input_size,))
-    x = layers.Dense(256, activation='relu')(inputs)
-    x = layers.Dropout(rate=0.5, noise_shape=(256,))(x)
-    outputs = layers.Dense(1, activation='sigmoid')(x)
+    inputs = tf.keras.Input(shape=(2048,))
+    x = layers.Dense(310, activation='relu')(inputs)
+    x = layers.Dropout(rate=0.3, noise_shape=(310,))(x)
+    x = layers.Dense(310, activation='relu')(x)
+    x = layers.Dropout(rate=0.3, noise_shape=(310,))(x)
+    outputs = layers.Dense(labels.shape[1], activation='softmax')(x)
     model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
     model.compile(loss='binary_crossentropy', optimizer=tf.keras.optimizers.RMSprop(momentum=0.1),
         metrics=['accuracy'])
@@ -46,10 +70,14 @@ if __name__=='__main__':
     parser.add_argument('--analyze', action='store_true')
     parser.add_argument('--cfg', help='config file')
     args = parser.parse_args()
-    cfg = yaml.load(open(args.cfg, 'r'), Loader=yaml.SafeLoader)
-    train_paths = cfg['train']
-    train_path = train_paths[0]
+    print('Are the train and test sets normalized the same way?')
+
+    train_path = os.path.abspath(args.train)
     test_path = os.path.abspath(args.test)
+    features = np.load(os.path.join(train_path, 'features.npy'))
+    sc_train = joblib.load(os.path.join(train_path, 'sc.joblib'))
+    features = sc_train.inverse_transform(features)
+    labels = np.load(os.path.join(train_path, 'labels.npy'))
 
     # Load test set
     le_train = joblib.load(os.path.join(train_path, 'le.joblib'))
@@ -80,6 +108,13 @@ if __name__=='__main__':
     np.random.shuffle(data)
     features = data[:,:-1]
     labels = data[:,-1:]
+
+    # Load test set
+    le_train = joblib.load(os.path.join('output/', 'le.joblib'))
+    x_test = np.load(os.path.join(test_path, 'features.npy'))
+    y_test = np.load(os.path.join(test_path, 'labels.npy'))
+    sc_test = joblib.load(os.path.join(test_path, 'sc.joblib'))
+    x_test = sc_test.inverse_transform(x_test)
 
     y_test = np.minimum(y_test, np.ones_like(y_test))    # label water (2) as nm (1)
     labels = np.minimum(labels, np.ones_like(labels))
@@ -140,7 +175,7 @@ if __name__=='__main__':
                 # pass
                 print('no such file '+src)
     elif args.xv:
-        # 10-fold corss-validation
+        # 10-fold cross-validation
         kfold = KFold(n_splits=10)
         cvscores = []
         for train_index, test_index in kfold.split(features):
