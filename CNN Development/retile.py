@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser(description="Retile an orthomosiac, call this i
 parser.add_argument("--width",help = "Width of output tiles")
 parser.add_argument("--input", help = "input orthomosaic")
 parser.add_argument("--targetDir", help = "output directory of tile imags with respect to the current directory")
+parser.add_argument("--shpFile", help = "input shapefile of polygon that you want to clip the orthomosaic to")
 args = parser.parse_args()
 
 if args.width:
