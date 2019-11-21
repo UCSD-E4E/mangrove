@@ -16,18 +16,26 @@ if args.input:
 	img_input = args.input
 if args.targetDir:
 	outputDir = args.targetDir
-if args.shpfile:
-	polygon = args.targetDir
+if args.shpFile:
+	polygon = args.shpFile
 else:
 	polygon == False
+
+if not img_input.lower().endswith('.tif'):
+	print("Input raster is not of .tif format")
+	exit()
 
 cwd = os.getcwd()
 if os.path.exists(os.path.join(cwd,outputDir)) == False:
 	os.mkdir(os.path.join(cwd,outputDir))
 
 if isinstance(polygon, str):
-	polycall = "gdal -clip " + polygon + " " + img_input + " " + "clipped" + img_input
-	img_input = "clipped" + img_input
+	if not polygon.lower().endswith('.shp'):
+		print(polygon)
+		print("Input polygon is not of type .shp format")
+		exit() 
+	#polycall = "gdal -clip " + polygon + " " + img_input + " " + "clipped" + img_input
+	polycall = "gdalwarp " + "-cutline " + polygon + " -dstalpha " + img_input  + " " + "clipped"+img_input  
 	subprocess.call(polycall, shell=True)
 
 
