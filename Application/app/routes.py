@@ -13,8 +13,9 @@ def index():
 
 @app.route('/upload')
 def upload():
-    file_path = FilePathForm()
-    return render_template('upload.html',title='Home',file_path = file_path)
+    file_ = FilePathForm()
+    return render_template('upload.html',title='Home',file = file_)
+    #return render_template('upload.html',title='Home')
 
 @app.route('/classify')
 def classify():

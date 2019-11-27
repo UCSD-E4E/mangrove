@@ -6,17 +6,17 @@
         <h1><p style="text-align:center">Welcome to the Mangrove Classification Application</p></h1>
 
         <h2>Step 1: Upload the file for classification</h2>
-
-        <!----
+        
         <form action="" method="post" novalidate>
             
             <p>
-                {{ form.file_path.label }}<br>
-                {{ form.file_path(size=32) }}
+                {{ file.file_path.label }}<br>
+                {{ file.file_path(size=32) }}
             </p>
-            <p>{{ form.confirm() }}</p>
+            <p>{{ file.confirm() }}</p>
         </form>
-    -->
+
+        
         <a href="/classify">Go to Classify Page</a>
 
 
