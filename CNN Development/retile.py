@@ -35,7 +35,7 @@ if isinstance(polygon, str):
 		print("Input polygon is not of type .shp format")
 		exit() 
 	#polycall = "gdal -clip " + polygon + " " + img_input + " " + "clipped" + img_input
-	polycall = "gdalwarp " + "-cutline " + polygon + " -dstalpha " + img_input  + " " + "clipped"+img_input  
+	polycall = "gdalwarp " + "-cutline " + polygon + " -dstalpha -crop_to_cutline " + img_input  + " " + "clipped"+img_input  
 	subprocess.call(polycall, shell=True)
 
 
