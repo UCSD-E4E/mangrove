@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import numpy as np
 from tqdm import tqdm
 from PIL import Image
 parser = argparse.ArgumentParser(description="Retile an orthomosiac, call this in the same folder as the orthomosaic")
@@ -40,7 +41,7 @@ if isinstance(polygon, str):
 
 
 
-call = "gdal_retile.py -ps " + out_width + " " + out_width + " " + "-targetDir " + outputDir + " " + img_input
+call = "gdal_retile.py -ps " + out_width + " " + out_width + " " + "-targetDir " + outputDir + " clipped" + img_input
 print(call)
 subprocess.call(call, shell=True)
 
@@ -53,7 +54,10 @@ for filename in tqdm(os.listdir(img_dir)):
 		with Image.open(filepath) as im:
 			x, y = im.size
 			totalsize = x*y
+			totalsum = np.sum(numpy.array(im))
 		if totalsize < (int(out_width) * (int(out_width))):
+			os.remove(filepath)
+		elif np.array_equal(np.unique(np.array(im)), [0, 255]):
 			os.remove(filepath)
 
 
