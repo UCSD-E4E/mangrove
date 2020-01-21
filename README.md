@@ -2,7 +2,7 @@
 
 Team members:
 
-Dillon Hicks, Savannah Longoria, Kathy Qi, Catherine Lee
+Dillon Hicks, Arden Ma, Kathy Qi
 
 ### Instructions on Using Docker 
 
