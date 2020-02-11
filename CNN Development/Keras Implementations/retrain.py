@@ -11,6 +11,7 @@ from keras import backend as k
 from keras.applications import *
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.optimizers import Nadam
 
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 warnings.filterwarnings('ignore', category=FutureWarning)
@@ -21,7 +22,7 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 
 #def train(train_data_dir, output_model, epoch_num = 100, img_width=256):
 
-def train(arch, train_data_dir, epoch_num, img_width, test_split, output_model):
+def train(arch, train_data_dir, epoch_num, img_width, test_split, output_model, transformation_ratio, batch_size, learning_rate):
 	# img_width=256
 	params = {'include_top':False, 'weights':'imagenet', 'input_shape':(img_width,img_width,3)}
 	
@@ -52,25 +53,24 @@ def train(arch, train_data_dir, epoch_num, img_width, test_split, output_model):
 		base_model = InceptionV3(include_top=False, weights='imagenet', input_shape=(img_width,img_width,3))
 
 	
-	#Freeze all previously trained layers in the base model
 	
-
-
 	#Set up input layers and pretrained input layers
 	x = base_model.output
 	x = GlobalAveragePooling2D()(x)
 	x = Dense(1024, activation='relu')(x)
 	predictions = Dense(2, activation='softmax')(x)
 
+	#Freeze all previously trained layers in the base model
 	for layer in base_model.layers[:]:
 		layer.trainable = False
 
-	model = Model(base_model.input, predictions)
-	model.summary()
+		model = Model(base_model.input, predictions)
+		model.summary()
+        
+		optim = Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999)
+        
+		print("Creating train and test set generators")
 
-	transformation_ratio = 0.2
-	batch_size = 32
-	print("Creating train and test set generators")
 	train_datagen = ImageDataGenerator(rescale=1. / 255,
 										rotation_range=transformation_ratio,
 										shear_range=transformation_ratio,
@@ -115,9 +115,12 @@ if __name__ == "__main__":
 	parser.add_argument("--epoch_num", help="Number of epochs you want to train your model for.", type=int, default=100)
 	parser.add_argument("--image_width", help="width of your input tile imagery",type=int, default=256)
 	parser.add_argument("--transformation_ratio", help="", type=float, default=0.2)
+	parser.add_argument("--batch_size", help="batch size: number of images per training batch", type=int, default=32)
+	parser.add_argument("--learning_rate", help="learning rate for Nadam optimizer", type=float, default=0.02)
 	args = parser.parse_args()
-
-	arch = args.architecture
+        
+	if args.path:
+		arch = args.architecture
 
 	if args.path:
 		path = args.path
@@ -146,8 +149,13 @@ if __name__ == "__main__":
 	if args.image_width:
 		image_width = args.image_width
 
+	if args.transformation_ratio:
+		transformation_ratio = args.transformation_ratio
+
+	if args.batch_size:
+			batch_size = args.batch_size
 	
-
-
-
-	history = train(arch, path, epoch_num, image_width, test_percent, output_model)
+	if args.learning_rate:
+			learning_rate = args.learning_rate
+	
+	history = train(arch, path, epoch_num, image_width, test_percent, output_model, transformation_ratio, batch_size, learning_rate)
