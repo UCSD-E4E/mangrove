@@ -1,0 +1,25 @@
+
+<!doctype html>
+    <head>
+        <title>{{ title }} - Mangrove Classification</title>
+    </head>
+    <body>
+        <h1><p style="text-align:center">Welcome to the Mangrove Classification Application</p></h1>
+
+       
+        <form method="POST" enctype="multipart/form-data">
+          <p>
+              {{ form.file_path.label }}<br>
+              {{ form.file_path(size=32) }}
+          </p>
+  
+          <p>{{ form.submit() }}</p>
+      </form>
+        
+        
+        <a href="/classify">Go to Classify Page</a>
+
+
+    </body>
+</html>
+
