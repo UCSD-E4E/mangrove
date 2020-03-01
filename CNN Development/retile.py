@@ -54,7 +54,7 @@ for filename in tqdm(os.listdir(img_dir)):
 		with Image.open(filepath) as im:
 			x, y = im.size
 			totalsize = x*y
-			totalsum = np.sum(numpy.array(im))
+			totalsum = np.sum(np.array(im))
 		if totalsize < (int(out_width) * (int(out_width))):
 			os.remove(filepath)
 		elif np.array_equal(np.unique(np.array(im)), [0, 255]):
