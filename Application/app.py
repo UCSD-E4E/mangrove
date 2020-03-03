@@ -11,7 +11,7 @@ app.config['SECRET_KEY'] = "it is a secret"
 training_file = ""
 
 class LoginForm(Form):
-    file_path = StringField('File Path', [validators.DataRequired()])
+    file_path = StringField('File Path',validators=[DataRequired()])
     submit = SubmitField('Upload')
 
 @app.route('/')
@@ -21,14 +21,30 @@ def index():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
+    '''
     form = LoginForm()
-    print("Form is created", file=sys.stderr)
+    #print("Form is created", file=sys.stderr)
+    form.validate()
+    print("Form's errors is {}".format(form.errors), file=sys.stderr)
+    print("Form's file_path is {}".format(form.file_path.data),file=sys.stderr)
+
     if request.method == 'POST' and form.validate():
-        print("In valide on submit", file=sys.stderr)
+        print("In validate on submit", file=sys.stderr)
+        
         training_file = form.file_path.data
-        flash('File path is {}'.format(training_file))
-        return redirect('/classify.html')
+        print('File path is {}'.format(training_file),file=sys.stderr)
+
+        return render_template('classify.html')
+
     return render_template('upload.html', title='Sign In', form=form)
+    '''
+    
+    if request.method == 'POST':  #this block is only entered when the form is submitted
+        training_file = request.form.get('file_path')
+        print(training_file,file=sys.stderr)
+        return render_template('classify.html',file_path = training_file)
+
+    return render_template('upload.html', title='Sign In')
 
 @app.route('/classify')
 def classify():
