@@ -14,6 +14,15 @@ class LoginForm(Form):
     file_path = StringField('File Path',validators=[DataRequired()])
     submit = SubmitField('Upload')
 
+def file_exists():
+    path = request.form.get('file_path')
+    if os.path.exists(path):
+        print("File exists!",file=sys.stderr)
+        return True
+    print("File not exists!",file=sys.stderr)
+    return False
+    
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -39,7 +48,7 @@ def upload():
     return render_template('upload.html', title='Sign In', form=form)
     '''
     
-    if request.method == 'POST':  #this block is only entered when the form is submitted
+    if request.method == 'POST' and file_exists():  #this block is only entered when the form is submitted
         training_file = request.form.get('file_path')
         print(training_file,file=sys.stderr)
         return render_template('classify.html',file_path = training_file)
