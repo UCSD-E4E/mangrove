@@ -10,7 +10,7 @@ def split_vector(filepath):
 
 	with fiona.open(filepath) as source:
 		# Making sure m.shp does not already exist
-		m_file = dir_path + "/m.shp"
+		m_file = os.path.join(dir_path, "m.shp")
 		if (os.path.exists(m_file)):
 			#os.remove("m.shp")	
 			os.system("rm " + dir_path + "/m.*")
@@ -23,7 +23,7 @@ def split_vector(filepath):
 			print("Joined {} mangrove polygons.".format(len(m_shp)))
 
 		# Making sure m.shp does not already exist
-		nm_file = dir_path + "/nm.shp"
+		nm_file = os.path.join(dir_path, "nm.shp")
 		if (os.path.exists(nm_file)):
 			#os.remove("nm.shp")	
 			os.system("rm " + dir_path + "/nm.*")

@@ -24,8 +24,8 @@ def raster_mask(raster_filepath, vector_filepath):
     dir_path = os.path.dirname(vector_filepath)
 
     # Need to run split_vector first
-    m_file = dir_path + "/m.shp"
-    nm_file = dir_path + "/nm.shp"
+    m_file = os.path.join(dir_path, "m.shp")
+    nm_file = os.path.join(dir_path, "nm.shp")
 
     if (os.path.exists(m_file) == False or os.path.exists(nm_file) == False):
         print("Splitting vectors...")
@@ -68,11 +68,13 @@ def raster_mask(raster_filepath, vector_filepath):
                     "width": out_image.shape[2],
                     "transform": out_transform})
 
-    with rasterio.open(dir_path + "/mask.tif", "w", **out_meta) as dest:
+    mask_file = os.path.join(dir_path, "mask.tif")
+    with rasterio.open(mask_file, "w", **out_meta) as dest:
         dest.write(out_image)
 
     # Writing binary mask to new file
-    imsave(dir_path + "/mask_binary.png", out_mask)
+    binary_mask_file = os.path.join(dir_path, "mask_binary.png")
+    imsave(binary_mask_file, out_mask)
     print("Done.")
     
 if __name__ == "__main__":
