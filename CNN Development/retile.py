@@ -20,7 +20,7 @@ if args.targetDir:
 if args.shpFile:
 	polygon = args.shpFile
 else:
-	polygon == False
+	polygon = False
 
 if not img_input.lower().endswith('.tif'):
 	print("Input raster is not of .tif format")
@@ -31,19 +31,21 @@ if os.path.exists(os.path.join(cwd,outputDir)) == False:
 	os.mkdir(os.path.join(cwd,outputDir))
 
 if isinstance(polygon, str):
-	if not polygon.lower().endswith('.shp'):
-		print(polygon)
-		print("Input polygon is not of type .shp format")
-		exit() 
-	#polycall = "gdal -clip " + polygon + " " + img_input + " " + "clipped" + img_input
-	polycall = "gdalwarp " + "-cutline " + polygon + " -dstalpha -crop_to_cutline " + img_input  + " " + "clipped"+img_input  
-	subprocess.call(polycall, shell=True)
+    if not polygon.lower().endswith('.shp'):
+        print(polygon)
+        print("Input polygon is not of type .shp format")
+        exit() 
+    #polycall = "gdal -clip " + polygon + " " + img_input + " " + "clipped" + img_input
+    polycall = "gdalwarp " + "-cutline " + polygon + " -dstalpha -crop_to_cutline " + img_input  + " " + "clipped"+img_input  
+    subprocess.call(polycall, shell=True)
+    call = "gdal_retile.py -ps " + out_width + " " + out_width + " " + "-targetDir " + outputDir + " clipped" + img_input
+    subprocess.call(call, shell=True)
 
 
-
-call = "gdal_retile.py -ps " + out_width + " " + out_width + " " + "-targetDir " + outputDir + " clipped" + img_input
-print(call)
-subprocess.call(call, shell=True)
+else:
+    call = "gdal_retile.py -ps " + out_width + " " + out_width + " " + "-targetDir " + outputDir + " " + img_input
+    print(call)
+    subprocess.call(call, shell=True)
 
 img_dir = os.path.join(cwd, outputDir)
 print("Removing undersized tiles in:")
@@ -59,5 +61,3 @@ for filename in tqdm(os.listdir(img_dir)):
 			os.remove(filepath)
 		elif np.array_equal(np.unique(np.array(im)), [0, 255]):
 			os.remove(filepath)
-
-
