@@ -144,7 +144,7 @@ if __name__ == "__main__":
 	output_operation = graph.get_operation_by_name(output_name)
 
 	# generating batches
-	filenames = [os.path.join(image_directory, file) for file in os.listdir(image_directory)]
+	filenames = [os.path.join(image_directory, file) for file in os.listdir(image_directory) if not file.endswith(".tif")]
 	batches, num_batches = generate_batches(filenames, batch_size)
 	
 	# for tracking execution time
