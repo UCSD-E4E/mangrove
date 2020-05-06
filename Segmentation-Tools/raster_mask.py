@@ -23,10 +23,17 @@ def raster_mask(raster_filepath, vector_filepath):
 
     dir_path = os.path.dirname(vector_filepath)
 
-    # Need to run split_vector first
-    m_file = os.path.join(dir_path, "m.shp")
-    nm_file = os.path.join(dir_path, "nm.shp")
+    # Creating necessary directories
+    m_dir = os.path.join(dir_path, "m")
+    nm_dir = os.path.join(dir_path, "nm")
+    mask_dir = os.path.join(dir_path, "masks")
+    if not os.path.exists(mask_dir):
+        os.mkdir(mask_dir)
+    # Note that directories for m_dir and nm_dir are created by split_vector
 
+    # Need to run split_vector first
+    m_file = os.path.join(m_dir, "m.shp")
+    nm_file = os.path.join(nm_dir, "nm.shp")
     if (os.path.exists(m_file) == False or os.path.exists(nm_file) == False):
         print("Splitting vectors...")
         split_vector(vector_filepath)
@@ -48,7 +55,15 @@ def raster_mask(raster_filepath, vector_filepath):
     
     # Creating binary mask for image
     out_mask = out_image.sum(axis=0)
-    out_mask = out_mask > 0
+    out_mask = out_mask > 0         # True/False
+    out_mask_0_255 = out_mask * 255   # 0 or 255
+    out_mask_4_band = np.zeros((4, np.shape(out_mask)[0], np.shape(out_mask)[1]))
+    out_mask_4_band = np.array([out_mask_0_255 for i in range(4)]).astype('uint8')
+
+    #print(np.max(out_mask_4_band))
+    #print(np.shape(out_mask_4_band))
+    #print(np.shape(out_image))
+    #print(np.shape(out_mask))
 
     # Converting from color, x, y -> x, y, color for display
     if (display == True):
@@ -68,12 +83,16 @@ def raster_mask(raster_filepath, vector_filepath):
                     "width": out_image.shape[2],
                     "transform": out_transform})
 
-    mask_file = os.path.join(dir_path, "mask.tif")
+    mask_file = os.path.join(mask_dir, "mask.tif")
     with rasterio.open(mask_file, "w", **out_meta) as dest:
         dest.write(out_image)
 
-    # Writing binary mask to new file
-    binary_mask_file = os.path.join(dir_path, "mask_binary.png")
+    # Writing binary mask to new file (tif and png versions)
+    mask_file = os.path.join(mask_dir, "mask_binary.tif")
+    with rasterio.open(mask_file, "w", **out_meta) as dest:
+        dest.write(out_mask_4_band)
+
+    binary_mask_file = os.path.join(mask_dir, "mask_binary.png")
     imsave(binary_mask_file, out_mask)
     print("Done.")
     
@@ -84,6 +103,8 @@ if __name__ == "__main__":
     parser.add_argument('--vector_filepath')
 
     args = parser.parse_args()
-    raster_filepath = args.raster_filepath
-    vector_filepath = args.vector_filepath
+    if args.raster_filepath:
+        raster_filepath = args.raster_filepath
+    if args.vector_filepath:
+        vector_filepath = args.vector_filepath
     raster_mask(raster_filepath, vector_filepath)
