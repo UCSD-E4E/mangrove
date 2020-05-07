@@ -1,4 +1,4 @@
-# Example usage: python3 gen_seg_labels.py --width 256 --input_raster test_data/test.tif --input_mask test_data/masks/mask_binary.tif
+# Example usage: python3 gen_seg_labels.py --width 256 --input_raster test_data/test.tif --input_mask test_data/masks/mask_binary.tif -c -d
 # Or on a .shp file: python3 gen_seg_labels.py --width 256 --input_raster test_data/test.tif --input_vector test_data/test.shp
 
 import argparse
@@ -9,8 +9,35 @@ from tqdm import tqdm
 from PIL import Image
 from glob import glob
 from raster_mask import raster_mask
+from joblib import Parallel, delayed
 
-def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, tif_to_jpg, destructive):
+def remove_undersized_tiles(img_filename, img_dir, label_dir, img_file_basename, mask_file_basename):
+	img_filepath = os.path.join(img_dir, img_filename)
+	index = img_filename.replace(img_file_basename, '')
+	label_filename = mask_file_basename + index
+	label_filepath = os.path.join(label_dir, label_filename)
+	if os.path.splitext(img_filename)[1] == ".tif":
+		with Image.open(img_filepath) as im:
+			x, y = im.size
+			totalsize = x*y
+			totalsum = np.sum(np.array(im))
+		if totalsize < (int(out_width) * (int(out_width))):
+			os.remove(img_filepath)
+			os.remove(label_filepath)
+		elif np.array_equal(np.unique(np.array(im)), [0, 255]):
+			os.remove(img_filepath)
+			os.remove(label_filepath)
+
+def tif_to_jpg(file, destructive):
+	with Image.open(file) as im:
+		new_im = im.convert("RGB")
+		new_file = file.rstrip(".tif")
+		new_im.save(new_file + ".jpg", "JPEG")
+	if (destructive == True):
+		os.remove(file)
+	
+
+def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, convert, destructive):
 	# Check
 	if not raster_file.lower().endswith('.tif'):
 		print("Input raster is not of .tif format")
@@ -42,36 +69,20 @@ def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, tif_
 
 	# Removing undersized and empty tiles (in img and label directories)
 	print("Removing undersized tiles...")
-	for img_filename in tqdm(os.listdir(img_dir)):
-		img_filepath = os.path.join(img_dir, img_filename)
-		index = img_filename.replace(img_file_basename, '')
-		label_filename = mask_file_basename + index
-		label_filepath = os.path.join(label_dir, label_filename)
-		if os.path.splitext(img_filename)[1] == ".tif":
-			with Image.open(img_filepath) as im:
-				x, y = im.size
-				totalsize = x*y
-				totalsum = np.sum(np.array(im))
-			if totalsize < (int(out_width) * (int(out_width))):
-				os.remove(img_filepath)
-				os.remove(label_filepath)
-			elif np.array_equal(np.unique(np.array(im)), [0, 255]):
-				os.remove(img_filepath)
-				os.remove(label_filepath)
+	with Parallel(n_jobs=-1) as parallel:
+		parallel(delayed(remove_undersized_tiles)
+				(img_filename, img_dir, label_dir, img_file_basename, mask_file_basename) 
+				for img_filename in tqdm(os.listdir(img_dir)))
 
-	print("Number of Images: " + str(len(os.listdir(img_dir))))
-	print("Number of Labels: " + str(len(os.listdir(label_dir))))
+		print("Number of Images: " + str(len(os.listdir(img_dir))))
+		print("Number of Labels: " + str(len(os.listdir(label_dir))))
 
-	# Converting from tif to jpg
-	if tif_to_jpg == True:
-		print("Converting from .tif to .jpg")
-		for file in tqdm(glob(os.path.join(img_dir, "*.tif"))):
-			with Image.open(file) as im:
-				new_im = im.convert("RGB")
-				new_file = file.rstrip(".tif")
-				new_im.save(new_file + ".jpg", "JPEG")
-			if (destructive == True):
-				os.remove(file)
+		# Converting from tif to jpg
+		if convert == True:
+			print("Converting images from .tif to .jpg")
+			parallel(delayed(tif_to_jpg)(file, destructive) for file in tqdm(glob(os.path.join(img_dir, "*.tif"))))
+			print("Converting labels from .tif to .jpg")
+			parallel(delayed(tif_to_jpg)(file, destructive) for file in tqdm(glob(os.path.join(label_dir, "*.tif"))))
 
 	print("Creating Map...")
 	map_filepath = os.path.join(out_dir, "map.txt")
@@ -130,12 +141,12 @@ if __name__ == "__main__":
 	else:
 		out_dir = os.path.dirname(raster_file)
 	if args.c:
-		tif_to_jpg = True
+		convert = True
 	else:
-		tif_to_jpg = False
+		convert = False
 	if args.d:
 		destructive = True
 	else:
 		destructive = False
 
-	gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, tif_to_jpg, destructive)
+	gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, convert, destructive)
