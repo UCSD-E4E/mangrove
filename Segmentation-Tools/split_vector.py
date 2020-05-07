@@ -24,8 +24,18 @@ def split_vector(filepath):
 		with fiona.open(m_file, "w", crs=source.crs, driver=source.driver, schema=source.schema) as m_shp:
 			print("Creating mangrove files in " + m_dir)
 			for record in source:
-				if (record['properties']['class'] == "mangrove"):
-					m_shp.write(record)
+				# Checking the there is in fact a class label
+				try:
+					if (record['properties']['class'] == "mangrove"):
+						m_shp.write(record)
+				except KeyError:
+					try:
+						if (record['properties']['Class'] == "mangrove"):
+							m_shp.write(record)
+					except KeyError:
+						print("No class label... Exiting.")
+						exit()
+
 			print("Joined {} mangrove polygons.".format(len(m_shp)))
 
 		nm_file = os.path.join(nm_dir, "nm.shp")
@@ -33,8 +43,17 @@ def split_vector(filepath):
 		with fiona.open(nm_file, "w", crs=source.crs, driver=source.driver, schema=source.schema) as nm_shp:
 			print("Creating nonmangrove files in " + nm_dir)
 			for record in source:
-				if (record['properties']['class'] == "nonmangrove"):
-					nm_shp.write(record)
+				# Checking the there is in fact a class label
+				try:
+					if (record['properties']['class'] == "nonmangrove"):
+						nm_shp.write(record)
+				except KeyError:
+					try:
+						if (record['properties']['Class'] == "nonmangrove"):
+							nm_shp.write(record)
+					except KeyError:
+						print("No class label... Exiting.")
+						exit()
 			print("Joined {} nonmangrove polygons.".format(len(nm_shp)))
 
 if __name__ == "__main__":

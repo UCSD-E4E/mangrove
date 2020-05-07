@@ -58,8 +58,14 @@ def raster_mask(raster_filepath, vector_filepath):
     out_mask = out_mask > 0         # True/False
     # NOTE: May need to change this for different pixel label values...
     out_mask_0_255 = out_mask * 255   # 0 or 255
-    out_mask_4_band = np.zeros((4, np.shape(out_mask)[0], np.shape(out_mask)[1]))
-    out_mask_4_band = np.array([out_mask_0_255 for i in range(4)]).astype('uint8')
+    # Old
+    #out_mask_4_band = np.zeros((4, np.shape(out_mask)[0], np.shape(out_mask)[1]))
+    #out_mask_4_band = np.array([out_mask_0_255 for i in range(4)]).astype('uint8')
+    
+    # To deal with potential memory issues
+    out_mask_4_band = np.memmap('tmp_arr', dtype='uint8', mode='w+', shape=(4, np.shape(out_mask)[0], np.shape(out_mask)[1]))
+    for i in range(4):
+        out_mask_4_band[i,:,:] = out_mask_0_255
 
     # Converting from color, x, y -> x, y, color for display
     if (display == True):
@@ -90,6 +96,9 @@ def raster_mask(raster_filepath, vector_filepath):
 
     binary_mask_file = os.path.join(mask_dir, "mask_binary.png")
     imsave(binary_mask_file, out_mask)
+
+    # Cleaning up memmap
+    os.remove('tmp_arr')
     print("Done.")
     
 if __name__ == "__main__":
