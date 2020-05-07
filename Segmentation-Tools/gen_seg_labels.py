@@ -7,9 +7,10 @@ import subprocess
 import numpy as np
 from tqdm import tqdm
 from PIL import Image
+from glob import glob
 from raster_mask import raster_mask
 
-def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir):
+def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, tif_to_jpg, destructive):
 	# Check
 	if not raster_file.lower().endswith('.tif'):
 		print("Input raster is not of .tif format")
@@ -61,16 +62,29 @@ def gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir):
 	print("Number of Images: " + str(len(os.listdir(img_dir))))
 	print("Number of Labels: " + str(len(os.listdir(label_dir))))
 
+	# Converting from tif to jpg
+	if tif_to_jpg == True:
+		print("Converting from .tif to .jpg")
+		for file in tqdm(glob(os.path.join(img_dir, "*.tif"))):
+			with Image.open(file) as im:
+				new_im = im.convert("RGB")
+				new_file = file.rstrip(".tif")
+				new_im.save(new_file + ".jpg", "JPEG")
+			if (destructive == True):
+				os.remove(file)
+
 	print("Creating Map...")
 	map_filepath = os.path.join(out_dir, "map.txt")
 	with open(map_filepath, 'w') as map_file:
 		for img_filename in tqdm(os.listdir(img_dir)):
 			img_filepath = os.path.join(img_dir, img_filename)
+			img_filepath_abs = os.path.abspath(img_filepath)
 			index = img_filename.replace(img_file_basename, '')
 			label_filename = mask_file_basename + index
 			label_filepath = os.path.join(label_dir, label_filename)
+			label_filepath_abs = os.path.abspath(label_filepath)
 			# NOTE: Consider adding parser for delimiter in map file
-			map_file.write(img_filename + " -> " + label_filepath + "\n")
+			map_file.write(img_filepath_abs + " -> " + label_filepath_abs + "\n")
 
 	print("Done.")
 
@@ -81,6 +95,8 @@ if __name__ == "__main__":
 	parser.add_argument("--input_mask", help = "input (binary) mask (.tif)")
 	parser.add_argument("--input_vector", help = "Only necessary if input_mask is not specified, should be a labeled .shp file")
 	parser.add_argument("--out_dir", help = "location to create directories for tiles and labels (defaults to directory containing raster)")
+	parser.add_argument("-c", action='store_true', help = "Automatically convert resulting files .tif files to .jpg (no argument)")
+	parser.add_argument("-d", action='store_true', help = "Destructive conversion from .tif to .jpg (Removes the .tif file)")
 	args = parser.parse_args()
 
 	if args.width:
@@ -113,5 +129,13 @@ if __name__ == "__main__":
 		out_dir = args.out_dir
 	else:
 		out_dir = os.path.dirname(raster_file)
+	if args.c:
+		tif_to_jpg = True
+	else:
+		tif_to_jpg = False
+	if args.d:
+		destructive = True
+	else:
+		destructive = False
 
-	gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir)
+	gen_seg_labels(out_width, raster_file, vector_file, mask_file, out_dir, tif_to_jpg, destructive)

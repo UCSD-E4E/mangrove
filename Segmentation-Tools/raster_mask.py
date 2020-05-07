@@ -56,14 +56,10 @@ def raster_mask(raster_filepath, vector_filepath):
     # Creating binary mask for image
     out_mask = out_image.sum(axis=0)
     out_mask = out_mask > 0         # True/False
+    # NOTE: May need to change this for different pixel label values...
     out_mask_0_255 = out_mask * 255   # 0 or 255
     out_mask_4_band = np.zeros((4, np.shape(out_mask)[0], np.shape(out_mask)[1]))
     out_mask_4_band = np.array([out_mask_0_255 for i in range(4)]).astype('uint8')
-
-    #print(np.max(out_mask_4_band))
-    #print(np.shape(out_mask_4_band))
-    #print(np.shape(out_image))
-    #print(np.shape(out_mask))
 
     # Converting from color, x, y -> x, y, color for display
     if (display == True):
