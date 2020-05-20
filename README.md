@@ -11,3 +11,5 @@ USAGE :
 cd into the directory with code and data.
 
 clustering.py. - python clustering.py --tilesDir \<folder with Tiles\> --outputDir \<folder to save the clustered tiles\>
+
+Pseudo-Labelling-Classifier.py - python Pseudo-Labelling-Classifier.py
