@@ -20,6 +20,24 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 import time
 
+
+
+def get_path_unlabelled_tiles(tilesDir,labelledTilesDir):
+    path_of_unlabelled_tiles =[]
+    tiles = []
+    tile_names=[]
+    for r, d, f in os.walk(tilesDir):
+        for item in f:
+            if '.tif' in item:
+                tiles.append(os.path.join(r, item))
+                tile_names.append(item)
+    for index, tile in enumerate(tiles):
+        labelled_raster_path = os.path.join(labelledTilesDir,"labelled_"+tile_names[index])
+        if not (os.path.exists(labelled_raster_path)):
+            path_of_unlabelled_tiles.append(tile)
+    return  path_of_unlabelled_tiles 
+
+
 def read_files(tilesDir,labelledTilesDir):
     tiles = []
     tile_names=[]
@@ -175,6 +193,21 @@ if __name__ == "__main__":
         X_test,y_test = create_test_sets(X_labelled,Y_labelled)
         print("Performance on train sets...: ",clf.score(X_train, y_train))
         print("Performance of test sets of 10,000 samples:",metrics.accuracy_score(y_test, predict_labels(clf,X_test)))
+        
+        #Displaying the classified pixels.
+        unlabelled_tiles = get_path_unlabelled_tiles(tilesDir,labelledTilesDir)
+        for tile in unlabelled_tiles:
+            X=[]
+            im = np.array(Image.open(tile))[:,:,:3]
+            X.append(im)
+            X = np.asarray(X)
+            X = X.reshape(len(X)*X[0].shape[0]*X[0].shape[1],len(['R','G','B']))
+            y_pred = predict_labels(clf,X)
+            y_pred = y_pred.reshape(im.shape[0],im.shape[1])
+            image = Image.fromarray(y_pred * 255)
+            image.show()
+        
+        
         end = time.time()
         print("The time elapsed for ",classifier,"classifier .........:",end - start)
     
