@@ -14,7 +14,7 @@ from matplotlib.image import imsave
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from tools.split_vector import split_vector
+from split_vector import split_vector
 import argparse
 
 def raster_mask(raster_filepath, vector_filepath):

@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import argparse
-from tools.create_seg_dataset import create_seg_dataset
-from tools.gen_seg_labels import gen_seg_labels
-from tools.raster_mask import raster_mask
+from create_seg_dataset import create_seg_dataset
+from gen_seg_labels import gen_seg_labels
+from raster_mask import raster_mask
 from segmentation_models.utils import set_trainable
 from glob import glob
 from datetime import datetime
@@ -181,7 +181,7 @@ def show_predictions(model=None, dataset=None, num=1):
             display([image[0], mask[0], create_mask(pred_mask[0])])
 
 
-def train():
+def train(weight_file):
     # For tensorboard
     logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
@@ -280,12 +280,13 @@ def train():
     )
 
     # Saving model
-    model.save_weights("unet_500_weights_vgg16.h5")
+    #model.save_weights("unet_500_weights_vgg16.h5")
+    model.save_weights(weight_file)
 
     # For reinstantiation
     #model = keras.models.load_model(your_file_path)
 
-def test():
+def test(weight_file):
     AUTOTUNE = tf.data.experimental.AUTOTUNE
     print(f"Tensorflow ver. {tf.__version__}")
 
@@ -296,7 +297,8 @@ def test():
     images = "../dataset/testing/images"
     annotations = "../dataset/testing/annotations"
     testing_data = "../dataset/testing/"
-    model_weights = "unet_500_weights_vgg16.h5"
+    #model_weights = "unet_500_weights_vgg16.h5"
+    model_weights = weight_file
 
     # Listing GPU info
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -397,6 +399,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_vectors", nargs='*', help = "space separated input labels (.shp)")
     parser.add_argument("--train", action='store_true', help = "training UNet")
     parser.add_argument("--test", action='store_true', help = "testing UNet")
+    parser.add_argument("--weights", help = "path to weight file, either to save or use (.h5)")
     args = parser.parse_args()
 
     # Parsing arguments
@@ -425,10 +428,15 @@ if __name__ == "__main__":
         TRAIN = True
     elif args.test:
         TEST = True
+    if args.weights:
+        weight_file = args.weights
+    else:
+        print("Need weight file, exiting.")
+        exit()
 
     # Selecting mode
     if TRAIN: 
         train_setup(raster_files, vector_files, out_width)
-        train()
+        train(weight_file)
     if TEST:
-        test()
+        test(weight_file)

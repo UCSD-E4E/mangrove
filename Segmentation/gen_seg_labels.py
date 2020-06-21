@@ -8,8 +8,8 @@ import numpy as np
 from tqdm import tqdm
 from PIL import Image
 from glob import glob
-from tools.raster_mask import raster_mask
 from joblib import Parallel, delayed
+from raster_mask import raster_mask
 
 def remove_undersized_tiles(img_filename, img_dir, label_dir, img_file_basename, mask_file_basename, out_width):
 	img_filepath = os.path.join(img_dir, img_filename)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 	parser.add_argument("--input_mask", help = "input (binary) mask (.tif)")
 	parser.add_argument("--input_vector", help = "Only necessary if input_mask is not specified, should be a labeled .shp file")
 	parser.add_argument("--out_dir", help = "location to create directories for tiles and labels (defaults to directory containing raster)")
-	parser.add_argument("-c", action='store_true', help = "Automatically convert resulting files .tif files to .jpg (no argument)")
+	parser.add_argument("-c", action='store_true', help = "Automatically convert resulting .tif files to .jpg (no argument)")
 	parser.add_argument("-d", action='store_true', help = "Destructive conversion from .tif to .jpg (Removes the .tif file)")
 	args = parser.parse_args()
 
