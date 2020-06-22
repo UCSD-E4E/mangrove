@@ -6,15 +6,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import argparse
+import rasterio
+import subprocess
 from create_seg_dataset import create_seg_dataset
-from gen_seg_labels import gen_seg_labels
+from gen_seg_labels import gen_seg_labels, tif_to_jpg, tile_raster
 from raster_mask import raster_mask
 from segmentation_models.utils import set_trainable
 from glob import glob
 from datetime import datetime
 from PIL import Image
 from tqdm import tqdm
+
 # Resources: https://yann-leguilly.gitlab.io/post/2019-12-14-tensorflow-tfdata-segmentation/
+
+'''
+Documentation/Usage: This script is meant to be called with command line arguments.
+--width (required): tile width
+--input_rasters (required): space separated list of rasters (orthomosaics)
+--input_vectors (required for training): space separated list of shapefiles (ordering should correspond with rasters)
+--train: Flag. Add if training.
+--test: Flag. Add if testing.
+--weights (required): path to weights file, either to write to for training, or to use for testing (.h5)
+--backbone (required): name of backbone to use, ex: resnet34, vgg16
+
+For training it should be sufficient to just call the script using the list of rasters and vectors (and other required arguments), 
+and currently you have to manually set the hyperparams in the code, but this should eventually be offloaded to a settings file or 
+command line arguments. This will result in the training weights being saved in the specified .h5 file.
+
+For testing you just need to call the script on the list of rasters and it will produce a mask of the entire
+orthomosaic.
+'''
 
 #keras.backend.set_image_data_format('channels_first')
 sm.set_framework('tf.keras')    # need this otherwise currently a bug in model.fit when used with tf.Datasets
@@ -181,7 +202,7 @@ def show_predictions(model=None, dataset=None, num=1):
             display([image[0], mask[0], create_mask(pred_mask[0])])
 
 
-def train(weight_file):
+def train(backbone, weight_file):
     # For tensorboard
     logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
@@ -255,7 +276,8 @@ def train(weight_file):
     # define model
     model = sm.Unet(
         #'resnet34',
-        'vgg16', 
+        #'vgg16', 
+        backbone,
         input_shape=(HEIGHT, WIDTH, N_CHANNELS), 
         encoder_weights='imagenet', 
         encoder_freeze=True,    # only training decoder network
@@ -286,7 +308,96 @@ def train(weight_file):
     # For reinstantiation
     #model = keras.models.load_model(your_file_path)
 
-def test(weight_file):
+def test(backbone, weight_file):
+
+    AUTOTUNE = tf.data.experimental.AUTOTUNE
+    print(f"Tensorflow ver. {tf.__version__}")
+
+    # For reproducibility
+    SEED = 42
+
+    # Relevant directories/files
+    image_dir = "../dataset/testing/images"
+    annotation_dir = "../dataset/testing/annotations"
+    out_dir = "../dataset/testing/output"
+    testing_data = "../dataset/testing/"
+    model_weights = weight_file
+
+    # Listing GPU info
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+        except RuntimeError as e:
+            print(e)
+
+    # Hyperparams
+    BATCH_SIZE = 16
+    BUFFER_SIZE = 1000 # See https://stackoverflow.com/questions/46444018/meaning-of-buffer-size-in-dataset-map-dataset-prefetch-and-dataset-shuffle
+
+    model = sm.Unet(
+        #'vgg16', 
+        backbone,
+        input_shape=(HEIGHT, WIDTH, N_CHANNELS), 
+        encoder_weights='imagenet', 
+        weights=model_weights,
+        encoder_freeze=True,    # only training decoder network
+        classes=2, 
+        activation='softmax'
+    )
+
+    # Might be unnecessary
+    model.compile(
+        'Adam', 
+        loss=sm.losses.bce_jaccard_loss, 
+        metrics=[sm.metrics.iou_score]
+    )
+
+    test_dataset = glob(os.path.join(image_dir, "*.jpg"))
+    
+    # Loop for inference
+    print("\nStarting inference... \n")
+    for img_file in tqdm(test_dataset):
+        tif_file = img_file.replace("jpg", "tif")
+
+        img = np.asarray(Image.open(img_file)) / 255.0 # normalization
+        img = img[np.newaxis, ...] # needs (batch_size, height, width, channels)
+        pred_mask = model.predict(img)[0]
+        pred_mask = create_mask(pred_mask)
+        pred_mask = np.array(pred_mask).astype('uint8') * 255
+
+        # Reading metadata from .tif
+        with rasterio.open(tif_file) as src:
+            tif_meta = src.meta
+            tif_meta['count'] = 1
+
+        # Writing prediction mask as a .tif using extracted metadata
+        mask_file = tif_file.replace("images", "output")
+        with rasterio.open(mask_file, "w", **tif_meta) as dest:
+            # Rasterio needs [bands, width, height]
+            pred_mask = np.rollaxis(pred_mask, axis=2)
+            dest.write(pred_mask)
+
+    print("Merging tiles (to create mask ortho)...")
+    call = "gdal_merge.py -o " + testing_data + "ortho_mask.tif " + " " + out_dir + "/*"
+    print(call)
+    subprocess.call(call, shell=True)
+
+
+def test_optimized(backbone, weight_file):
+    '''
+    Note: This version of test does not work yet. It is optimized to be very efficient and works well for inference on .jpg files.
+    It lacks the capabilities to link the output predictions to the input .jpgs since the filenames are lost when in the tf.dataset
+    we map the parse image function. As a result, we need to somehow modify this dataset to retain filename information so we can use it
+    to link the output prediction to the input image and its corresponding .tif file, which will be used to write the geospatial info to
+    the prediction.
+
+    Initial ideas would be to modify the parse image function and related functions to save filename info, and use this to link the images
+    in the prediction stage by replacing .jpg with .tif in the filename.
+    '''
     AUTOTUNE = tf.data.experimental.AUTOTUNE
     print(f"Tensorflow ver. {tf.__version__}")
 
@@ -385,9 +496,15 @@ def train_setup(raster_files, vector_files, out_width):
     # Creating dataset to train UNet
     create_seg_dataset(map_files)
 
-# TODO!!! Depending on plan for inference...
-def test_setup():
-    None
+def test_setup(raster_files, out_width):
+    out_dir = "../dataset/testing/output"
+    test_dir = "../dataset/testing"
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    print("\nTiling rasters...")
+    for raster_file in raster_files:
+        tile_raster(out_width, raster_file, test_dir, True, False)
 
 if __name__ == "__main__":
     TRAIN = False
@@ -400,6 +517,7 @@ if __name__ == "__main__":
     parser.add_argument("--train", action='store_true', help = "training UNet")
     parser.add_argument("--test", action='store_true', help = "testing UNet")
     parser.add_argument("--weights", help = "path to weight file, either to save or use (.h5)")
+    parser.add_argument("--backbone", help = "segmentation model backbone, ex: resnet34, vgg16, etc.")
     args = parser.parse_args()
 
     # Parsing arguments
@@ -433,10 +551,17 @@ if __name__ == "__main__":
     else:
         print("Need weight file, exiting.")
         exit()
+    if args.backbone:
+        backbone = args.backbone
+    else:
+        print("Need to specify backbone, exiting.")
+        exit()
 
     # Selecting mode
     if TRAIN: 
         train_setup(raster_files, vector_files, out_width)
-        train(weight_file)
+        train(backbone, weight_file)
     if TEST:
-        test(weight_file)
+        test_setup(raster_files, out_width)
+        test(backbone, weight_file)
+        #test_optimized(backbone, weight_file)
