@@ -1,0 +1,15 @@
+site_name: E4E Mangrove Monitoring 
+
+theme: sandstone
+
+
+nav:
+    - 'index.md'
+    - 'About.md'
+    - 'Papers.md'
+    - 'CNN.md'
+    - 'UNet.md'
+    - 'Labeling Tool.md'
+    - 'Semi-Supervised.md'
+    - 'Misc.md'
+    
