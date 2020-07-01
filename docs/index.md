@@ -2,8 +2,8 @@
 ##Welcome to the E4E Mangrove Monitoring Documentation Hub!
 
 <p align="left">
-<img src="images/drone.JPG" alt="drawing" width="500"/>
-<img src="images/banner.png" alt="drawing" width="500"/>
+<img src="images/drone.JPG" alt="drawing" width="600"/>
+<img src="images/banner.PNG" alt="drawing" width="600"/>
 </p>
 
 ## Github
@@ -14,14 +14,15 @@
 
 ## Current Team
 
-| |                |                 |
+|              |                |                 |
 |:------------:|:--------------:|:---------------:|
-| **Dillon Hicks** |  **Kathy Qi **             |                 |
-|   Technical Lead  <img src="images/dillon1.JPG.jpg" alt="drawing" width="200"/>      |  . <img src="images/avatar.png" alt="drawing" width="200"/>              |                 |
-|   **Arden Ma**   |   **Matthew Ma**   | **Ashlesha Vaidya** |
-|    CNN/UNet<br/>  <img src="images/avatar.png" alt="drawing" width="200"/>         |  .   <img src="images/avatar.png" alt="drawing" width="200"/>           | Semi-Supervised <img src="images/avatar.png" alt="drawing" width="200"/>              |
-| **David Forman - REU **  | **Nicole Meister - REU** |                 |
-|  Labeling Tool <img src="images/avatar.png" alt="drawing" width="200"/>         |  . <img src="images/avatar.png" alt="drawing" width="200"/>          |                 |
+| **Dillon Hicks** |  **Kathy Qi**  |   **Arden Ma**    |
+|   *Technical Lead*  <img src="images/dillon1.JPG.jpg" alt="dillon" width="200"/>      |    *Biomass* <br/>   <img src="images/avatar.png" alt="drawing" width="200"/>     |  *UNet Segmentation /CNN* <img src="images/arden.png" alt="drawing" width="200"/>              |
+|   **Matthew Ma**   | **Ashlesha Vaidya** | **David Forman - REU**  |     
+|  *UNet Segmentation*  <img src="images/avatar.png" alt="drawing" width="200"/>           |*Semi-Supervised Segmentation* <img src="images/avatar.png" alt="drawing" width="200"/>    |   *Labeling Tool* <img src="images/avatar.png" alt="drawing" width="200"/> |
+| **Nicole Meister - REU** |  **Samuel Cole - REU** | **Thuan Do - HS** |  
+| *Image Classification Tool* <img src="images/nicole.jpg" alt="nicole" width="200"/>          |   *UNet Segmentation*    <img src="images/sam.jpg" alt="drawing" width="200"/>   |  <br/> <img src="images/thuan.png" alt="drawing" width="200"/> |
+
 
 
 
