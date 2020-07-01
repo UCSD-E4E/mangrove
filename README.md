@@ -3,7 +3,7 @@
 Repository for storing general tools and documentation for the Mangrove Monitoring Project. This includes gisutils and the documentation site for all of our development documentation. 
 
 # Documentaion Site: 
-[https://ucsd-e4e.github.io/mangrove/]
+https://ucsd-e4e.github.io/mangrove/
 
 
 ## Using and editing the documentation site
@@ -14,18 +14,18 @@ Adding to the documentation site requires simple command line and markdown skill
 
 For a nice cheatsheet for markdown syntax, check out the cheatsheet linked below:
 
-[https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links]
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links
 
 *VSCode is reccomended due to markdown suupport out of the box and a lot of different extensiuons to make editing documents easy*
 
-[https://code.visualstudio.com/docs/languages/markdown]
+https://code.visualstudio.com/docs/languages/markdown
 
 
 ### MKDocs 
 
 >MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. Documentation source files are written in Markdown, and configured with a single YAML configuration file. Start by reading the introduction below, then check the User Guide for more info." 
 
-[https://www.mkdocs.org/]
+https://www.mkdocs.org/
 
 To install mkdocs, assuming you have pip and python prebuilt:
 
