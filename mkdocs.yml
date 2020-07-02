@@ -4,12 +4,16 @@ theme: sandstone
 
 
 nav:
-    - 'index.md'
+    - Home: 'index.md'
     - 'About.md'
-    - 'Papers.md'
-    - 'CNN.md'
-    - 'UNet.md'
-    - 'Labeling Tool.md'
-    - 'Semi-Supervised.md'
-    - 'Misc.md'
-    
+    - ML: 
+        - 'CNN.md'
+        - 'UNet.md'
+        - 'Semi-Supervised.md'
+    - Tools: 
+        - 'Labeling Tool.md'
+        - 'Image Classification Tool.md'
+        - 'GIS Utils.md'
+    - Other: 
+        - 'Misc.md'
+        - 'Papers.md'
