@@ -7,13 +7,14 @@ nav:
     - Home: 'index.md'
     - 'About.md'
     - ML: 
-        - 'CNN.md'
-        - 'UNet.md'
-        - 'Semi-Supervised.md'
+        - CNN: 'CNN.md'
+        - UNet: 'UNet.md'
+        - Semi-Supervised: 'Semi-Supervised.md'
     - Tools: 
-        - 'Labeling Tool.md'
-        - 'Image Classification Tool.md'
-        - 'GIS Utils.md'
+        - Labeling Tool: 'Labeling Tool.md'
+        - Image Classification Tool: 'Image Classification Tool.md'
+        - GIS Utils: 'GIS Utils.md'
+        - Azure Slack Bot: 'Azure Slackbot.md'
     - Other: 
         - 'Misc.md'
         - 'Papers.md'
