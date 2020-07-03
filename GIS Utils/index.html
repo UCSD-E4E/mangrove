@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>CNN - E4E Mangrove Monitoring</title>
+        <title>GIS Utils - E4E Mangrove Monitoring</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -39,12 +39,12 @@
                             <li class="navitem">
                                 <a href="../About/" class="nav-link">About</a>
                             </li>
-                            <li class="dropdown active">
+                            <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active">CNN</a>
+    <a href="../CNN/" class="dropdown-item">CNN</a>
 </li>
                                     
 <li>
@@ -56,7 +56,7 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -69,7 +69,7 @@
 </li>
                                     
 <li>
-    <a href="../GIS%20Utils/" class="dropdown-item">GIS Utils</a>
+    <a href="./" class="dropdown-item active">GIS Utils</a>
 </li>
                                     
 <li>
@@ -99,12 +99,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../About/" class="nav-link">
+                                <a rel="prev" href="../Labeling%20Tool/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../UNet/" class="nav-link">
+                                <a rel="next" href="../Azure%20Slackbot/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -126,12 +126,35 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="2"><a href="#cnn-tile-based-classification" class="nav-link">CNN Tile Based Classification</a>
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
               <ul class="nav flex-column">
               </ul>
             </li>
             
-            <li class="nav-item" data-level="2"><a href="#tensorflow-20-notebooks" class="nav-link">Tensorflow 2.0 Notebooks</a>
+            <li class="nav-item" data-level="1"><a href="#requirements" class="nav-link">Requirements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#general-tools" class="nav-link">General Tools</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#load_image" class="nav-link">load_image()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#retiling-rasters" class="nav-link">Retiling Rasters</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#retile" class="nav-link">retile()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#polygonizing-rasters" class="nav-link">Polygonizing Rasters</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -140,15 +163,38 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h2 id="cnn-tile-based-classification">CNN Tile Based Classification</h2>
-<p><img alt="alt text" src="../images/Site5_Visualization.png" /></p>
-<h2 id="tensorflow-20-notebooks">Tensorflow 2.0 Notebooks</h2>
-<p>Upgrades to Tensorflow 2.0 brings much more optimization compared to Tensorflow 1.0 and many more models, Seeing up to 10x increases in classification speeds, plus the code is much easier to read and know what is going on! View the below notebooks to get an intro into the code</p>
-<h3 id="retrain-tf2-notebook">Retrain (TF2 Notebook)</h3>
-<script src="https://gist.github.com/dillhicks/1809216c8e49db9ae25e2b658b95bdd8.js"></script>
+<h1 id="introduction">Introduction</h1>
+<p>GIS Utils is a python package aimed to improve on many of the inabilities of GDAL Python scripts to be faster, properly multithreaded, and much easier to use with a ML workflow than GDAL on its own. GIS Utils provides a few high level abstractions of GIS workflows aimed to be used for ML workflows, such as tilizing of images, raster to image conversions, and a few other tools specific to our workflow in particular. </p>
+<h1 id="requirements">Requirements</h1>
+<p>In order to use GIS Utils, the below python libraries must be installed:</p>
+<p><code>rasterio</code>
+<code>fiona</code>
+<code>geopandas</code>
+<code>gdal</code></p>
+<p>We reccomending using Google Colab or an Anaconda Environment as this package also requires many of the packages preincluded in those environments:</p>
+<p><code>tqdm</code>
+<code>numpy</code>
+<code>pandas</code></p>
+<p>For your convenience, we have a series of <code>pip</code> and <code>apt-get</code> commands that you can use below in order to download all of the prerequisite packages for GIS Utils. </p>
+<pre><code class="console">!apt-get update
+!apt-get install libgdal-dev -y
+!apt-get install python-gdal -y
+!apt-get install python-numpy python-scipy -y
+!pip install rasterio
+!pip install fiona
+!pip install geopandas
+</code></pre>
 
-<h3 id="autoclass-tf2-notebook">Autoclass (TF2 Notebook)</h3>
-<script src="https://gist.github.com/dillhicks/660263b03751ea3885df24be21019a57.js"></script></div>
+<h1 id="general-tools">General Tools</h1>
+<h2 id="load_image"><code>load_image()</code></h2>
+<p><code>load_image</code> is intended to </p>
+<h1 id="retiling-rasters">Retiling Rasters</h1>
+<h2 id="retile"><code>retile()</code></h2>
+<p><code>Retile</code> is aimed to be a faster, easier to use version of <code>gdal_retile.py</code>, being able to be used in the form of a python function, and easily transferred to be used in an application or with argparse. It has the ability to output both a numpy array of the original raster, and the ability to save the resulting tiles. <code>Retile</code> is multithreaded, meaning it is much faster than it's older gdal sibling, which unfortunately only runs on 1 thread. </p>
+<p>Just to give a comparison, this implementation </p>
+<h4 id="get_tiles"><code>get_tiles</code></h4>
+<h1 id="polygonizing-rasters">Polygonizing Rasters</h1>
+<h3 id="polygonize"><code>polygonize()</code></h3></div>
             </div>
         </div>
 

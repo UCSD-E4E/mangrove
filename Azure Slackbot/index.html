@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>CNN - E4E Mangrove Monitoring</title>
+        <title>Azure Slack Bot - E4E Mangrove Monitoring</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -39,12 +39,12 @@
                             <li class="navitem">
                                 <a href="../About/" class="nav-link">About</a>
                             </li>
-                            <li class="dropdown active">
+                            <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">ML <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active">CNN</a>
+    <a href="../CNN/" class="dropdown-item">CNN</a>
 </li>
                                     
 <li>
@@ -56,7 +56,7 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -73,7 +73,7 @@
 </li>
                                     
 <li>
-    <a href="../Azure%20Slackbot/" class="dropdown-item">Azure Slack Bot</a>
+    <a href="./" class="dropdown-item active">Azure Slack Bot</a>
 </li>
                                 </ul>
                             </li>
@@ -99,12 +99,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../About/" class="nav-link">
+                                <a rel="prev" href="../GIS%20Utils/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../UNet/" class="nav-link">
+                                <a rel="next" href="../Misc/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -126,13 +126,16 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="2"><a href="#cnn-tile-based-classification" class="nav-link">CNN Tile Based Classification</a>
+            <li class="nav-item" data-level="1"><a href="#mangrove-azure-updates" class="nav-link">Mangrove Azure Updates</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#turning-on-and-off-vms" class="nav-link">Turning on and off VMs</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            
-            <li class="nav-item" data-level="2"><a href="#tensorflow-20-notebooks" class="nav-link">Tensorflow 2.0 Notebooks</a>
+            <li class="nav-item" data-level="2"><a href="#autoshutdown" class="nav-link">Autoshutdown</a>
               <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -140,15 +143,37 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h2 id="cnn-tile-based-classification">CNN Tile Based Classification</h2>
-<p><img alt="alt text" src="../images/Site5_Visualization.png" /></p>
-<h2 id="tensorflow-20-notebooks">Tensorflow 2.0 Notebooks</h2>
-<p>Upgrades to Tensorflow 2.0 brings much more optimization compared to Tensorflow 1.0 and many more models, Seeing up to 10x increases in classification speeds, plus the code is much easier to read and know what is going on! View the below notebooks to get an intro into the code</p>
-<h3 id="retrain-tf2-notebook">Retrain (TF2 Notebook)</h3>
-<script src="https://gist.github.com/dillhicks/1809216c8e49db9ae25e2b658b95bdd8.js"></script>
-
-<h3 id="autoclass-tf2-notebook">Autoclass (TF2 Notebook)</h3>
-<script src="https://gist.github.com/dillhicks/660263b03751ea3885df24be21019a57.js"></script></div>
+<h1 id="mangrove-azure-updates">Mangrove Azure Updates</h1>
+<p>Mangrove Azure Updates is a slack app developed to make it easier to manage VMs used for data processing and to recieved status updates on those VMs.</p>
+<p><img alt="Cover" src="../slackbot/cover.PNG" /></p>
+<h2 id="turning-on-and-off-vms">Turning on and off VMs</h2>
+<p>You can turn of VMs using the commands given below. You can type any of the below commands to turn on and off a specific VM in any channel. </p>
+<p><img alt="commands" src="../slackbot/commands.PNG" />
+</br></p>
+<p><strong>Note:</strong> After you type in the above commands, wait at least a minute before trying to log into the VM, as it needs time to start up! If the request to start the VM is successful, you should get a message that is visible only to you, with the specific job id of the VM startup job given to Azure. <strong>Below is an example message of one that you should recieve upon a successful job request.</strong></p>
+<p><img alt="jobid" src="../slackbot/jobid.PNG" /></p>
+<p></br></p>
+<h2 id="autoshutdown">Autoshutdown</h2>
+<p>Each VM is set to shut down every midnight (12:00 AM PST). If you are doing overnight processing, make sure to go to the <strong>#azure</strong> channel in order to see updates on automatic shutdowns. Below is an example image for a VM that is left on. <strong>This automatic message will be posted 30 minutes before shutdown, (~11:30 PM PST)</strong>, so make sure to stay online to ensure that you can see this message. </p>
+<p><img alt="update" src="../slackbot/message.PNG" /></p>
+<p>You can either skip the automatic shutdown, with the VM staying on until the next automatic shutdown. If you just need time to save your work and shut down, you can also delay the automatic shutdown by 1 or two hours by clicking on the links in the message sent by @Mangrove Azure Updates. </p>
+<p></br>
+</br>
+</br></p>
+<table>
+<thead>
+<tr>
+<th>Author</th>
+<th>Email</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dillon Hicks</td>
+<td>sdhicks@ucsd.edu</td>
+</tr>
+</tbody>
+</table></div>
             </div>
         </div>
 
