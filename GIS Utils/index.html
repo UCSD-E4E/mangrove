@@ -156,6 +156,19 @@
             
             <li class="nav-item" data-level="1"><a href="#polygonizing-rasters" class="nav-link">Polygonizing Rasters</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#polygonize" class="nav-link">polygonize()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#downsampling-rasters" class="nav-link">Downsampling Rasters</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#downsample_raster" class="nav-link">downsample_raster()</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -165,6 +178,7 @@
 
 <h1 id="introduction">Introduction</h1>
 <p>GIS Utils is a python package aimed to improve on many of the inabilities of GDAL Python scripts to be faster, properly multithreaded, and much easier to use with a ML workflow than GDAL on its own. GIS Utils provides a few high level abstractions of GIS workflows aimed to be used for ML workflows, such as tilizing of images, raster to image conversions, and a few other tools specific to our workflow in particular. </p>
+<p></br></p>
 <h1 id="requirements">Requirements</h1>
 <p>In order to use GIS Utils, the below python libraries must be installed:</p>
 <p><code>rasterio</code>
@@ -185,16 +199,142 @@
 !pip install geopandas
 </code></pre>
 
+<p></br></p>
 <h1 id="general-tools">General Tools</h1>
 <h2 id="load_image"><code>load_image()</code></h2>
-<p><code>load_image</code> is intended to </p>
+<p><code>load_image</code> is intended as a quick wrapper to of some rasterio functions to directly get the generator of the image and some of the metainformation of the original image. This function should typically be used in order to </p>
+<p><strong>Inputs:</strong></p>
+<p><code>file</code> - Filelocation of input raster</p>
+<p><strong>Outputs:</strong></p>
+<p><code>img</code> - Image generator from the specified input raster</p>
+<p><code>meta</code> - Meta information from the specified input raster</p>
+<p></br></p>
+<h3 id="get_area"><code>get_area()</code></h3>
+<p><code>get_area</code> simply gets the area from an input shapefile with the specified CRS from a geopandas dataframe of an input shapefile. </p>
+<p><strong>Inputs:</strong></p>
+<p><code>gpd_df</code> - Filelocation of input raster</p>
+<p><code>crs</code> - Projection for which to find the area - note the resulting area can differ greatly between different types of projections, so try to use the same projection in your further calculations. Defaults to EPSG 3857 (<code>'epsg:3857'</code>).</p>
+<p><strong>Outputs:</strong></p>
+<p>The area of the polygon(s) in m^2. In order to convert this to km^2, divide this number by 10**6.</p>
+<p></br></p>
 <h1 id="retiling-rasters">Retiling Rasters</h1>
 <h2 id="retile"><code>retile()</code></h2>
 <p><code>Retile</code> is aimed to be a faster, easier to use version of <code>gdal_retile.py</code>, being able to be used in the form of a python function, and easily transferred to be used in an application or with argparse. It has the ability to output both a numpy array of the original raster, and the ability to save the resulting tiles. <code>Retile</code> is multithreaded, meaning it is much faster than it's older gdal sibling, which unfortunately only runs on 1 thread. </p>
-<p>Just to give a comparison, this implementation </p>
-<h4 id="get_tiles"><code>get_tiles</code></h4>
+<p>Just to give a comparison, this implementation is quicker than <code>gdal_retile.py</code>, especially when you don't save output files and have more threads to access!</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gdal_retile.py</code></td>
+<td>13 sec</td>
+</tr>
+<tr>
+<td><code>retile()</code> (files = True)</td>
+<td>12.5 sec</td>
+</tr>
+<tr>
+<td><code>retile()</code> (files = False)</td>
+<td>8.25 sec</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inputs:</strong></p>
+<p><code>img</code> - Image generator from the specified input raster - from <code>load_image</code></p>
+<p><code>meta</code> - Meta information from the specified input raster - from <code>load_image</code></p>
+<p><code>out_path</code> - Output path for image tiles, note that you need to create this folder - defaults to <code>'images/'</code></p>
+<p><code>files</code> - Whether to output image tiles to the specified <code>out_path</code> - defaults to False</p>
+<p><code>width</code> - Width of output tiles in pixels - defaults to 256</p>
+<p><code>height</code> - Height of output tiles in pixels - defaults to 256</p>
+<p><strong>Outputs:</strong></p>
+<p><code>results</code> - Numpy array containing tiles </p>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="python">file = &quot;lap_2018-07_site05_120m_RGB_cc.tif&quot; 
+img, meta = load_image(file)
+results = generate_tiles(img,meta,files=False)
+</code></pre>
+
+<p></br></p>
+<h3 id="get_tiles"><code>get_tiles()</code></h3>
+<p>Get tiles is a function to generate the bounds of the image tiles generated in <code>retile</code>.</p>
+<p><strong>Inputs:</strong></p>
+<p><code>ds</code> - Image generator from the specified input raster - from <code>load_image</code></p>
+<p><code>width</code> - Width of output tiles in pixels - defaults to 256</p>
+<p><code>height</code> - Height of output tiles in pixels - defaults to 256</p>
+<p><strong>Outputs:</strong></p>
+<p><code>out_window, out_transform</code> - A tuple of lists, with each list containing each tiles respective window and transform</p>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="python">window, transform = get_tiles(img, width, height)
+tile = img.read(window=window)
+</code></pre>
+
+<p></br></p>
 <h1 id="polygonizing-rasters">Polygonizing Rasters</h1>
-<h3 id="polygonize"><code>polygonize()</code></h3></div>
+<h2 id="polygonize"><code>polygonize()</code></h2>
+<p>Polygonize is intended to be a much faster implementation of <code>gdal_polygonize.py</code>. I'm not going to bring out a chart like I did with <code>retile</code>, but expect 30x increases in processing time compared to  <code>gdal_polygonize.py</code> :). </p>
+<p><strong>Inputs:</strong></p>
+<p><code>img</code>: Image generator from the specified input raster - from <code>load_image</code>
+<code>out_file</code>: Output filename of shapefile to write
+<code>band</code>: Band in which to make polygons from - defaults to 4 (Alpha layer)</p>
+<p><strong>Outputs:</strong> 
+<code>geopandas_df</code>: Geopandas dataframe containing the geometries from the input raster band</p>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="python">file = &quot;/content/downsampled_m_psc_2018-05_site09_120m_RGB.tif&quot;
+img, meta = load_image(file)
+df = polygonize(img,  out_file=&quot;/content/test.shp&quot;, band=4)
+</code></pre>
+
+<p></br></p>
+<h3 id="fixing-polygonized-rasters">Fixing Polygonized Rasters:</h3>
+<p>When generating polygons from the alpha layer, our scripts will generate polygons for all pixel values in the original raster (ex. will make polygons for 0 and 255 alpha values), so the functions below are aimed to fix these and only generate polygons for the specified class of polygons.</p>
+<p></br></p>
+<h4 id="fix_shp"><code>fix_shp()</code></h4>
+<p>This is used for the above "fixing" of polygons created from <code>polygonize()</code> as explained above. </p>
+<p><strong>Inputs:</strong></p>
+<p><code>shp</code>: geopandas dataframe of the shapefile outputted from <code>polygonize()</code></p>
+<p><code>filename</code>: of input shapefile from <code>polygonize()</code></p>
+<p><strong>Outputs:</strong></p>
+<p><code>shp</code>: geopandas dataframe of fixed polygons</p>
+<p></br></p>
+<h4 id="fix_gdalshp"><code>fix_gdalshp()</code></h4>
+<p>Similarly, this is used for fixing the polygons when generated from <code>gdal_polygonize.py</code></p>
+<p><strong>Inputs:</strong></p>
+<p><code>shp</code>: geopandas dataframe of the shapefile outputted from <code>gdal_polygonize.py</code></p>
+<p><code>filename</code>: of input shapefile from <code>gdal_polygonize.py</code></p>
+<p><strong>Outputs:</strong>
+<code>shp</code>: geopandas dataframe of fixed polygons</p>
+<p></br></p>
+<h1 id="downsampling-rasters">Downsampling Rasters</h1>
+<h2 id="downsample_raster"><code>downsample_raster()</code></h2>
+<p>As the name intends, this is for downsampling rasters. This has been used previously in order to generate previews for all of our rasters in the drive that are geolocated and can easily be used for testing. </p>
+<p><strong>Inputs:</strong></p>
+<p><code>img</code> - Image generator from the specified input raster - from <code>load_image</code></p>
+<p><code>downscale_factor</code> - How much to downsample (or upsample) your image. An appropriate input would be <code>1/25</code> , <code>1/5</code>, <code>10</code>, etc.</p>
+<p><code>out_file</code> - Output filename of downsampled raster to write</p>
+<p><strong>Outputs:</strong>
+<code>resampled</code> - Output numpy array of the resampled raster</p>
+<p><code>transform</code> - Transform of the resampled raster</p>
+<p></br>
+</br>
+</br></p>
+<table>
+<thead>
+<tr>
+<th>Author</th>
+<th>Email</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dillon Hicks</td>
+<td>sdhicks@ucsd.edu</td>
+</tr>
+</tbody>
+</table></div>
             </div>
         </div>
 
