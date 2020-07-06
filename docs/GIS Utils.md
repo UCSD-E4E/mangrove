@@ -212,6 +212,11 @@ As the name intends, this is for downsampling rasters. This has been used previo
 
 `transform` - Transform of the resampled raster
 
+# Demo Notebook
+
+<script src="https://gist.github.com/dillhicks/2d0e5a02a65608382dcebafae6476ba1.js"></script>
+
+
 </br>
 </br>
 </br>
