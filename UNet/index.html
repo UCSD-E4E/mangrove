@@ -12,7 +12,7 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atelier-dune-light.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
@@ -125,12 +125,237 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#requirements" class="nav-link">Requirements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#file-structure" class="nav-link">File Structure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#using-the-unet" class="nav-link">Using the UNet</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#unetpy" class="nav-link">unet.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#helper-scripts" class="nav-link">Helper Scripts</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#create_seg_datasetpy" class="nav-link">create_seg_dataset.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#gen_seg_labelspy" class="nav-link">gen_seg_labels.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#raster_maskpy" class="nav-link">raster_mask.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#split_vectorpy" class="nav-link">split_vector.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h1 id="introduction">Introduction</h1>
+<p>This UNet uses a convolutional network backbone chosen by the user to label 
+pixels of an input image as either "mangrove" or "non-mangrove" 
+(Semantic Segmentation)</p>
+<p>The UNet is a group of four scripts and <code>unet.py</code></p>
+<p>For <strong>training, testing, and generating predictions</strong> one only needs to run 
+<code>unet.py</code><br />
+<br /> </p>
+<h1 id="requirements">Requirements</h1>
+<p>In order to use <code>unet.py</code> or any of the associated helper scripts: </p>
+<ul>
+<li><code>create_seg_dataset.py</code> </li>
+<li><code>gen_seg_labels.py</code> </li>
+<li><code>raster_mask.py</code> </li>
+<li><code>split_vector.py</code></li>
+</ul>
+<p>The python libraries below must be installed:  </p>
+<p><code>keras</code>
+<code>tensorflow_gpu&gt;=2.2</code> or <code>tensorflow&gt;=2.2</code> 
+(this is dependent on your 
+<a href="https://www.tensorflow.org/install/gpu?hl=csi">machine/gpu</a>)  </p>
+<p><code>segmentation_models</code>
+<code>Fiona</code>
+<code>rasterio</code>
+<code>gdal</code></p>
+<p><br /> </p>
+<p><strong>Note</strong>: If you have never used the GDAL libaries before,
+use the following commands:  </p>
+<p><code>apt-get install libgdal-dev</code>
+<code>apt-get install python-gdal</code><br />
+<br />   </p>
+<p>We recommend using Google Colab or an Anaconda Environment as this package also
+requires many of the packages preincluded in those environments:</p>
+<p><code>tqdm</code>
+<code>numpy</code>
+<code>matplotlib</code>
+<code>Pillow</code>
+<code>joblib</code>  </p>
+<p><code>ml-mangrove/Segmentation/requirements.txt</code> will have a <strong>version complete</strong> 
+list of the neccesary libaries<br />
+<br /></p>
+<h1 id="file-structure">File Structure</h1>
+<p>In order to properly use the current build of <code>unet.py</code> and have all functions 
+write to the correct directories, follow these rules and use these EXACT 
+directory names:</p>
+<ul>
+<li><code>unet.py</code> and 4 helper scripts MUST be in same directory, for this example 
+it will be <code>/Segmentation</code></li>
+<li>In the parent directory of <code>/Segmentation</code>, lets call it <code>/ml-mangrove</code>,
+create a directory <code>/ml-mangrove/dataset</code> </li>
+<li>In <code>/dataset</code>, create directories <code>/dataset/training</code> or <code>/dataset/testing</code>
+depending on intended use of <code>unet.py</code> </li>
+<li>For training, create <code>/training/images</code> for orthomosaics,  and 
+<code>/training/vectors</code> for shapefiles </li>
+<li>For testing create <code>/testing/images</code> for orthomosaics, and <code>/testing/output</code>
+for output rasters</li>
+</ul>
+<h1 id="using-the-unet">Using the UNet</h1>
+<h2 id="unetpy"><code>unet.py</code></h2>
+<p><code>unet.py</code> takes input orthomosaic(s) and shapefile(s) pairs for training a 
+binary mangrove classifier, and outputs a weight file to be used for testing. 
+When testing this script takes input orthomosaic(s) and a weight file and
+outputs pieces (tiles) of the original orthomosaic that have been masked
+with the masks predicted by the UNet.</p>
+<p><strong>Inputs:</strong>  </p>
+<p><code>width</code> - size of tiles in pixels (used in retiling)</p>
+<p><code>input_rasters</code> - filepath(s) to orthomosaic <code>.tif</code></p>
+<p><code>input_vectors</code> (required for training) - filepath(s) to shapefile for 
+orthomosaic <code>.shp</code> (ordering should correspond with input rasters)  </p>
+<p><code>train</code>: include this flag if training the UNet</p>
+<p><code>test</code>: include this flag if testing the UNet</p>
+<p><code>weights</code>: filepath to weights file <code>.h5</code>, write location if training, or to 
+use for testing </p>
+<p><code>backbone</code>: name of backbone to use ex: <code>resnet34</code> or <code>vgg16</code>  </p>
+<p><strong>Note:</strong> shapefile <code>.shp</code> must be in the SAME directory as <code>.shx</code>, <code>.dbf</code>, 
+<code>.prj</code>, <code>.qpj</code>, and <code>.cpg</code> files of the SAME name<br />
+<br /></p>
+<p><strong>Training the UNet</strong><br />
+Example Usage:<br />
+<code>python3 unet.py --width 256 --input_rasters 
+../dataset/training/images/ortho1.tif ../dataset/training/images/ortho2.tif
+--input_vectors ../dataset/training/vectors/shapefile1.shp  
+../dataset/training/vectors/shapefile2.shp --train --weights 
+../dataset/training/weights/new_weight.h5 --backbone vgg16</code>  </p>
+<p><strong>Testing the UNet</strong><br />
+Example Usage:<br />
+<code>python3 unet.py --width 256 --input_rasters 
+../dataset/testing/images/ortho1.tif ../dataset/testing/images/ortho2.tif
+--test --weights ../dataset/testing/weights/weight_vgg16.h5 --backbone vgg16</code>  </p>
+<h1 id="helper-scripts">Helper Scripts</h1>
+<p>The following scripts are called upon either directly or indirectly by 
+<code>unet.py</code>
+<br />  </p>
+<h2 id="create_seg_datasetpy"><code>create_seg_dataset.py</code></h2>
+<p><code>create_seg_dataset.py</code> uses the provided map files to place pairs of images
+and annotations in their proper directories</p>
+<p><strong>Inputs:</strong> </p>
+<p><code>map_files</code> - space seperated txt file(s) with image path data</p>
+<p><code>dir_name</code> - directory above <code>/images</code> and <code>/annotations</code> directories 
+(training or testing)</p>
+<p><code>include_tif</code> - boolean that indicates <code>.tif</code> files are to be moved into 
+<code>/images</code> as well<br />
+<br /></p>
+<p><strong>Example Usage:</strong>  </p>
+<p><code>python3 create_seg_dataset.py --map_files ../dataset/Site_1/map.txt 
+ ../dataset/Site_4/map.txt</code><br />
+<br /></p>
+<h2 id="gen_seg_labelspy"><code>gen_seg_labels.py</code></h2>
+<p><code>gen_seg_labels.py</code> creates <code>/images</code> and <code>/labels</code> directories, calls
+<code>gdal_retile.py</code> on both the <code>raster_file</code> and <code>mask_file</code>, and creates map 
+file that pairs images and labels (created during retiling). </p>
+<p><strong>Inputs:</strong> </p>
+<p><code>width</code> - size of tiles in pixels (used in retiling)</p>
+<p><code>input_raster</code> - filepath to orthomosaic (.tif)</p>
+<p><code>input_vector</code> - filepath to shapefile for orthomosaic (.shp)</p>
+<p><code>input_mask</code> - filepath to mask file if provided (otherwise 
+<code>raster_mask.py</code> is called)</p>
+<p><code>out_dir</code> - directory above <code>/images</code> and <code>/labels</code> directories and map file</p>
+<p><code>convert</code> - boolean that indicates (retiled) labels/images are converted from 
+<code>.tif</code> to <code>.jpg</code></p>
+<p><code>destructive</code> - boolean that indicates <code>.tif</code> files are deleted after 
+conversion to <code>.jpg</code></p>
+<p><strong>Note:</strong> shapefile <code>.shp</code> must be in the SAME directory as <code>.shx</code>, <code>.dbf</code>, 
+<code>.prj</code>, <code>.qpj</code>, and <code>.cpg</code> files of the SAME name
+<br /></p>
+<p><strong>Example Usage:</strong>  </p>
+<p><code>python3 gen_seg_labels.py --width 256 --input_raster test_data/test.tif 
+ --input_mask test_data/masks/mask_binary.tif -c -d</code></p>
+<p>Or with a .shp file: <code>python3 gen_seg_labels.py --width 256 --input_raster 
+ test_data/test.tif --input_vector test_data/test.shp</code><br />
+<br /></p>
+<h2 id="raster_maskpy"><code>raster_mask.py</code></h2>
+<p><code>raster_mask.py</code> (if vectors not split) calls <code>split_vector.py</code> to 
+seperate <code>input_vector</code> into <code>m.shp</code> and <code>nm.shp</code> and then creates a binary 
+pixel mask for mangrove v non-mangrove (<code>mask_binary.tif</code> and <code>mask_binary.png</code>
+). Can easily be extended to use multiple <code>.shp</code> files by creating 
+corresponding numpy arrays and combining them</p>
+<p><strong>Note:</strong> this function can bog down machines with insufficent ram (&lt;16gb) </p>
+<p><code>rasterio</code> Documentation:<br />
+<a href="https://rasterio.readthedocs.io/en/latest/topics/masks.html">Masks</a><br />
+<a href="https://rasterio.readthedocs.io/en/latest/topics/masking-by-shapefile.html">Masking by shapefile</a></p>
+<p><strong>Inputs:</strong> </p>
+<p><code>raster_filepath</code> - filepath to orthomosaic <code>.tif</code></p>
+<p><code>vector_filepath</code> - filepath to original shapefile <code>.shp</code>   </p>
+<p><strong>Note:</strong> shapefile <code>.shp</code> must be in the SAME directory as <code>.shx</code>, <code>.dbf</code>, 
+<code>.prj</code>, <code>.qpj</code>, and <code>.cpg</code> files of the SAME name
+<br /></p>
+<p><strong>Example Usage:</strong> </p>
+<p><code>python3 raster_mask.py --raster_filepath test_data/test.tif --vector_filepath 
+test_data/test.shp</code></p>
+<p><br /></p>
+<h2 id="split_vectorpy"><code>split_vector.py</code></h2>
+<p><code>split_vector.py</code> creates <code>/m</code> and <code>/nm</code> directories and splits a shapefile 
+<code>.shp</code> into "mangrove" and "non-mangrove" shapefiles <code>.shp</code>.</p>
+<p><strong>Inputs:</strong> </p>
+<p><code>filepath</code> - filepath to original shapefile <code>.shp</code> to be split. </p>
+<p><strong>Note:</strong> shapefile <code>.shp</code> must be in the SAME directory as <code>.shx</code>, <code>.dbf</code>, 
+<code>.prj</code>, <code>.qpj</code>, and <code>.cpg</code> files of the SAME name
+<br /></p>
+<p><strong>Example Usage:</strong>  </p>
+<p><code>python3 split_vector.py test_data/test.shp</code></p>
+<p><br /></p>
+<table>
+<thead>
+<tr>
+<th>Author</th>
+<th>Email</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sam Cole</td>
+<td>scole02@calpoly.edu</td>
+</tr>
+</tbody>
+</table>
+<!---
+
+unet.py 
+
+--></div>
             </div>
         </div>
 

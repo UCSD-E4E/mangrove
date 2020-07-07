@@ -1,16 +1,36 @@
 html {
-    /* The nav header is 2rem + 22px high, plus 20px for the margin-top of the
+    /* csslint ignore:start */
+    /* The nav header is 3.5rem high, plus 20px for the margin-top of the
        main container. */
-    scroll-padding-top: calc(2rem + 22px + 20px);
+    scroll-padding-top: calc(3.5rem + 20px);
+    /* csslint ignore:end */
+}
+
+/* Replacement for `body { background-attachment: fixed; }`, which has
+   performance issues when scrolling on large displays. See #1394. */
+body::before {
+    content: ' ';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #f8f8f8;
+    background: url(../img/grid.png) repeat-x;
+    will-change: transform;
+    z-index: -1;
 }
 
 body > .container {
     margin-top: 20px;
+    min-height: 400px;
 }
 
-.navbar.fixed-top {
+.navbar.fixed-top { /* csslint allow: adjoining-classes */
+    /* csslint ignore:start */
     position: -webkit-sticky;
     position: sticky;
+    /* csslint ignore:end */
 }
 
 .source-links {
@@ -19,36 +39,59 @@ body > .container {
 
 .col-md-9 img {
     max-width: 100%;
+    display: inline-block;
+    padding: 4px;
+    line-height: 1.428571429;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px auto 30px auto;
 }
 
-pre, code {
-    background: #f8f5f0;
-    color: #6e6b5e;
-    border: 1px solid rgba(223,215,202,0.75);
-    border-radius: 0.25rem;
+h1 {
+    color: #444;
+    font-weight: 400;
+    font-size: 42px;
 }
 
-pre {
-    padding: 0.75em;
+h2, h3, h4, h5, h6 {
+    color: #444;
+    font-weight: 300;
+}
+
+hr {
+    border-top: 1px solid #aaa;
+}
+
+pre, .rst-content tt {
+    max-width: 100%;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+    color: #333;
+    overflow-x: auto;
+}
+
+code.code-large, .rst-content tt.code-large {
+    font-size: 90%;
 }
 
 code {
-    padding: 1px 3px;
+    padding: 2px 5px;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 pre code {
+    display: block;
+    background: transparent;
     border: none;
-    /* Override styles from hljs theme */
-    background: transparent !important;
-    padding: 0 !important;
-}
-
-a code {
-    color: #93c54b;
-}
-
-a:hover code {
-    color: #6b9430;
+    white-space: pre;
+    word-wrap: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
 }
 
 kbd {
@@ -61,6 +104,14 @@ kbd {
     box-shadow: inset 0 -1px 0 rgba(0,0,0,.25);
 }
 
+a code {
+    color: #2FA4E7;
+}
+
+a:hover code, a:focus code {
+    color: #157AB5;
+}
+
 footer {
     margin-top: 30px;
     margin-bottom: 10px;
@@ -69,55 +120,7 @@ footer {
 }
 
 .modal-dialog {
-    margin-top: 70px;
-}
-
-/* Style the admonitions. */
-
-.admonition {
-    margin-bottom: 1rem;
-    border: 1px solid rgba(223,215,202,0.75);
-    border-radius: 0.25rem;
-}
-
-.admonition > .admonition-title {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    background: rgba(248,245,240,0.25);
-    border-bottom: 1px solid rgba(223,215,202,0.75);
-    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
-    font-size: 1rem;
-}
-
-.admonition > * {
-    margin-left: 1rem;
-    margin-right: 1rem;
-}
-
-.admonition > *:not(.admonition-title):first-of-type,
-.admonition > .admonition-title + * {
-    margin-top: 1rem;
-}
-
-.admonition > *:last-child {
-    margin-bottom: 1rem;
-}
-
-/* Style each kind of admonition. */
-
-.admonition.note > .admonition-title {
-    background: #5dbee4;
-    color: #fff;
-}
-
-.admonition.warning > .admonition-title {
-    background: #f59b69;
-    color: #fff;
-}
-
-.admonition.danger > .admonition-title {
-    background: #e17c77;
-    color: #fff;
+    margin-top: 60px;
 }
 
 /*
@@ -127,20 +130,20 @@ footer {
  * sections of docs content.
  */
 
-.bs-sidebar.affix {
+.bs-sidebar.affix { /* csslint allow: adjoining-classes */
+    /* csslint ignore:start */
     position: -webkit-sticky;
     position: sticky;
-    /* The nav header is 2rem + 22px high, plus 20px for the margin-top of the
+    /* csslint ignore:end */
+    /* The nav header is 3.5rem high, plus 20px for the margin-top of the
        main container. */
-    top: calc(2rem + 22px + 20px);
+    top: calc(3.5rem + 20px);
 }
 
-.bs-sidebar.card {
+.bs-sidebar.card { /* csslint allow: adjoining-classes */
     padding: 0;
-}
-
-.bs-sidebar > .card {
-    background-color: #f8f5f0 !important;
+    max-height: 90%;
+    overflow-y: auto;
 }
 
 /* Toggle (vertically flip) sidebar collapse icon */
@@ -152,7 +155,7 @@ footer {
     transform: scale(1, -1);
 }
 
-.bs-sidebar .navbar-toggler.collapsed span {
+.bs-sidebar .navbar-toggler.collapsed span { /* csslint allow: adjoining-classes */
     -moz-transform: scale(1, 1);
     -webkit-transform: scale(1, 1);
     -o-transform: scale(1, 1);
@@ -200,6 +203,8 @@ footer {
 }
 
 .headerlink {
+    font-family: FontAwesome;
+    font-size: 14px;
     display: none;
     padding-left: .5em;
 }
@@ -208,16 +213,49 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     display:inline-block;
 }
 
+
+
+.admonition {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.admonition.note { /* csslint allow: adjoining-classes */
+    color: #3a87ad;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.admonition.warning { /* csslint allow: adjoining-classes */
+    color: #c09853;
+    background-color: #fcf8e3;
+    border-color: #fbeed5;
+}
+
+.admonition.danger { /* csslint allow: adjoining-classes */
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+}
+
+.admonition-title {
+    font-weight: bold;
+    text-align: left;
+}
+
 @media (max-width: 991.98px) {
-    .navbar-collapse.show {
+    .navbar-collapse.show { /* csslint allow: adjoining-classes */
         overflow-y: auto;
-        max-height: calc(100vh - 2rem - 22px);
+        max-height: calc(100vh - 3.5rem);
     }
 }
 
-.dropdown-item.open {
-    color: #8E8C84;
-    background-color: #F8F5F0;
+.dropdown-item.open { /* csslint allow: adjoining-classes */
+    color: #fff;
+    background-color: #2FA4E7;
 }
 
 .dropdown-submenu > .dropdown-menu {
@@ -241,13 +279,13 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
 }
 
 .dropdown-submenu:hover > a::after {
-    border-left-color: #404040;
+    border-left-color: #fff;
 }
 
 @media (min-width: 992px) {
     .dropdown-menu {
         overflow-y: auto;
-        max-height: calc(100vh - 2rem - 22px);
+        max-height: calc(100vh - 3.5rem);
     }
 
     .dropdown-submenu {
@@ -255,10 +293,21 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     }
 
     .dropdown-submenu > .dropdown-menu {
+        /* csslint ignore:start */
         position: fixed !important;
+        /* csslint ignore:end */
         margin-top: -9px;
         margin-left: -2px;
         border-width: 1px;
         padding: 0.5rem 0;
+    }
+
+    .dropdown-submenu.pull-left { /* csslint allow: adjoining-classes */
+        float: none;
+    }
+
+    .dropdown-submenu.pull-left > .dropdown-menu { /* csslint allow: adjoining-classes */
+        left: -100%;
+        margin-left: 10px;
     }
 }
