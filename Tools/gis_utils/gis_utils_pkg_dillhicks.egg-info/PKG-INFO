@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: gis-utils-pkg-dillhicks
+Version: 0.0.1
+Summary: GIS Utilities
+Home-page: https://github.com/UCSD-E4E/mangrove/tree/master/Tools/gis_utils
+Author: Dillon Hicks
+Author-email: sdhicks@ucsd.edu
+License: UNKNOWN
+Description: # GIS Utils 
+        
+        GIS Utilities for ML Workflows
+        
+        Link to documentation: 
+        https://ucsd-e4e.github.io/mangrove/GIS%20Utils/
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

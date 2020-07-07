@@ -214,7 +214,7 @@ As the name intends, this is for downsampling rasters. This has been used previo
 
 # Demo Notebook
 
-<script src="https://gist.github.com/dillhicks/2d0e5a02a65608382dcebafae6476ba1.js"></script>
+<script src="https://gist.github.com/dillhicks/14b4f8d95651678326f4bc1f3e0795ce.js"></script>
 
 
 </br>
