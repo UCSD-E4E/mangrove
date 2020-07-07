@@ -36,6 +36,12 @@ pip install --upgrade pip
 pip install mkdocs
 ```   
 
+In addition, in order to use the mkdocs theme that we use with our site please install it with: 
+
+```console
+pip install mkdocs-bootswatch
+```
+
 Next, `cd` into the mangrove folder which should contain docs, Tools, etc., and use the following to view the site locally
 
 ```console
