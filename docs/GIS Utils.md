@@ -31,6 +31,13 @@ For your convenience, we have a series of `pip` and `apt-get` commands that you 
 !pip install geopandas
 ```
 
+**Once the previous libraries have been installed, you can simply use pip to install GIS Utils to your python environment.** 
+
+```console
+pip install -i https://test.pypi.org/simple/ gis-utils-pkg-dillhicks==0.0.1
+```
+
+
 </br>
 
 # General Tools
