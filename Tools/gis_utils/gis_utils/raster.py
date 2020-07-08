@@ -85,7 +85,7 @@ def retile(img, meta, out_path = 'images/', files=False, width=256, height=256):
 
     #getting tiles and setting filenames for the outputy files
     output_filename = 'tile_{}-{}.tif'
-    window, transform = get_tiles(img, width, height)
+    window, transform = get_tiles(img, width=width, height=height)
 
     #locking read and write since they are not thread safe 
     read_lock = threading.Lock()

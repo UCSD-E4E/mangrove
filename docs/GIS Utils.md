@@ -34,7 +34,7 @@ For your convenience, we have a series of `pip` and `apt-get` commands that you 
 **Once the previous libraries have been installed, you can simply use pip to install GIS Utils to your python environment.** 
 
 ```console
-pip install -i https://test.pypi.org/simple/ gis-utils-pkg-dillhicks==0.0.1
+pip install -i https://test.pypi.org/simple/ gis-utils-pkg-dillhicks==0.0.2
 ```
 
 
@@ -105,13 +105,22 @@ Just to give a comparison, this implementation is quicker than `gdal_retile.py`,
 
 **Outputs:**
 
-`results` - Numpy array containing tiles 
+`results` - List containing numpy array tiles 
+
+**Note:** The tiles outputted have the standard rasterio shape with `(bands, rows, columns)`, meanwhile many image processing tools such as scikit-image and Pillow use an image shape of `(columns,bands,rows)`. You can use `reshape_as_raster(array)` and `reshape_as_image(array)` to convert to rasterio format and image processing format, respectively. 
+
+```python
+from rasterio.plot import reshape_as_raster, reshape_as_image
+```
+
+
 
 **Example Usage:**
 ```python
 file = "lap_2018-07_site05_120m_RGB_cc.tif" 
 img, meta = load_image(file)
 results = generate_tiles(img,meta,files=False)
+tile = reshape_as_image(results[0])
 ```
 
 </br>
