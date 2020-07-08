@@ -70,3 +70,10 @@ def fix_shp(shp=None,filename=None):
     return shp
 
 
+def rasterize(shp,img,meta,geometry="geometry",label="label"):
+    size = (img.height,img.width)
+    out_array = np.zeros(size)
+    shapes = ((geom,value) for geom, value in zip(shp[geometry], shp[label]))
+    burned = features.rasterize(shapes=shapes, fill=0, out=out_array, transform=img.transform)
+
+    return burned
