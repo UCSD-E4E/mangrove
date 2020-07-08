@@ -205,7 +205,7 @@
 </code></pre>
 
 <p><strong>Once the previous libraries have been installed, you can simply use pip to install GIS Utils to your python environment.</strong> </p>
-<pre><code class="console">pip install -i https://test.pypi.org/simple/ gis-utils-pkg-dillhicks==0.0.1
+<pre><code class="console">pip install -i https://test.pypi.org/simple/ gis-utils-pkg-dillhicks==0.0.2
 </code></pre>
 
 <p></br></p>
@@ -260,11 +260,16 @@
 <p><code>width</code> - Width of output tiles in pixels - defaults to 256</p>
 <p><code>height</code> - Height of output tiles in pixels - defaults to 256</p>
 <p><strong>Outputs:</strong></p>
-<p><code>results</code> - Numpy array containing tiles </p>
+<p><code>results</code> - List containing numpy array tiles </p>
+<p><strong>Note:</strong> The tiles outputted have the standard rasterio shape with <code>(bands, rows, columns)</code>, meanwhile many image processing tools such as scikit-image and Pillow use an image shape of <code>(columns,bands,rows)</code>. You can use <code>reshape_as_raster(array)</code> and <code>reshape_as_image(array)</code> to convert to rasterio format and image processing format, respectively. </p>
+<pre><code class="python">from rasterio.plot import reshape_as_raster, reshape_as_image
+</code></pre>
+
 <p><strong>Example Usage:</strong></p>
 <pre><code class="python">file = &quot;lap_2018-07_site05_120m_RGB_cc.tif&quot; 
 img, meta = load_image(file)
 results = generate_tiles(img,meta,files=False)
+tile = reshape_as_image(results[0])
 </code></pre>
 
 <p></br></p>
