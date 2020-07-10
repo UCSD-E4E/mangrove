@@ -76,6 +76,7 @@ The area of the polygon(s) in m^2. In order to convert this to km^2, divide this
 
 # Retiling Rasters
 
+![retile](gis_utils/retile.PNG)
 
 ## `retile()`
 
@@ -151,6 +152,9 @@ tile = img.read(window=window)
 
 # Polygonizing Rasters
 
+![polygonize](gis_utils/polygonize.PNG)
+
+
 ## `polygonize()`
 
 Polygonize is intended to be a much faster implementation of `gdal_polygonize.py`. I'm not going to bring out a chart like I did with `retile`, but expect 30x increases in processing time compared to  `gdal_polygonize.py` :). 
@@ -210,6 +214,9 @@ Similarly, this is used for fixing the polygons when generated from `gdal_polygo
 </br>
 
 # Downsampling Rasters
+
+![downsample](gis_utils/downsample.PNG)
+
 
 ## `downsample_raster()`
 
