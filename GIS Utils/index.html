@@ -227,6 +227,7 @@
 <p>The area of the polygon(s) in m^2. In order to convert this to km^2, divide this number by 10**6.</p>
 <p></br></p>
 <h1 id="retiling-rasters">Retiling Rasters</h1>
+<p><img alt="retile" src="../gis_utils/retile.PNG" /></p>
 <h2 id="retile"><code>retile()</code></h2>
 <p><code>Retile</code> is aimed to be a faster, easier to use version of <code>gdal_retile.py</code>, being able to be used in the form of a python function, and easily transferred to be used in an application or with argparse. It has the ability to output both a numpy array of the original raster, and the ability to save the resulting tiles. <code>Retile</code> is multithreaded, meaning it is much faster than it's older gdal sibling, which unfortunately only runs on 1 thread. </p>
 <p>Just to give a comparison, this implementation is quicker than <code>gdal_retile.py</code>, especially when you don't save output files and have more threads to access!</p>
@@ -288,6 +289,7 @@ tile = img.read(window=window)
 
 <p></br></p>
 <h1 id="polygonizing-rasters">Polygonizing Rasters</h1>
+<p><img alt="polygonize" src="../gis_utils/polygonize.PNG" /></p>
 <h2 id="polygonize"><code>polygonize()</code></h2>
 <p>Polygonize is intended to be a much faster implementation of <code>gdal_polygonize.py</code>. I'm not going to bring out a chart like I did with <code>retile</code>, but expect 30x increases in processing time compared to  <code>gdal_polygonize.py</code> :). </p>
 <p><strong>Inputs:</strong></p>
@@ -323,6 +325,7 @@ df = polygonize(img,  out_file=&quot;/content/test.shp&quot;, band=4)
 <code>shp</code>: geopandas dataframe of fixed polygons</p>
 <p></br></p>
 <h1 id="downsampling-rasters">Downsampling Rasters</h1>
+<p><img alt="downsample" src="../gis_utils/downsample.PNG" /></p>
 <h2 id="downsample_raster"><code>downsample_raster()</code></h2>
 <p>As the name intends, this is for downsampling rasters. This has been used previously in order to generate previews for all of our rasters in the drive that are geolocated and can easily be used for testing. </p>
 <p><strong>Inputs:</strong></p>
