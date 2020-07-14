@@ -25,7 +25,7 @@ Biomass Estimation: <https://github.com/UCSD-E4E/biomass-mangrove>
 |              |                |                 |
 |:------------:|:--------------:|:---------------:|
 | **Dillon Hicks** |  **Kathy Qi**  |   **Arden Ma**    |
-|   *Technical Lead*  <img src="images/dillon1.JPG.jpg" alt="dillon" width="200"/>      |    *Biomass* <br/>   <img src="images/avatar.png" alt="drawing" width="200"/>     |  *UNet Segmentation /CNN* <img src="images/arden.png" alt="drawing" width="200"/>              |
+|   *Technical Lead*  <img src="images/dillon1.JPG.jpg" alt="dillon" width="200"/>      |    *Biomass* <br/>   <img src="images/kathy.jpg" alt="drawing" width="200"/>     |  *UNet Segmentation /CNN* <img src="images/arden.png" alt="drawing" width="200"/>              |
 |   **Matthew Ma**   | **Ashlesha Vaidya** | **David Forman - REU**  |     
 |  *UNet Segmentation*  <img src="images/matthew.JPG" alt="drawing" width="200"/>           |*Semi-Supervised Segmentation* <img src="images/ashlesha.jpg" alt="drawing" width="200"/>    |   *Labeling Tool* <img src="images/david.png" alt="david" width="200"/> |
 | **Nicole Meister - REU** |  **Samuel Cole - REU** | **Thuan Do - HS** |  
