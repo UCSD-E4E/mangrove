@@ -196,3 +196,19 @@ def downsample_raster(dataset, downscale_factor, out_file=None):
             dst.write(resampled)
 
     return resampled, transform
+
+
+
+
+
+def clip(shp_file, image_file):
+    with fiona.open(shp_file, "r") as shapefile:
+        shapes = [feature["geometry"] for feature in shapefile]
+    with rasterio.open(image_file) as src:
+        out_image, out_transform = rasterio.mask.mask(src, shapes, crop=True)
+        out_meta = src.meta
+    out_meta.update({"driver": "GTiff",
+                "height": out_image.shape[1],
+                "width": out_image.shape[2],
+                "transform": out_transform})
+    return out_image, out_meta
