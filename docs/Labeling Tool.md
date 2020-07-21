@@ -2,7 +2,8 @@
     beta internal mangrove release
     Soon we will have a setup tutorial and a document on the computer science behind this labeling tool.
 
-# Download the application
+# Download 
+[the application](https://github.com/UCSD-E4E/mlpaint-mangrove/blob/master/MLPaint.jar) 
 
 ***
 ***
