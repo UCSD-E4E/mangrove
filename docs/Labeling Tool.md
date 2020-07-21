@@ -9,7 +9,7 @@
 ***
 ***
 
-//![The Github download button](./images/GitDownload.png)
+#![The Github download button](./images/GitDownload.png)
 
 # Running the .JAR file
 
