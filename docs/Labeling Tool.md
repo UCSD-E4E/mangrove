@@ -5,7 +5,8 @@
 # Download the application
 
 [Go to the github page and download.](https://github.com/UCSD-E4E/mlpaint-mangrove/blob/master/MLPaint.jar)
-[The Github download button](./images/GitDownload.png)
+
+![The Github download button](./images/GitDownload.png)
 
 # Running the .JAR file
 
