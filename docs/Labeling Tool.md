@@ -10,10 +10,11 @@ Windows: All that should be covered in
 [this video for Windows.](https://www.youtube.com/watch?v=ifBlevULGtM)
 
 Mac: 
-[How to download Java](https://treehouse.github.io/installation-guides/mac/jdk-mac.html)
+
+1) [How to download Java](https://treehouse.github.io/installation-guides/mac/jdk-mac.html)
 You will need at least Java SE 11.
 
-[How to run a .jar file](https://www.youtube.com/watch?v=WkTt70O6SwI)
+2) [How to run a .jar file](https://www.youtube.com/watch?v=WkTt70O6SwI)
 This video explains how to use Mac Terminal to navigate to your file:
     1) Use "ls" to see your directory names
     2) Use "cd" to enter a directory.
