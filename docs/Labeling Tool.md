@@ -5,7 +5,7 @@
 # Download the application
 ***
 ***
-[Go to the github page and find the download button.](https://github.com/UCSD-E4E/mlpaint-mangrove/blob/master/MLPaint.jar)
+[Go to the github page and find the download button (lower right).](https://github.com/UCSD-E4E/mlpaint-mangrove/blob/master/MLPaint.jar)
 ***
 ***
 
