@@ -20,9 +20,11 @@ This video explains how to use Mac Terminal to navigate to your file:
     2) Use "cd" to enter a directory.
     3) Once you are in the same directory as the .jar file, run "java -jar MLPaint.jar"
 
+# Labeling Setup Tutorial
 
+    Navigate to the image, probably a .tif, that you want to open, and open it!
         
-# Tutorial
+# Labeling Workflow Tutorial
 <iframe width="560" height="315" src="https://www.youtube.com/embed/uAIU2VNW9_g" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
