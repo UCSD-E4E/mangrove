@@ -2,7 +2,7 @@
     beta internal mangrove release
     Soon we will have a setup tutorial and a document on the computer science behind this labeling tool.
 
-# Setup
+# Running a .JAR file
 
 MLPaint is a Java programming language .jar desktop application. To run it, you will need to have Java installed on your computer. Even if you have Java already installed, you may need to Google how to update it to Java 11. 
 
