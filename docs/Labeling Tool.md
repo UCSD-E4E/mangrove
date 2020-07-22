@@ -31,7 +31,11 @@ This video explains how to use Mac Terminal to navigate to your file:
 # Tutorial: Loading an image to label
 
     Navigate to the image, probably a .tif, that you want to open, and open it!
-        
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ynDJ86NST30" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>    
+
+
+
 # Tutorial: The Labeling Workflow
 <iframe width="560" height="315" src="https://www.youtube.com/embed/m0N1C22AFdc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
