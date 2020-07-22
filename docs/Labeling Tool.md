@@ -1,6 +1,5 @@
 # Welcome to Magic Label Paint, a user interface for ML-assisted labeling.
     beta internal mangrove release
-    Soon we will have a setup tutorial and a document on the computer science behind this labeling tool.
 
 # Downloading the application
 ***
