@@ -203,8 +203,8 @@ This image classification tool is an accessible and automated workflow for conse
 <hr></p>
 <h1 id="modules">Modules</h1>
 <h2 id="azure_blobpy"><code>azure_blob.py</code></h2>
-<p><code>azure_blob.py</code> is a Azure Blob Storage Directory Client that allows the programmer to easily interface and communicate with the Azure database. To call the function and set up a client ( a connection to the Azure database, create a client and specify the connection string and desired container to connect to. <code>client = azure_blob.DirectoryClient(CONNECTION_STRING, input_container)</code>
-Then you are able to call the following functions.
+<p><code>azure_blob.py</code> is a Azure Blob Storage Directory Client that allows the programmer to easily interface and communicate with the Azure database. To call the function and set up a client (a connection to the Azure database), create a client and specify the connection string and desired container to connect to. <code>client = azure_blob.DirectoryClient(CONNECTION_STRING, input_container)</code>
+Then you are able to call the following functions:
 <br></p>
 <table>
 <thead>
@@ -265,7 +265,15 @@ Then you are able to call the following functions.
 </tr>
 <tr>
 <td><code>download_model(client_model)</code></td>
-<td>This function is used to download the model from Microsoft Azure. If a new model is desired and it has a different file structure, please update this function. This current file structure is ./saved_model.pb ./variables/*</td>
+<td>This function is used to download the model from Microsoft Azure. If a new model is desired and it has a different file structure, please update this function. This current file structure is</td>
+</tr>
+<tr>
+<td>* ./saved_model.pb</td>
+<td></td>
+</tr>
+<tr>
+<td>* ./variables/*</td>
+<td></td>
 </tr>
 </tbody>
 </table>
