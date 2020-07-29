@@ -125,12 +125,206 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#requirements" class="nav-link">Requirements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#file-organization" class="nav-link">File Organization</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#modules" class="nav-link">Modules</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#azure_blobpy" class="nav-link">azure_blob.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#classify_modpy" class="nav-link">classify_mod.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#gdal_mergypy" class="nav-link">gdal_mergy.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#gdal_polygonizepy" class="nav-link">gdal_polygonize.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#procfile" class="nav-link">Procfile</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#rasterpy" class="nav-link">raster.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#visualizepy" class="nav-link">visualize.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#wsgipy" class="nav-link">wsgi.py</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#azure" class="nav-link">Azure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h1 id="introduction">Introduction</h1>
+<p>Mangrove forests are highly productive ecosystems and play a vital role in carbon sequestration. Accurately monitoring their growth in an automated way has presented a challenge for many conservation groups, especially those with smaller budgets who may not have the financial resources to deploy satellites or expensive drones with multispectral sensors. Drones with cheaper sensors have the advantage of accessibility, but a streamlined workflow for drone imagery classification is still lacking. <br> <br>
+This image classification tool is an accessible and automated workflow for conservation groups to quantify the amount of mangroves within their site by allowing them to upload cheaply acquired high resolution imagery (drone imagery) to a website and quantify the amount of mangroves in their site using a CNN.</p>
+<p></br>
+<hr></p>
+<h1 id="requirements">Requirements</h1>
+<p>To run this Flask application locally, clone the Git repository and cd into the web-mangrove directory. To install all the necessary requirements (located in requirements.txt) use pip install: <code>pip install -r requirements.txt</code></p>
+<p>To run the server locally, use the command <code>python app.py</code></p>
+<p><hr>
+</br></p>
+<h1 id="file-organization">File Organization</h1>
+<p>In progress..
+<br>
+<hr></p>
+<h1 id="modules">Modules</h1>
+<h2 id="azure_blobpy"><code>azure_blob.py</code></h2>
+<p><code>azure_blob.py</code> is a Azure Blob store Directory Client that allows the programmer to easily interface and communicate with the Azure database. To call the function and set up a client ( a connection to the Azure database, create a client and specify the connection string and desired container to connect to. <code>client = azure_blob.DirectoryClient(CONNECTION_STRING, input_container)</code>
+Then you are able to call the following functions.
+<br></p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_blob_from_stream(blob_name, stream)</code></td>
+<td>Send .zip file to the Azure blob just from filestream (no downloading). (Note: When deploying to heroku, you may need to increase the timeout in the Procfile so if it needs more time to process these larger zip files)</td>
+</tr>
+<tr>
+<td><code>upload_file(source, dest)</code></td>
+<td>Upload a single file (source) to a path (dest) inside the container</td>
+</tr>
+<tr>
+<td><code>download(source, dest)</code></td>
+<td>Download a file or directory (source) to a path (dest) on the local filesystem</td>
+</tr>
+<tr>
+<td><code>download_file(source, dest)</code></td>
+<td>Download a single file (source) to a path (dest) on the local filesystem</td>
+</tr>
+<tr>
+<td><code>ls_files(path, recursive=False)</code></td>
+<td>List files under a path, optionally recursively</td>
+</tr>
+<tr>
+<td><code>ls_dirs(path, recursive=False)</code></td>
+<td>List directories under a path, optionally recursively</td>
+</tr>
+<tr>
+<td><code>rm(path, recursive=False)</code></td>
+<td>Remove a single file, or remove a path recursively</td>
+</tr>
+<tr>
+<td><code>rmdir(path)</code></td>
+<td>Remove a directory and its contents recursively</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h2 id="classify_modpy"><code>classify_mod.py</code></h2>
+<p>This classification module encompasses the important functions required for image classification. The primary function is <code>classify()</code> described below: </p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>classify()</code></td>
+<td>In this function, the model is downloaded from Microsoft Azure, the images are downloaded from the Microsoft Azure output-files container in batches of 32. <code>model.predict()</code> is run on these images. Then, the downsampled images are reupload to ouput-files container to replace the big files with these smaller ones</td>
+</tr>
+<tr>
+<td><code>download_model(client_model)</code></td>
+<td>This function is used to download the model from Microsoft Azure. If a new model is desired and it has a different file structure, please update this function. This current file structure is ./saved_model.pb ./variables/*</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h2 id="gdal_mergypy"><code>gdal_mergy.py</code></h2>
+<p><code>gdal_mergy.py</code> is a library containing free software to merge the tiles
+<br></p>
+<p><br></p>
+<h2 id="gdal_polygonizepy"><code>gdal_polygonize.py</code></h2>
+<p><code>gdal_mergy.py</code> is a library containing free software to polygonize the orthomosaic
+<br>
+<br></p>
+<h2 id="procfile"><code>Procfile</code></h2>
+<p>The Procfile is required for deploying to heroku. It currently contains a timeout of 200 seconds to allow for large zip files to be sent to the Azure storage via bitstream.
+<br>
+<br></p>
+<h2 id="rasterpy"><code>raster.py</code></h2>
+<p><code>raster.py</code> contains code from gis_utils to downsample the images</p>
+<p><br>
+<br></p>
+<h2 id="visualizepy"><code>visualize.py</code></h2>
+<p><code>visualize.py</code> contains code to prepare the Plotly visualization. The most important functions are described below:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_geojson(FILENAME, final_filename)</code></td>
+<td>This function takes in a tif filename (ex: non-mangrove classification) and creates the geojson file containing the coordinates of the polygons required for the visualization. This is done by taking in the data and converting it to a mask. From this mask, the coordinates of each shapes is stored.</td>
+</tr>
+<tr>
+<td><code>get_im(FILENAME, hue)</code></td>
+<td>This function takes in a tif file name (ex: non-mangrove classification 1.tif) and applies a green or red hue. Potential values for hue can be: <code>green_hue = (180-78)/360.0</code> or <code>red_hue = (180-180)/360.0</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="wsgipy"><code>wsgi.py</code></h2>
+<p>For <code>wsgi.py</code> be sure to run both the Flask web application with and the Dash visualization.</p>
+<p><br>
+<br></p>
+<h1 id="azure">Azure</h1>
+<table>
+<thead>
+<tr>
+<th>Author</th>
+<th>Email</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nicole Meister</td>
+<td>nmeister@princeton.edu</td>
+</tr>
+</tbody>
+</table></div>
             </div>
         </div>
 
