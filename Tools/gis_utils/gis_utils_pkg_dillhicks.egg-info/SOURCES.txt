@@ -1,6 +1,7 @@
 README.md
 setup.py
 gis_utils/__init__.py
+gis_utils/ml.py
 gis_utils/raster.py
 gis_utils/shape.py
 gis_utils_pkg_dillhicks.egg-info/PKG-INFO

@@ -9,6 +9,8 @@ import geopandas as gpd
 import rasterio 
 import gdal 
 from itertools import product
+from rasterio.merge import merge
+
 
 
 '''
@@ -212,3 +214,32 @@ def clip(shp_file, image_file):
                 "width": out_image.shape[2],
                 "transform": out_transform})
     return out_image, out_meta
+
+
+
+
+
+
+def merge_raster(input_files, output_file):
+    images = []
+    #get files from file list and load the rasters
+    for file in input_files:
+        image, meta = raster.load_image(file)
+        images.append(image)
+
+    #merge all the rasters together
+    array, transform = merge(images)
+
+    #set meta of merged file to the same as the original 
+    out_meta = meta.copy()
+
+    #edit meta for merged raster
+    out_meta.update({"driver": "GTiff",
+                                           "height": array.shape[1],
+                                           "width": array.shape[2],
+                                           "transform": transform}
+                                          )
+    
+    #write merged raster
+    with rasterio.open(output_file, "w", **out_meta) as dest:
+        dest.write(array)

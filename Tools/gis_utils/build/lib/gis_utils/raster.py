@@ -9,6 +9,8 @@ import geopandas as gpd
 import rasterio 
 import gdal 
 from itertools import product
+from rasterio.merge import merge
+
 
 
 '''
@@ -196,3 +198,48 @@ def downsample_raster(dataset, downscale_factor, out_file=None):
             dst.write(resampled)
 
     return resampled, transform
+
+
+
+
+
+def clip(shp_file, image_file):
+    with fiona.open(shp_file, "r") as shapefile:
+        shapes = [feature["geometry"] for feature in shapefile]
+    with rasterio.open(image_file) as src:
+        out_image, out_transform = rasterio.mask.mask(src, shapes, crop=True)
+        out_meta = src.meta
+    out_meta.update({"driver": "GTiff",
+                "height": out_image.shape[1],
+                "width": out_image.shape[2],
+                "transform": out_transform})
+    return out_image, out_meta
+
+
+
+
+
+
+def merge_raster(input_files, output_file):
+    images = []
+    #get files from file list and load the rasters
+    for file in input_files:
+        image, meta = raster.load_image(file)
+        images.append(image)
+
+    #merge all the rasters together
+    array, transform = merge(images)
+
+    #set meta of merged file to the same as the original 
+    out_meta = meta.copy()
+
+    #edit meta for merged raster
+    out_meta.update({"driver": "GTiff",
+                                           "height": array.shape[1],
+                                           "width": array.shape[2],
+                                           "transform": transform}
+                                          )
+    
+    #write merged raster
+    with rasterio.open(output_file, "w", **out_meta) as dest:
+        dest.write(array)
