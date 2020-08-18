@@ -1,3 +1,4 @@
+  
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -5,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gis-utils-pkg-dillhicks", # Replace with your own username
-    version="0.0.4",
+    version="0.0.76",
     author="Dillon Hicks",
     author_email="sdhicks@ucsd.edu",
     description="GIS Utilities",
