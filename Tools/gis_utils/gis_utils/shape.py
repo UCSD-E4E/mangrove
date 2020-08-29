@@ -1,8 +1,5 @@
 from rasterio import windows
 from rasterio.features import shapes
-import multiprocess
-import threading
-import concurrent
 import numpy as np
 import geopandas as gpd
 import rasterio 
