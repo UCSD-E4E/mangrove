@@ -111,10 +111,10 @@ Tiles (PNG + PMTiles) are served from **Cloudflare R2** and are not committed to
    .\rclone copyto "landing\public\tiles\florida.pmtiles" r2-e4e-mangrove:e4e-mangrove/tiles/florida.pmtiles --progress --s3-no-check-bucket
    ```
 
-7. **Add GitHub secret**
-   - Repo → Settings → Secrets and variables → Actions → New secret
-   - Name: `VITE_TILES_BASE_URL`
-   - Value: the public URL from step 3 (e.g. `https://pub-xxx.r2.dev`)
+7. **Add GitHub secrets**
+   - Repo → Settings → Secrets and variables → Actions → New repository secret
+   - `VITE_MAPBOX_TOKEN` — your Mapbox public token (required for satellite basemap)
+   - `VITE_TILES_BASE_URL` — the R2 public URL from step 3 (e.g. `https://pub-xxx.r2.dev`)
 
 8. **Add to `landing/.env.local`** for local dev pointing at R2:
    ```

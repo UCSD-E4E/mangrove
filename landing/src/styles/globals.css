@@ -93,3 +93,102 @@ p {
   font-style: italic;
   color: var(--accent);
 }
+
+/* ===== Dark story sections ===== */
+
+.section-dark {
+  background-color: #060e07;
+  color: #e8e0d0;
+}
+
+.section-dark h2,
+.section-dark h3 {
+  color: #f0ead8;
+}
+
+/* ===== Scroll-story animations ===== */
+
+@keyframes storyFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes storyFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mangrove background light-ray shimmer */
+@keyframes rayPulse {
+  0%, 100% { opacity: 0.06; }
+  50%       { opacity: 0.14; }
+}
+
+.mangrove-rays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mangrove-rays::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -18deg,
+    transparent 0px,
+    transparent 110px,
+    rgba(80, 200, 100, 0.05) 110px,
+    rgba(80, 200, 100, 0.05) 130px
+  );
+  animation: rayPulse 9s ease-in-out infinite;
+}
+
+.mangrove-rays::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    22deg,
+    transparent 0px,
+    transparent 90px,
+    rgba(60, 180, 80, 0.04) 90px,
+    rgba(60, 180, 80, 0.04) 108px
+  );
+  animation: rayPulse 13s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+/* ===== Page transitions ===== */
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: pageFadeIn 0.5s ease forwards;
+}
+
+/* ===== Blog card hover ===== */
+
+.blog-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+/* ===== Collaborate page ===== */
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}

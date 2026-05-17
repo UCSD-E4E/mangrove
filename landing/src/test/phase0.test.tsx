@@ -19,6 +19,6 @@ describe('Phase 0 — scaffold', () => {
 
   it('App renders an h1', () => {
     renderApp()
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 1 }).length).toBeGreaterThan(0)
   })
 })

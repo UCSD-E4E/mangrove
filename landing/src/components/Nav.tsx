@@ -1,5 +1,12 @@
 import type { CSSProperties } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useNavHide } from '../hooks/useNavHide'
+
+const NAV_LINKS = [
+  { label: 'Visualizer', href: '/visualizer' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Team', href: '/team' },
+]
 
 const linkStyle: CSSProperties = {
   color: 'var(--text-muted)',
@@ -8,10 +15,16 @@ const linkStyle: CSSProperties = {
   letterSpacing: '0.04em',
   fontFamily: "'DM Sans', sans-serif",
   transition: 'color 0.2s ease',
+  cursor: 'pointer',
+  background: 'none',
+  border: 'none',
+  padding: 0,
 }
 
 export function Nav() {
   const { hidden, scrolled } = useNavHide()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   return (
     <header
@@ -36,7 +49,10 @@ export function Nav() {
       }}
     >
       {/* Wordmark */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+      <button
+        onClick={() => navigate('/')}
+        style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
         <span style={{
           fontFamily: "'Instrument Serif', serif",
           color: 'var(--text-primary)',
@@ -51,17 +67,27 @@ export function Nav() {
         }}>
           · E4E Lab, UC San Diego
         </span>
-      </div>
+      </button>
 
       {/* Center links */}
       <nav aria-label="Site navigation" style={{ display: 'flex', gap: '3rem' }}>
-        <a href="#research" style={linkStyle}>Research</a>
-        <a href="#regions" style={linkStyle}>Regions</a>
-        <a href="#team" style={linkStyle}>Team</a>
+        {NAV_LINKS.map(({ label, href }) => (
+          <button
+            key={label}
+            onClick={() => navigate(href)}
+            style={{
+              ...linkStyle,
+              color: location.pathname === href ? 'var(--accent)' : 'var(--text-muted)',
+            }}
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
       {/* CTA */}
       <button
+        onClick={() => navigate('/collaborate')}
         style={{
           background: 'none',
           border: '1px solid var(--border)',
@@ -72,7 +98,15 @@ export function Nav() {
           fontSize: '0.75rem',
           letterSpacing: '0.04em',
           fontFamily: "'DM Sans', sans-serif",
-          transition: 'border-color 0.2s ease',
+          transition: 'border-color 0.2s ease, color 0.2s ease',
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--accent)'
+          ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--accent)'
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'
+          ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)'
         }}
       >
         Collaborate →

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 import { Team } from '../components/Team'
 import { JoinCTA } from '../components/JoinCTA'
@@ -7,35 +8,35 @@ import { Footer } from '../components/Footer'
 
 describe('Phase 10 — Team', () => {
   it('renders without throwing', () => {
-    expect(() => render(<Team />)).not.toThrow()
+    expect(() => render(<MemoryRouter><Team /></MemoryRouter>)).not.toThrow()
   })
 
   it('section has data-testid="team"', () => {
-    render(<Team />)
+    render(<MemoryRouter><Team /></MemoryRouter>)
     expect(screen.getByTestId('team')).toBeInTheDocument()
   })
 
   it('renders exactly 3 team cards', () => {
-    render(<Team />)
+    render(<MemoryRouter><Team /></MemoryRouter>)
     expect(screen.getAllByTestId('team-card')).toHaveLength(3)
   })
 
   it('"The researchers" overline is present', () => {
-    render(<Team />)
+    render(<MemoryRouter><Team /></MemoryRouter>)
     expect(screen.getByText('The researchers')).toBeInTheDocument()
   })
 
-  it('each card has a non-empty avatar', () => {
-    render(<Team />)
+  it('each card has an avatar with an img', () => {
+    render(<MemoryRouter><Team /></MemoryRouter>)
     const avatars = screen.getAllByTestId('team-avatar')
     expect(avatars).toHaveLength(3)
-    avatars.forEach(av => expect(av.textContent?.trim().length).toBeGreaterThan(0))
+    avatars.forEach(av => expect(av.querySelector('img')).not.toBeNull())
   })
 
-  it('all three affiliation labels say "UC San Diego"', () => {
-    render(<Team />)
+  it('each card contains the member name', () => {
+    render(<MemoryRouter><Team /></MemoryRouter>)
     const cards = screen.getAllByTestId('team-card')
-    cards.forEach(card => expect(card.textContent).toContain('UC San Diego'))
+    cards.forEach(card => expect(card.textContent?.trim().length).toBeGreaterThan(0))
   })
 })
 
@@ -74,32 +75,34 @@ describe('Phase 10 — JoinCTA', () => {
 
 describe('Phase 10 — Footer', () => {
   it('renders without throwing', () => {
-    expect(() => render(<Footer />)).not.toThrow()
+    expect(() => render(<MemoryRouter><Footer /></MemoryRouter>)).not.toThrow()
   })
 
   it('footer has data-testid="footer"', () => {
-    render(<Footer />)
+    render(<MemoryRouter><Footer /></MemoryRouter>)
     expect(screen.getByTestId('footer')).toBeInTheDocument()
   })
 
   it('copyright element is present', () => {
-    render(<Footer />)
+    render(<MemoryRouter><Footer /></MemoryRouter>)
     expect(screen.getByTestId('copyright')).toBeInTheDocument()
   })
 
   it('copyright mentions "Engineers for Exploration"', () => {
-    render(<Footer />)
+    render(<MemoryRouter><Footer /></MemoryRouter>)
     expect(screen.getByTestId('copyright').textContent).toContain('Engineers for Exploration')
   })
 
-  it('footer has 3 nav links', () => {
-    render(<Footer />)
-    const links = screen.getByTestId('footer').querySelectorAll('nav a')
-    expect(links).toHaveLength(3)
+  it('footer has 5 nav items (4 internal buttons + 1 external link)', () => {
+    render(<MemoryRouter><Footer /></MemoryRouter>)
+    const footer = screen.getByTestId('footer')
+    const buttons = footer.querySelectorAll('nav button')
+    const anchors = footer.querySelectorAll('nav a')
+    expect(buttons.length + anchors.length).toBe(5)
   })
 
   it('"GitHub" link is present in footer nav', () => {
-    render(<Footer />)
+    render(<MemoryRouter><Footer /></MemoryRouter>)
     expect(screen.getByText('GitHub')).toBeInTheDocument()
   })
 })

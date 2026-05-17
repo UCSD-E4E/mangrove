@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 
 // Decouple Nav rendering tests from scroll behavior
@@ -9,6 +10,8 @@ vi.mock('../hooks/useNavHide', () => ({
 
 import { useNavHide } from '../hooks/useNavHide'
 
+const renderNav = () => render(<MemoryRouter><Nav /></MemoryRouter>)
+
 beforeEach(() => {
   vi.mocked(useNavHide).mockReturnValue({ hidden: false, scrolled: false })
 })
@@ -17,32 +20,32 @@ beforeEach(() => {
 
 describe('Phase 2 — Nav rendering', () => {
   it('renders the wordmark "Mangrove Monitor"', () => {
-    render(<Nav />)
+    renderNav()
     expect(screen.getByText('Mangrove Monitor')).toBeInTheDocument()
   })
 
   it('renders "· E4E Lab, UC San Diego"', () => {
-    render(<Nav />)
+    renderNav()
     expect(screen.getByText('· E4E Lab, UC San Diego')).toBeInTheDocument()
   })
 
-  it('renders exactly 3 center links', () => {
-    render(<Nav />)
+  it('renders exactly 3 center nav buttons', () => {
+    renderNav()
     const centerNav = screen.getByRole('navigation', { name: 'Site navigation' })
-    expect(within(centerNav).getAllByRole('link')).toHaveLength(3)
+    expect(within(centerNav).getAllByRole('button')).toHaveLength(3)
   })
 
-  it('center links are Research, Regions, Team in order', () => {
-    render(<Nav />)
+  it('center nav buttons are Visualizer, Blog, Team in order', () => {
+    renderNav()
     const centerNav = screen.getByRole('navigation', { name: 'Site navigation' })
-    const links = within(centerNav).getAllByRole('link')
-    expect(links[0]).toHaveTextContent('Research')
-    expect(links[1]).toHaveTextContent('Regions')
-    expect(links[2]).toHaveTextContent('Team')
+    const btns = within(centerNav).getAllByRole('button')
+    expect(btns[0]).toHaveTextContent('Visualizer')
+    expect(btns[1]).toHaveTextContent('Blog')
+    expect(btns[2]).toHaveTextContent('Team')
   })
 
   it('renders "Collaborate →" button', () => {
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('button', { name: /Collaborate/i })).toBeInTheDocument()
   })
 })
@@ -51,12 +54,12 @@ describe('Phase 2 — Nav rendering', () => {
 
 describe('Phase 2 — Nav structure', () => {
   it('header has position: fixed', () => {
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveStyle({ position: 'fixed' })
   })
 
   it('header has z-index: 100', () => {
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveStyle({ zIndex: '100' })
   })
 })
@@ -66,25 +69,25 @@ describe('Phase 2 — Nav structure', () => {
 describe('Phase 2 — Nav transform', () => {
   it('sets data-hidden="false" when hook returns hidden=false', () => {
     vi.mocked(useNavHide).mockReturnValue({ hidden: false, scrolled: false })
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveAttribute('data-hidden', 'false')
   })
 
   it('sets data-hidden="true" when hook returns hidden=true', () => {
     vi.mocked(useNavHide).mockReturnValue({ hidden: true, scrolled: false })
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveAttribute('data-hidden', 'true')
   })
 
   it('applies translateY(-100%) when hidden=true', () => {
     vi.mocked(useNavHide).mockReturnValue({ hidden: true, scrolled: false })
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveStyle({ transform: 'translateY(-100%)' })
   })
 
   it('applies translateY(0) when hidden=false', () => {
     vi.mocked(useNavHide).mockReturnValue({ hidden: false, scrolled: false })
-    render(<Nav />)
+    renderNav()
     expect(screen.getByRole('banner')).toHaveStyle({ transform: 'translateY(0)' })
   })
 })
