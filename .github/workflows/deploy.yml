@@ -35,6 +35,7 @@ jobs:
         run: npm run build
         env:
           VITE_TILES_BASE_URL: ${{ secrets.VITE_TILES_BASE_URL }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
