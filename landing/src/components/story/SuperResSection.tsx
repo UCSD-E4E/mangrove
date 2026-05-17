@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 
+const BASE = import.meta.env.VITE_TILES_BASE_URL ?? ''
+
 export function SuperResSection() {
   const ref = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(false)
@@ -102,6 +104,7 @@ export function SuperResSection() {
                 marginTop: '2rem',
                 display: 'flex',
                 gap: '40px',
+                flexWrap: 'wrap',
               }}
             >
               {[
@@ -136,7 +139,7 @@ export function SuperResSection() {
             </div>
           </div>
 
-          {/* Right: visual comparison */}
+          {/* Right: real image comparison */}
           <div
             style={{
               opacity: visible ? 1 : 0,
@@ -151,48 +154,41 @@ export function SuperResSection() {
                 overflow: 'hidden',
                 border: '1px solid rgba(61,107,74,0.2)',
                 cursor: 'crosshair',
+                aspectRatio: '1',
               }}
               onMouseEnter={() => setHover(true)}
               onMouseLeave={() => setHover(false)}
             >
-              {/* Simulated low-res tile */}
-              <div
+              {/* Sentinel-2 10m — base layer */}
+              <img
+                src={`${BASE}/sentinel2_10m.png`}
+                alt="Sentinel-2 10m resolution"
                 style={{
+                  position: 'absolute',
+                  inset: 0,
                   width: '100%',
-                  aspectRatio: '1',
-                  background: `
-                    repeating-conic-gradient(
-                      rgba(13,46,20,0.9) 0% 25%, rgba(9,26,11,0.9) 25% 50%
-                    ) 0 0 / 40px 40px
-                  `,
-                  filter: hover ? 'none' : 'blur(3px)',
-                  transition: 'filter 0.4s ease',
-                  position: 'relative',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  imageRendering: 'pixelated',
                 }}
-              >
-                {/* Simulated classified patches */}
-                {[
-                  { x: '10%', y: '15%', w: '30%', h: '25%', c: 'rgba(61,107,74,0.85)' },
-                  { x: '50%', y: '10%', w: '40%', h: '20%', c: 'rgba(61,107,74,0.7)' },
-                  { x: '5%', y: '55%', w: '45%', h: '30%', c: 'rgba(61,107,74,0.9)' },
-                  { x: '55%', y: '50%', w: '35%', h: '35%', c: 'rgba(74,144,184,0.75)' },
-                  { x: '60%', y: '35%', w: '15%', h: '12%', c: 'rgba(138,106,74,0.8)' },
-                ].map((patch, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: 'absolute',
-                      left: patch.x,
-                      top: patch.y,
-                      width: patch.w,
-                      height: patch.h,
-                      background: patch.c,
-                      borderRadius: hover ? '2px' : '0',
-                      transition: 'border-radius 0.4s ease',
-                    }}
-                  />
-                ))}
-              </div>
+              />
+
+              {/* High-res 0.6m — fades in on hover */}
+              <img
+                src={`${BASE}/naip_0.6m.png`}
+                alt="Super-resolution 0.6m"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  opacity: hover ? 1 : 0,
+                  transition: 'opacity 0.55s ease',
+                }}
+              />
 
               {/* Label overlay */}
               <div
@@ -209,13 +205,13 @@ export function SuperResSection() {
                 <div
                   style={{
                     alignSelf: 'flex-start',
-                    background: 'rgba(4,11,5,0.75)',
+                    background: 'rgba(4,11,5,0.72)',
                     backdropFilter: 'blur(8px)',
                     padding: '4px 10px',
                     borderRadius: '3px',
                     fontFamily: "'DM Mono', monospace",
                     fontSize: '0.68rem',
-                    color: 'rgba(232,224,208,0.7)',
+                    color: 'rgba(232,224,208,0.8)',
                     letterSpacing: '0.06em',
                   }}
                 >
@@ -244,7 +240,7 @@ export function SuperResSection() {
                 textAlign: 'center',
               }}
             >
-              Simulated classification · Florida mangrove coast
+              Ten Thousand Islands · Florida mangrove coast
             </p>
           </div>
         </div>

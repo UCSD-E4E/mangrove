@@ -73,7 +73,6 @@ export function VisualizerPage() {
             <button
               key={r.id}
               onClick={() => navigate(`/region/${r.id}`)}
-              onMouseEnter={() => globeRef.current?.flyToRegion(r.id)}
               style={{
                 background: 'rgba(6,14,7,0.75)',
                 backdropFilter: 'blur(12px)',

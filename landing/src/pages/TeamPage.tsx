@@ -9,7 +9,7 @@ const LEADS = [
     name: 'Jason Cheung',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    bio: 'Leads the ML pipeline and model architecture. Developing SegFormer-based segmentation for multispectral satellite imagery and super-resolution upscaling.',
+    bio: 'Architected and implemented the full ML pipeline, spanning GEE data ingestion, SegFormer segmentation, super-resolution upscaling, and the web visualization platform.',
     photo: `${BASE}/team/jason-cheung.jpg`,
   },
   {
@@ -17,7 +17,7 @@ const LEADS = [
     name: 'Nick Swetlin',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    bio: 'Leads satellite data ingestion and processing via Google Earth Engine. Handles multi-temporal compositing, cloud masking, and spectral normalization.',
+    bio: 'Orchestrates project coordination, documentation, and data sourcing workflows. Drives milestone planning and connects the team\'s technical output to external partners.',
     photo: `${BASE}/team/nick-swetlin.jpg`,
   },
   {
@@ -25,7 +25,7 @@ const LEADS = [
     name: 'Andrew Zhou',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    bio: 'Leads the tile generation pipeline, PMTiles infrastructure, and the Cloudflare R2 delivery stack powering the visualization platform.',
+    bio: 'Shaped the early project scope and research direction during the team\'s founding phase. Established the initial problem framing and investigated foundational dataset structures.',
     photo: `${BASE}/team/andrew-zhou.svg`,
   },
 ]

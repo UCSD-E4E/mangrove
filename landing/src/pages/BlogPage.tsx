@@ -1,61 +1,60 @@
-import { useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { Footer } from '../components/Footer'
 
 const POSTS = [
   {
-    slug: 'mapping-florida-mangroves',
-    date: 'May 2026',
-    tag: 'Research',
-    title: 'Mapping Florida\'s Mangroves from Sentinel-2',
-    excerpt:
-      'How we processed 500 multispectral GeoTIFFs to build a high-resolution mangrove classification layer covering the entire Florida coastline and the Everglades.',
-    readTime: '6 min read',
-  },
-  {
-    slug: 'super-resolution-mangroves',
+    slug: 'super-resolution-pipeline',
     date: 'Apr 2026',
     tag: 'ML',
-    title: 'Super-Resolution for Coastal Ecosystems',
+    title: 'Recovering Boundaries: Our Super-Resolution Pipeline',
     excerpt:
-      'Upsampling SegFormer predictions 4× reveals tidal channels and canopy gaps invisible at native 10m Sentinel-2 resolution. A deep-dive into our ESRGAN-based pipeline.',
+      'Standard 10m Sentinel-2 predictions blur the tidal channels and fragmented edges that define mangrove ecosystem health. Our hybrid transformer-CNN model upsamples predictions 16 times, resolving structure that was previously invisible.',
     readTime: '8 min read',
   },
   {
-    slug: 'pmtiles-for-science',
+    slug: 'continual-learning',
     date: 'Mar 2026',
     tag: 'Engineering',
-    title: 'Why We Chose PMTiles for Global Tile Delivery',
+    title: 'Continual Learning Across Regions',
     excerpt:
-      'Serving 340 million tile requests from a single file. PMTiles\' HTTP range-request architecture lets us deploy worldwide without a tile server.',
-    readTime: '4 min read',
+      'A model trained on Florida tends to forget Florida when fine-tuned on Yucatan. We fixed this with a replay buffer that keeps 10 percent of prior region samples in every training batch.',
+    readTime: '6 min read',
   },
   {
-    slug: 'gee-pipeline',
-    date: 'Feb 2026',
-    tag: 'Research',
-    title: 'Building a Global Sentinel-2 Ingestion Pipeline with GEE',
+    slug: 'satellite-embeddings',
+    date: 'Jan 2026',
+    tag: 'ML',
+    title: 'Why Satellite Embeddings Are a Game Changer',
     excerpt:
-      'Google Earth Engine lets us pull cloud-free composites for any coastline on Earth. Here\'s how we structure the export pipeline for six regions.',
+      'Google\'s DINO-based satellite embeddings compress rich spectral and textural context into 64 dimensions per pixel. Prepending them to our SegFormer input lifted validation IoU by 11 points without adding labeled data.',
+    readTime: '8 min read',
+  },
+  {
+    slug: 'scaling-to-satellites',
+    date: 'Dec 2025',
+    tag: 'Research',
+    title: 'Scaling to Satellites: What We Gain and What We Lose',
+    excerpt:
+      'Moving from drone to Sentinel-2 imagery multiplies coverage but trades spatial detail for global reach. We walk through the trade-offs and why 10m resolution is still useful for coastline-scale monitoring.',
+    readTime: '6 min read',
+  },
+  {
+    slug: 'segmenting-drone-imagery',
+    date: 'Nov 2025',
+    tag: 'ML',
+    title: 'Segmenting Mangroves from Drone Imagery',
+    excerpt:
+      'We trained a SegFormer model on aerial drone imagery to classify mangroves, built-up land, and water at centimeter resolution. This post covers our data pipeline and the loss weighting choices that mattered most.',
     readTime: '7 min read',
   },
   {
-    slug: 'mangrove-carbon',
-    date: 'Jan 2026',
+    slug: 'why-mangroves-matter',
+    date: 'Sep 2025',
     tag: 'Science',
-    title: 'Why Mangrove Carbon Matters More Than You Think',
+    title: 'Why Mangroves Matter',
     excerpt:
-      'Mangroves store 3–5× more carbon per hectare than terrestrial forests. Mapping their extent precisely is a prerequisite for any credible carbon accounting.',
+      'Mangroves store 3 to 5 times more carbon per hectare than any terrestrial forest, filter coastal runoff, and buffer communities against storm surge. Yet we are losing them faster than we can map them.',
     readTime: '5 min read',
-  },
-  {
-    slug: 'segformer-remote-sensing',
-    date: 'Dec 2025',
-    tag: 'ML',
-    title: 'Adapting SegFormer to 69-Band Satellite Imagery',
-    excerpt:
-      'SegFormer was designed for RGB images. Here\'s how we adapted its input projection to handle Google\'s 64-dimensional DINO satellite embeddings.',
-    readTime: '9 min read',
   },
 ]
 
@@ -67,8 +66,6 @@ const TAG_COLORS: Record<string, string> = {
 }
 
 export function BlogPage() {
-  const navigate = useNavigate()
-
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }} className="page-enter">
       <Nav />

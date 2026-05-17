@@ -8,7 +8,7 @@ const LEADS = [
     name: 'Jason Cheung',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    focus: 'ML pipeline architecture, SegFormer training & super-resolution',
+    focus: 'Architected the full ML pipeline, from segmentation and super-resolution to the visualization platform.',
     photo: `${BASE}/team/jason-cheung.jpg`,
   },
   {
@@ -16,7 +16,7 @@ const LEADS = [
     name: 'Nick Swetlin',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    focus: 'Satellite data ingestion, Google Earth Engine & spectral compositing',
+    focus: 'Orchestrates project coordination, data sourcing workflows, and stakeholder outreach.',
     photo: `${BASE}/team/nick-swetlin.jpg`,
   },
   {
@@ -24,7 +24,7 @@ const LEADS = [
     name: 'Andrew Zhou',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    focus: 'Tile infrastructure, PMTiles pipeline & web visualization platform',
+    focus: 'Shaped early project scope and contributed to the initial research direction.',
     photo: `${BASE}/team/andrew-zhou.svg`,
   },
 ]
@@ -134,7 +134,7 @@ export function Team() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '2px',
           }}
         >

@@ -5,6 +5,13 @@ vi.mock('../components/GlobeViewer', () => ({
   GlobeViewer: vi.fn(() => null),
 }))
 
+vi.mock('../data/regions', () => ({
+  regions: [
+    { id: 'florida', name: 'Florida', status: 'trained', tilesUrl: '', pmtilesUrl: '', center: [0,0], zoom: 5 },
+    { id: 'yucatan', name: 'Yucatan', status: 'planned', tilesUrl: '', pmtilesUrl: '', center: [0,0], zoom: 5 },
+  ],
+}))
+
 import { Hero } from '../components/Hero'
 
 describe('Phase 3 — Hero section', () => {
@@ -15,42 +22,22 @@ describe('Phase 3 — Hero section', () => {
 
   it('hero has height: 100vh', () => {
     render(<Hero />)
-    // Use raw inline style — happy-dom resolves viewport units in getComputedStyle
     expect(screen.getByTestId('hero').style.height).toBe('100vh')
   })
 
-  it('hero has backgroundColor: #f0ede6', () => {
+  it('hero has dark background', () => {
     render(<Hero />)
-    expect(screen.getByTestId('hero')).toHaveStyle({ backgroundColor: '#f0ede6' })
+    expect(screen.getByTestId('hero')).toHaveStyle({ backgroundColor: '#0a1a0c' })
   })
 
-  it('overline text is "Engineers for Exploration · UC San Diego"', () => {
+  it('overlay label "Global visualizer" is present', () => {
     render(<Hero />)
-    expect(screen.getByText('Engineers for Exploration · UC San Diego')).toBeInTheDocument()
+    expect(screen.getByText('Global visualizer')).toBeInTheDocument()
   })
 
-  it('h1 contains "A living map of Earth\'s"', () => {
+  it('h1 contains "Select a region"', () => {
     render(<Hero />)
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain("A living map of Earth's")
-  })
-
-  it('<em> inside h1 contains "mangroves"', () => {
-    render(<Hero />)
-    const h1 = screen.getByRole('heading', { level: 1 })
-    const em = h1.querySelector('em')
-    expect(em).toBeInTheDocument()
-    expect(em).toHaveTextContent('mangroves')
-  })
-
-  it('<em> has class serif-italic', () => {
-    render(<Hero />)
-    const em = screen.getByRole('heading', { level: 1 }).querySelector('em')
-    expect(em).toHaveClass('serif-italic')
-  })
-
-  it('subhead paragraph is present', () => {
-    render(<Hero />)
-    expect(screen.getByText(/Drag the globe/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Select a region')
   })
 
   it('globe root div exists', () => {
@@ -58,19 +45,21 @@ describe('Phase 3 — Hero section', () => {
     expect(document.getElementById('globe-root')).toBeInTheDocument()
   })
 
-  it('gradient overlay exists', () => {
+  it('region pills container is present', () => {
     render(<Hero />)
-    const overlay = screen.getByTestId('gradient-overlay')
-    expect(overlay).toBeInTheDocument()
-    // happy-dom silently drops gradient values from CSSOM; verify structural props only.
-    // Gradient value is verified in E2E (real browser).
-    expect(overlay.style.position).toBe('absolute')
-    expect(overlay.style.height).toBe('65%')
+    expect(screen.getByTestId('region-pills')).toBeInTheDocument()
   })
 
-  it('scroll cue is present', () => {
+  it('renders a pill for each mocked region', () => {
     render(<Hero />)
-    expect(screen.getByTestId('scroll-cue')).toBeInTheDocument()
-    expect(screen.getByText('scroll')).toBeInTheDocument()
+    expect(screen.getByText('Florida')).toBeInTheDocument()
+    expect(screen.getByText('Yucatan')).toBeInTheDocument()
+  })
+
+  it('clicking a trained region pill calls onRegionClick', () => {
+    const onRegionClick = vi.fn()
+    render(<Hero onRegionClick={onRegionClick} />)
+    screen.getByText('Florida').click()
+    expect(onRegionClick).toHaveBeenCalledWith('florida')
   })
 })

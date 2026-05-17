@@ -1,6 +1,7 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { GlobeViewer } from './GlobeViewer'
 import type { GlobeViewerHandle } from './GlobeViewer'
+import { regions } from '../data/regions'
 
 export type { GlobeViewerHandle }
 
@@ -9,131 +10,110 @@ type Props = {
 }
 
 export function Hero({ onRegionClick }: Props) {
-  const sectionRef = useRef<HTMLElement>(null)
   const globeRef = useRef<GlobeViewerHandle>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const gradientRef = useRef<HTMLDivElement>(null)
-  const textRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let ticking = false
-    const update = () => {
-      const progress = Math.min(window.scrollY / (window.innerHeight * 0.65), 1)
-      const opacity = String(1 - progress)
-      if (overlayRef.current) overlayRef.current.style.opacity = opacity
-      if (gradientRef.current) gradientRef.current.style.opacity = opacity
-      if (textRef.current) textRef.current.style.opacity = opacity
-      ticking = false
-    }
-    const onScroll = () => {
-      if (!ticking) { requestAnimationFrame(update); ticking = true }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   return (
-    // Wrapper provides the extra scroll space while the hero is pinned via sticky
-    <div style={{ height: '230vh' }}>
-      <section
-        ref={sectionRef}
-        data-testid="hero"
-        aria-label="Hero"
+    <section
+      data-testid="hero"
+      aria-label="Hero"
+      style={{
+        height: '100vh',
+        backgroundColor: '#0a1a0c',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Globe — fills section */}
+      <div id="globe-root" style={{ position: 'absolute', inset: '0' }}>
+        <GlobeViewer ref={globeRef} onRegionClick={onRegionClick} />
+      </div>
+
+      {/* Text overlay — top left */}
+      <div
+        data-testid="hero-overlay"
         style={{
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-          overflow: 'hidden',
-          backgroundColor: '#f0ede6',
+          position: 'absolute',
+          top: '80px',
+          left: '48px',
+          zIndex: 10,
+          pointerEvents: 'none',
         }}
       >
-        {/* Globe — fills section */}
-        <div
-          id="globe-root"
-          style={{ position: 'absolute', inset: '0' }}
-        >
-          <GlobeViewer ref={globeRef} onRegionClick={onRegionClick} />
-        </div>
-
-        {/* Frosted blur overlay — obscures globe so text is legible; fades out on scroll */}
-        <div
-          ref={overlayRef}
+        <p
           style={{
-            position: 'absolute',
-            inset: '0',
-            backdropFilter: 'blur(14px)',
-            WebkitBackdropFilter: 'blur(14px)',
-            background: 'rgba(240, 237, 230, 0.45)',
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* Bottom gradient — fades globe into page background */}
-        <div
-          ref={gradientRef}
-          data-testid="gradient-overlay"
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '65%',
-            backgroundImage:
-              'linear-gradient(transparent 0%, rgba(240,237,230,0.5) 40%, rgba(240,237,230,0.97) 100%)',
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* Text block — bottom-left over gradient; fades on scroll */}
-        <div
-          ref={textRef}
-          style={{
-            position: 'absolute',
-            bottom: '4rem',
-            left: '4rem',
-            maxWidth: '600px',
-            zIndex: 1,
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.68rem',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'rgba(200,220,200,0.5)',
+            marginBottom: '8px',
           }}
         >
-          <p className="overline" style={{ marginBottom: '1.25rem' }}>
-            Engineers for Exploration · UC San Diego
-          </p>
-
-          <h1 style={{ marginBottom: '1.25rem' }}>
-            A living map of Earth's{' '}
-            <em className="serif-italic">mangroves</em>
-          </h1>
-
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: '480px' }}>
-            Drag the globe. Click any region. Explore a 3D terrain view of our
-            land cover predictions at sub-meter resolution.
-          </p>
-        </div>
-
-        {/* Scroll cue — bottom-right */}
-        <div
-          data-testid="scroll-cue"
+          Global visualizer
+        </p>
+        <h1
           style={{
-            position: 'absolute',
-            bottom: '4rem',
-            right: '4rem',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.75rem',
-            zIndex: 1,
+            fontFamily: "'Instrument Serif', serif",
+            fontWeight: 400,
+            fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
+            color: 'rgba(240,234,216,0.9)',
+            lineHeight: 1.1,
           }}
         >
-          <span className="overline">scroll</span>
-          <div
+          Select a region
+        </h1>
+      </div>
+
+      {/* Region pills — bottom center */}
+      <div
+        data-testid="region-pills"
+        style={{
+          position: 'absolute',
+          bottom: '40px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '8px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          zIndex: 10,
+          padding: '0 24px',
+        }}
+      >
+        {regions.map(r => (
+          <button
+            key={r.id}
+            onClick={() => onRegionClick?.(r.id)}
             style={{
-              width: '1px',
-              height: '48px',
-              background: 'linear-gradient(var(--accent), transparent)',
+              background: 'rgba(6,14,7,0.75)',
+              backdropFilter: 'blur(12px)',
+              border: `1px solid ${r.status === 'trained' ? 'rgba(61,107,74,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              color: r.status === 'trained' ? 'rgba(200,220,200,0.85)' : 'rgba(200,220,200,0.35)',
+              padding: '8px 18px',
+              borderRadius: '999px',
+              cursor: r.status === 'trained' ? 'pointer' : 'default',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.78rem',
+              letterSpacing: '0.03em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'background 0.2s ease, border-color 0.2s ease',
             }}
-          />
-        </div>
-      </section>
-    </div>
+          >
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: r.status === 'trained' ? '#3d6b4a' : 'rgba(200,200,200,0.3)',
+                flexShrink: 0,
+              }}
+            />
+            {r.name}
+          </button>
+        ))}
+      </div>
+    </section>
   )
 }

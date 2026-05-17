@@ -135,7 +135,7 @@ export function MangroveVideoSection({ videoSrc }: Props) {
           style={{
             position: 'absolute',
             top: '32px',
-            left: '48px',
+            left: 'clamp(20px, 4vw, 48px)',
             fontFamily: "'DM Mono', monospace",
             fontSize: '0.68rem',
             letterSpacing: '0.18em',

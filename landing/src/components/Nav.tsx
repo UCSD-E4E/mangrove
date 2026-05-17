@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNavHide } from '../hooks/useNavHide'
@@ -25,6 +26,12 @@ export function Nav() {
   const { hidden, scrolled } = useNavHide()
   const navigate = useNavigate()
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const go = (href: string) => {
+    setMenuOpen(false)
+    navigate(href)
+  }
 
   return (
     <header
@@ -39,7 +46,7 @@ export function Nav() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 48px',
+        padding: '0 clamp(20px, 4vw, 48px)',
         background: 'rgba(247, 245, 240, 0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -50,8 +57,8 @@ export function Nav() {
     >
       {/* Wordmark */}
       <button
-        onClick={() => navigate('/')}
-        style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        onClick={() => go('/')}
+        style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
       >
         <span style={{
           fontFamily: "'Instrument Serif', serif",
@@ -60,21 +67,22 @@ export function Nav() {
         }}>
           Mangrove Monitoring
         </span>
-        <span style={{
+        <span className="nav-subtitle" style={{
           fontFamily: "'DM Mono', monospace",
           fontSize: '0.72rem',
           color: 'var(--text-muted)',
+          display: menuOpen ? 'none' : undefined,
         }}>
           · E4E Lab, UC San Diego
         </span>
       </button>
 
-      {/* Center links */}
-      <nav aria-label="Site navigation" style={{ display: 'flex', gap: '3rem' }}>
+      {/* Center links — hidden on mobile via CSS */}
+      <nav aria-label="Site navigation" className="nav-center" style={{ gap: '3rem' }}>
         {NAV_LINKS.map(({ label, href }) => (
           <button
             key={label}
-            onClick={() => navigate(href)}
+            onClick={() => go(href)}
             style={{
               ...linkStyle,
               color: location.pathname === href ? 'var(--accent)' : 'var(--text-muted)',
@@ -85,9 +93,10 @@ export function Nav() {
         ))}
       </nav>
 
-      {/* CTA */}
+      {/* CTA — hidden on mobile via CSS */}
       <button
-        onClick={() => navigate('/collaborate')}
+        className="nav-cta-btn"
+        onClick={() => go('/collaborate')}
         style={{
           background: 'none',
           border: '1px solid var(--border)',
@@ -111,6 +120,46 @@ export function Nav() {
       >
         Collaborate →
       </button>
+
+      {/* Hamburger — shown on mobile via CSS */}
+      <button
+        className="nav-hamburger"
+        onClick={() => setMenuOpen(v => !v)}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
+      >
+        <span style={{ width: 22, height: 1.5, background: menuOpen ? 'transparent' : 'var(--text-primary)', display: 'block', transition: '0.2s' }} />
+        <span style={{ width: 22, height: 1.5, background: 'var(--text-primary)', display: 'block', transition: '0.2s',
+          transform: menuOpen ? 'rotate(45deg) translateY(-3px)' : 'none' }} />
+        <span style={{ width: menuOpen ? 22 : 14, height: 1.5, background: 'var(--text-primary)', display: 'block', transition: '0.2s',
+          transform: menuOpen ? 'rotate(-45deg) translateY(3px)' : 'none' }} />
+      </button>
+
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="nav-drawer">
+          {NAV_LINKS.map(({ label, href }) => (
+            <button
+              key={label}
+              onClick={() => go(href)}
+              style={{
+                ...linkStyle,
+                fontSize: '1rem',
+                textAlign: 'left',
+                color: location.pathname === href ? 'var(--accent)' : 'var(--text-secondary)',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+          <button
+            onClick={() => go('/collaborate')}
+            style={{ ...linkStyle, fontSize: '1rem', textAlign: 'left', color: 'var(--accent)' }}
+          >
+            Collaborate →
+          </button>
+        </div>
+      )}
     </header>
   )
 }
