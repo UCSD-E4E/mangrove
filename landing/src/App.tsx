@@ -17,6 +17,8 @@ import { VisualizerPage } from './pages/VisualizerPage'
 import { CollaboratePage } from './pages/CollaboratePage'
 import { BlogPostPage } from './pages/BlogPostPage'
 
+const BASE = import.meta.env.VITE_TILES_BASE_URL ?? ''
+
 function MainPage() {
   const navigate = useNavigate()
   useScrollAnimations()
@@ -25,7 +27,7 @@ function MainPage() {
       <Nav />
       <main>
         <IntroHero />
-        <MangroveVideoSection videoSrc="/mangrove.mp4" />
+        <MangroveVideoSection videoSrc={`${BASE}/mangrove.mp4`} />
         <CrisisSection />
         <SolutionSection />
         <Hero onRegionClick={(id) => navigate(`/region/${id}`)} />
