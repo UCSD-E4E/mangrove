@@ -15,6 +15,7 @@ import { BlogPage } from './pages/BlogPage'
 import { TeamPage } from './pages/TeamPage'
 import { VisualizerPage } from './pages/VisualizerPage'
 import { CollaboratePage } from './pages/CollaboratePage'
+import { BlogPostPage } from './pages/BlogPostPage'
 
 function MainPage() {
   const navigate = useNavigate()
@@ -44,6 +45,7 @@ function App() {
       <Route path="/region/:id" element={<RegionPage />} />
       <Route path="/visualizer" element={<VisualizerPage />} />
       <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/team" element={<TeamPage />} />
       <Route path="/collaborate" element={<CollaboratePage />} />
     </Routes>
