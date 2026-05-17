@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap');
+
+/* ===== Reset ===== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== Design Tokens ===== */
+
+:root {
+  /* Backgrounds */
+  --bg-page: #f7f5f0;
+  --bg-panel: #ffffff;
+  --bg-raised: #f2efe8;
+
+  /* Text */
+  --text-primary: #1a1a18;
+  --text-secondary: #666660;
+  --text-muted: #aaa;
+
+  /* Accent + border */
+  --accent: #3d6b4a;
+  --border: rgba(0,0,0,0.06);
+
+  /* Land cover class colors */
+  --class-mangrove: #3d6b4a;
+  --class-water: #4a90b8;
+  --class-built-up: #8a6a4a;
+  --class-other-veg: #7a9a6a;
+  --class-bare: #c8c0b0;
+}
+
+/* ===== Base ===== */
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 5.5vw, 5rem);
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+h2 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+/* ===== Typography Utilities ===== */
+
+.overline {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.caption {
+  font-family: 'DM Mono', monospace;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.serif-italic {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  color: var(--accent);
+}

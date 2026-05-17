@@ -1,10 +1,19 @@
-models/
-output/
+# dependencies
+node_modules/
+
+# build output
+dist/
+landing/public/tiles/
+
+# env
+.env
+.env.local
+
+# python
 __pycache__/
-*.tar.xz
-output-*/
-dataset/
-psc*/
-site*/
-*.h5
-lap*/
+*.pyc
+*.egg-info/
+.venv/
+
+# large binary docs in archive
+archive/Other Documentation/

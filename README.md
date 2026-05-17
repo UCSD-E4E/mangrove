@@ -1,59 +1,77 @@
-# Mangrove Classification Using Machine Learning 
+# Mangrove Monitoring — Landing Site
 
-Repository for storing general tools and documentation for the Mangrove Monitoring Project. This includes gisutils and the documentation site for all of our development documentation. 
+Interactive web map for visualizing mangrove classification results from the [UCSD Engineers for Exploration](https://e4e.ucsd.edu/) Mangrove Monitoring project.
 
-# Documentation Site: 
-https://ucsd-e4e.github.io/mangrove/
+## Repository layout
 
-
-## Using and editing the documentation site
-
-Adding to the documentation site requires simple command line and markdown skills to edit and deploy changes to the site
-
-### Markdown 
-
-For a nice cheatsheet for markdown syntax, check out the cheatsheet linked below:
-
-https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links
-
-*VSCode is reccomended due to markdown suupport out of the box and a lot of different extensiuons to make editing documents easy*
-
-https://code.visualstudio.com/docs/languages/markdown
-
-
-### MKDocs 
-
->MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. Documentation source files are written in Markdown, and configured with a single YAML configuration file. Start by reading the introduction below, then check the User Guide for more info." 
-
-https://www.mkdocs.org/
-
-To install mkdocs, assuming you have pip and python prebuilt:
-
-```console
-pip install --upgrade pip
-```   
-```console
-pip install mkdocs
-```   
-
-In addition, in order to use the mkdocs theme that we use with our site please install it with: 
-
-```console
-pip install mkdocs-bootswatch
+```
+mangrove/
+├── landing/          # React + deck.gl web app (Vite)
+├── scripts/          # Data pipeline scripts
+│   ├── generate_raster_tiles.py   # Build PNG tile pyramid from ESA WorldCover TIFs
+│   └── generate_pmtiles.ipynb     # Build vector PMTiles via tippecanoe (WSL)
+└── archive/          # Original UCSD-E4E/mangrove repo content (historical reference)
 ```
 
-Next, `cd` into the mangrove folder which should contain docs, Tools, etc., and use the following to view the site locally
+## Landing site
 
-```console
-mkdocs serve
-```   
+The landing site displays mangrove classification results on an interactive satellite basemap. Classification tiles are served as:
 
-Here, you can view the website and changes that you make to the markdown documents within the `/docs` folder.
+- **Raster PNG** (z0–12): pre-rendered 256×256 tiles generated from ESA WorldCover GeoTIFFs
+- **Vector PMTiles** (z13+): single-file vector tiles for high-zoom detail
 
-In order to deploy your changes to the website, from the same directory that you used mkdocs serve with
+### Dev setup
 
-```console 
-mkdocs gh-deploy
+```bash
+cd landing
+npm install
+npm run dev
 ```
 
-This will then lead you to a log in prompt where you can then enter your github login info to authenticate and push changes made to the website to the `gh-pages` branch. Keep in mind, this won't deploy your changes to the `master` branch, so make sure to also push your changes of the markdown documents to the master branch as well!
+Tests:
+
+```bash
+npm test
+```
+
+### Building
+
+```bash
+npm run build
+```
+
+## Generating tiles
+
+The tile generation scripts expect the `ml-mangrove` repo to be cloned as a sibling directory:
+
+```
+e4e-mangrove/
+├── mangrove/       ← this repo
+└── ml-mangrove/    ← ML pipeline repo (clone separately)
+```
+
+### Raster PNG tiles (z6–12)
+
+Activate the `mangrove` conda environment, then:
+
+```bash
+python scripts/generate_raster_tiles.py --region florida --zooms 6,7,8,9,10,11,12
+```
+
+Output goes to `landing/public/tiles/{region}/`.
+
+### Vector PMTiles
+
+Requires [tippecanoe](https://github.com/felt/tippecanoe) via WSL on Windows.
+Run `scripts/generate_pmtiles.ipynb` and place the resulting `.pmtiles` file in `landing/public/tiles/`.
+
+## Class legend
+
+| Class | Color | ESA value |
+|-------|-------|-----------|
+| Background | transparent | — |
+| Tree Cover | dark green | 10 |
+| Built-up | brown | 50 |
+| Water | blue | 80 |
+| Wetland | muted green | 90 |
+| Mangrove | deep green | 95 |
