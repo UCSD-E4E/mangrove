@@ -1,3 +1,7 @@
+// In production, set VITE_TILES_BASE_URL to the R2 public bucket URL.
+// Locally, leave it unset — tiles are served from landing/public/tiles/.
+const BASE = import.meta.env.VITE_TILES_BASE_URL ?? ''
+
 export interface Region {
   id: string
   name: string
@@ -20,8 +24,8 @@ export const regions: Region[] = [
     coords: { lng: -80.9, lat: 25.2 },
     zoom: 9,
     pitch: 45,
-    tilesUrl: '/tiles/florida/{z}/{x}/{y}.png',
-    pmtilesUrl: '/tiles/florida.pmtiles',
+    tilesUrl: `${BASE}/tiles/florida/{z}/{x}/{y}.png`,
+    pmtilesUrl: `${BASE}/tiles/florida.pmtiles`,
     status: 'trained',
   },
   {
