@@ -19,9 +19,9 @@ beforeEach(() => {
 // ── Rendering ─────────────────────────────────────────────────────────────
 
 describe('Phase 2 — Nav rendering', () => {
-  it('renders the wordmark "Mangrove Monitor"', () => {
+  it('renders the wordmark "Mangrove Monitoring"', () => {
     renderNav()
-    expect(screen.getByText('Mangrove Monitor')).toBeInTheDocument()
+    expect(screen.getByText('Mangrove Monitoring')).toBeInTheDocument()
   })
 
   it('renders "· E4E Lab, UC San Diego"', () => {

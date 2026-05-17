@@ -33,7 +33,7 @@ export function Footer() {
           fontFamily: "'DM Mono', monospace",
         }}
       >
-        © 2025 Engineers for Exploration, UC San Diego
+        © 2026 Engineers for Exploration, UC San Diego
       </p>
 
       <nav style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>

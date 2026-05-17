@@ -167,41 +167,43 @@ export function IntroHero() {
           </div>
         </div>
 
-        {/* Scroll cue */}
-        <div
+      </div>
+
+      {/* Scroll cue — bottom-left of section, clear of text column */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 'clamp(28px, 4vh, 44px)',
+          left: 'clamp(16px, 2.5vw, 36px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '10px',
+          animation: 'pageFadeIn 1s ease 1s both',
+          zIndex: 2,
+        }}
+      >
+        <span
           style={{
-            position: 'absolute',
-            bottom: 'clamp(-60px, -5vh, -80px)',
-            left: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '10px',
-            animation: 'pageFadeIn 1s ease 1s both',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.6rem',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'rgba(26,26,24,0.3)',
+            writingMode: 'vertical-rl',
+            transform: 'rotate(180deg)',
           }}
         >
-          <span
-            style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.6rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: 'rgba(26,26,24,0.3)',
-              writingMode: 'vertical-rl',
-              transform: 'rotate(180deg)',
-            }}
-          >
-            Scroll
-          </span>
-          <div
-            style={{
-              width: '1px',
-              height: '48px',
-              background: 'linear-gradient(to bottom, rgba(61,107,74,0.4), transparent)',
-              animation: 'floatUp 2s ease-in-out infinite',
-            }}
-          />
-        </div>
+          Scroll
+        </span>
+        <div
+          style={{
+            width: '1px',
+            height: '48px',
+            background: 'linear-gradient(to bottom, rgba(61,107,74,0.4), transparent)',
+            animation: 'floatUp 2s ease-in-out infinite',
+          }}
+        />
       </div>
     </section>
   )

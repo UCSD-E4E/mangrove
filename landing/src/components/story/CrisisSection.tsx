@@ -93,7 +93,7 @@ export function CrisisSection() {
             }}
           >
             We are losing one of Earth's
-            most vital ecosystems —{' '}
+            most vital ecosystems,{' '}
             <em style={{ fontStyle: 'italic', color: 'rgba(196,74,42,0.9)' }}>
               faster than we can study it.
             </em>

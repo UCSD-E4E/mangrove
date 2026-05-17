@@ -80,9 +80,9 @@ export function SuperResSection() {
                 marginBottom: '1.25rem',
               }}
             >
-              Standard Sentinel-2 imagery is 10 meters per pixel — enough to map
-              forests, but not to resolve the tidal channels, root systems, and
-              fragmented edges that determine ecosystem health.
+              Standard Sentinel-2 imagery is 10 meters per pixel, which is enough
+              to map forests, but not to resolve the tidal channels, root systems,
+              and fragmented edges that determine ecosystem health.
             </p>
             <p
               style={{
@@ -92,7 +92,7 @@ export function SuperResSection() {
                 lineHeight: 1.85,
               }}
             >
-              Our super-resolution model upsamples predictions 4× — sharpening
+              Our super-resolution model upsamples predictions 16×, sharpening
               boundaries, revealing sub-canopy structure, and enabling measurement
               of individual mangrove stands that were previously invisible.
             </p>
@@ -106,8 +106,8 @@ export function SuperResSection() {
             >
               {[
                 { val: '10m', label: 'Native resolution' },
-                { val: '2.5m', label: 'After super-res' },
-                { val: '4×', label: 'Upscaling factor' },
+                { val: '0.6m', label: 'After super-res' },
+                { val: '16×', label: 'Upscaling factor' },
               ].map(({ val, label }) => (
                 <div key={label}>
                   <div
@@ -219,7 +219,7 @@ export function SuperResSection() {
                     letterSpacing: '0.06em',
                   }}
                 >
-                  {hover ? 'Super-res · 2.5m/px' : 'Native · 10m/px'}
+                  {hover ? 'Super-res · 0.6m/px' : 'Native · 10m/px'}
                 </div>
                 <div
                   style={{

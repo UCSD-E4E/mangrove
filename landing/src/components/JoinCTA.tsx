@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom'
+
 export function JoinCTA() {
+  const navigate = useNavigate()
   return (
     <section
       data-testid="join-cta"
@@ -113,9 +116,9 @@ export function JoinCTA() {
             >
               We respond within a few business days.
             </p>
-            <a
-              href="mailto:e4e@ucsd.edu"
+            <button
               data-testid="cta-button"
+              onClick={() => navigate('/collaborate')}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -124,18 +127,19 @@ export function JoinCTA() {
                 background: '#3d6b4a',
                 color: '#fff',
                 borderRadius: '4px',
-                textDecoration: 'none',
+                border: 'none',
+                cursor: 'pointer',
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '0.88rem',
                 fontWeight: 500,
                 letterSpacing: '0.03em',
                 transition: 'opacity 0.2s ease',
               }}
-              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = '0.85')}
-              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.opacity = '1')}
+              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.opacity = '0.85')}
+              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.opacity = '1')}
             >
               Get in touch →
-            </a>
+            </button>
           </div>
 
           {/* E4E link */}

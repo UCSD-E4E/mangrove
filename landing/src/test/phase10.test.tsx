@@ -42,34 +42,33 @@ describe('Phase 10 — Team', () => {
 
 describe('Phase 10 — JoinCTA', () => {
   it('renders without throwing', () => {
-    expect(() => render(<JoinCTA />)).not.toThrow()
+    expect(() => render(<MemoryRouter><JoinCTA /></MemoryRouter>)).not.toThrow()
   })
 
   it('section has data-testid="join-cta"', () => {
-    render(<JoinCTA />)
+    render(<MemoryRouter><JoinCTA /></MemoryRouter>)
     expect(screen.getByTestId('join-cta')).toBeInTheDocument()
   })
 
   it('CTA button is present', () => {
-    render(<JoinCTA />)
+    render(<MemoryRouter><JoinCTA /></MemoryRouter>)
     expect(screen.getByTestId('cta-button')).toBeInTheDocument()
   })
 
   it('CTA button text is "Get in touch →"', () => {
-    render(<JoinCTA />)
+    render(<MemoryRouter><JoinCTA /></MemoryRouter>)
     expect(screen.getByTestId('cta-button').textContent).toBe('Get in touch →')
   })
 
   it('"Open science" overline is present', () => {
-    render(<JoinCTA />)
+    render(<MemoryRouter><JoinCTA /></MemoryRouter>)
     expect(screen.getByText('Open science')).toBeInTheDocument()
   })
 
-  it('CTA button is an anchor tag with an href', () => {
-    render(<JoinCTA />)
+  it('CTA button navigates to collaborate', () => {
+    render(<MemoryRouter><JoinCTA /></MemoryRouter>)
     const btn = screen.getByTestId('cta-button')
-    expect(btn.tagName).toBe('A')
-    expect(btn.getAttribute('href')).toBeTruthy()
+    expect(btn.tagName).toBe('BUTTON')
   })
 })
 

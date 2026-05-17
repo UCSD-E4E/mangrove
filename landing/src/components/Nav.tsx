@@ -58,7 +58,7 @@ export function Nav() {
           color: 'var(--text-primary)',
           fontSize: '1.05rem',
         }}>
-          Mangrove Monitor
+          Mangrove Monitoring
         </span>
         <span style={{
           fontFamily: "'DM Mono', monospace",

@@ -25,7 +25,7 @@ const PHASES = [
   {
     range: [0.6, 0.8] as [number, number],
     lines: ['Carbon stored', '4× more than rainforests'],
-    sub: 'Per hectare — the densest blue-carbon ecosystem on Earth',
+    sub: 'The densest blue-carbon ecosystem on Earth',
   },
   {
     range: [0.8, 1.0] as [number, number],
@@ -40,21 +40,38 @@ export function MangroveVideoSection({ videoSrc }: Props) {
   const [progress, setProgress] = useState(0)
   const [phaseKey, setPhaseKey] = useState(0)
   const lastPhaseIdx = useRef(-1)
+  const targetProgress = useRef(0)
+  const rafId = useRef(0)
 
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const scrollable = containerRef.current.offsetHeight - window.innerHeight
     const p = Math.max(0, Math.min(1, -rect.top / scrollable))
+    targetProgress.current = p
     setProgress(p)
-    if (videoRef.current?.duration) {
-      videoRef.current.currentTime = p * videoRef.current.duration
-    }
     const idx = PHASES.findIndex(ph => p >= ph.range[0] && p < ph.range[1])
     if (idx !== lastPhaseIdx.current) {
       lastPhaseIdx.current = idx
       setPhaseKey(k => k + 1)
     }
+  }, [])
+
+  // Smooth video scrub via rAF lerp — decoupled from scroll events
+  useEffect(() => {
+    const tick = () => {
+      const video = videoRef.current
+      if (video?.duration) {
+        const target = targetProgress.current * video.duration
+        const current = video.currentTime
+        const diff = target - current
+        // Fast lerp: close enough → snap, otherwise smooth
+        video.currentTime = Math.abs(diff) < 0.01 ? target : current + diff * 0.1
+      }
+      rafId.current = requestAnimationFrame(tick)
+    }
+    rafId.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId.current)
   }, [])
 
   useEffect(() => {

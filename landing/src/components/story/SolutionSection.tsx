@@ -5,22 +5,22 @@ const PILLARS = [
     num: '01',
     title: 'Satellite Imagery',
     body:
-      'We ingest multispectral Sentinel-2 imagery — 10m resolution, every 5 days — across every mangrove coastline on Earth.',
-    detail: 'via Google Earth Engine',
+      'We ingest multispectral satellite imagery with 10m resolution across every mangrove coastline on Earth.',
+    detail: 'via Sentinel-2',
   },
   {
     num: '02',
     title: 'ML Segmentation',
     body:
-      'A SegFormer model trained on 69-band composite imagery classifies mangroves, water, built-up land, and vegetation pixel by pixel.',
-    detail: '6 classes · 94% accuracy',
+      'An in-house model trained on composite imagery through a custom pipeline classifies mangroves, water, built-up land, and vegetation pixel by pixel.',
+    detail: '10 classes · 94% accuracy',
   },
   {
     num: '03',
     title: 'Super Resolution',
     body:
       'We up-sample predictions to sub-meter detail, resolving individual canopy gaps and tidal channels invisible at native satellite resolution.',
-    detail: '4× upscaling · ESRGAN-based',
+    detail: '16× upscaling · hybrid transformer CNN architecture',
   },
 ]
 
@@ -118,8 +118,8 @@ export function SolutionSection() {
             }}
           >
             The UCSD Engineers for Exploration team built an end-to-end pipeline
-            that turns raw satellite data into high-resolution, classified maps —
-            updated continuously, globally.
+            that turns raw satellite data into high-resolution, classified maps
+            that're updated continuously, globally.
           </p>
         </div>
 
