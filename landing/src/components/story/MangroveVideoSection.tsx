@@ -108,7 +108,6 @@ export function MangroveVideoSection({ videoSrc }: Props) {
             muted
             playsInline
             autoPlay
-            loop
             preload="auto"
             onLoadedMetadata={() => handleScroll()}
             style={{
