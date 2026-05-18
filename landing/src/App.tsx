@@ -27,7 +27,7 @@ function MainPage() {
       <Nav />
       <main>
         <IntroHero />
-        <MangroveVideoSection videoSrc={`${BASE}/mangrove.mp4`} />
+        <MangroveVideoSection videoSrc={`${BASE}/mangrove_scrub.mp4`} />
         <CrisisSection />
         <SolutionSection />
         <Hero onRegionClick={(id) => navigate(`/region/${id}`)} />

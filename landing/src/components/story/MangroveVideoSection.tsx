@@ -57,16 +57,19 @@ export function MangroveVideoSection({ videoSrc }: Props) {
     }
   }, [])
 
-  // Smooth video scrub via rAF lerp — decoupled from scroll events
+  // Sync video position to scroll on each animation frame — no lerp so it tracks exactly
   useEffect(() => {
     const tick = () => {
       const video = videoRef.current
       if (video?.duration) {
         const target = targetProgress.current * video.duration
-        const current = video.currentTime
-        const diff = target - current
-        // Fast lerp: close enough → snap, otherwise smooth
-        video.currentTime = Math.abs(diff) < 0.01 ? target : current + diff * 0.1
+        if (Math.abs(video.currentTime - target) > 0.001) {
+          if ('fastSeek' in video) {
+            (video as HTMLVideoElement & { fastSeek(t: number): void }).fastSeek(target)
+          } else {
+            (video as HTMLVideoElement).currentTime = target
+          }
+        }
       }
       rafId.current = requestAnimationFrame(tick)
     }
