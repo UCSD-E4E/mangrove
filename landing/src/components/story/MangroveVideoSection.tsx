@@ -109,6 +109,7 @@ export function MangroveVideoSection({ videoSrc }: Props) {
             playsInline
             autoPlay
             preload="auto"
+            className="hero-video"
             onLoadedMetadata={() => handleScroll()}
             style={{
               position: 'absolute',

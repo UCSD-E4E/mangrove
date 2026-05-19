@@ -242,3 +242,12 @@ p {
     display: none;
   }
 }
+
+/* Hide iOS/Android native video play button overlay */
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-panel,
+.hero-video::-webkit-media-controls-play-button,
+.hero-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  appearance: none;
+}
