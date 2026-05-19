@@ -8,8 +8,16 @@ const LEADS = [
     name: 'Jason Cheung',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    focus: 'Architected the full ML pipeline, from segmentation and super-resolution to the visualization platform.',
+    focus: 'Drove the expansion to planetary-scale satellite inference, architecting the end-to-end ML system spanning segmentation, super-resolution, continual learning, and real-time visualization.',
     photo: `${BASE}/team/jason-cheung.jpg`,
+  },
+  {
+    id: 'wyre',
+    name: 'Gage Wyre',
+    role: 'Project Lead',
+    affiliation: 'UC San Diego',
+    focus: 'Architected and benchmarked the aerial segmentation pipeline, implementing deep learning models including SegFormer and DeepLab for drone-based mangrove classification.',
+    photo: `${BASE}/team/gage-wyre.png`,
   },
   {
     id: 'swetlin',

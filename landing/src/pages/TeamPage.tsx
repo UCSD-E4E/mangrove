@@ -9,8 +9,16 @@ const LEADS = [
     name: 'Jason Cheung',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    bio: 'Architected and implemented the full ML pipeline, spanning GEE data ingestion, SegFormer segmentation, super-resolution upscaling, and the web visualization platform.',
+    bio: 'Drove the expansion to planetary-scale satellite inference, architecting the end-to-end ML system spanning GEE data ingestion, SegFormer segmentation, super-resolution upscaling, and continual learning across global regions. Built the full web visualization platform.',
     photo: `${BASE}/team/jason-cheung.jpg`,
+  },
+  {
+    id: 'wyre',
+    name: 'Gage Wyre',
+    role: 'Project Lead',
+    affiliation: 'UC San Diego',
+    bio: 'Pioneered the aerial segmentation pipeline from the ground up, architecting and benchmarking multiple deep learning models including SegFormer and DeepLab on drone imagery. Led the binary mangrove classification research that formed the project\'s technical foundation, and worked on the multiclass aerial gated ensemble that extended coverage to human infrastructure classification.',
+    photo: `${BASE}/team/gage-wyre.png`,
   },
   {
     id: 'swetlin',
