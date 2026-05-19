@@ -2,6 +2,19 @@ import { useNavigate } from 'react-router-dom'
 
 const BASE = import.meta.env.VITE_TILES_BASE_URL ?? ''
 
+const ADVISORS = [
+  {
+    name: 'Ryan Kastner',
+    title: 'Professor, CSE',
+    photo: `${BASE}/team/ryan-kastner.jpg`,
+  },
+  {
+    name: 'Curt Schurgers',
+    title: 'Teaching Professor, ECE',
+    photo: `${BASE}/team/curt-schurgers.jpg`,
+  },
+]
+
 const LEADS = [
   {
     id: 'cheung',
@@ -230,6 +243,42 @@ export function Team() {
             </div>
           ))}
         </div>
+
+        {/* Faculty advisors strip */}
+        <div style={{ marginTop: 'clamp(48px, 8vh, 72px)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 'clamp(32px, 5vh, 48px)' }}>
+          <p
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.62rem',
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'rgba(61,107,74,0.5)',
+              marginBottom: '1.5rem',
+            }}
+          >
+            Faculty advisors
+          </p>
+          <div style={{ display: 'flex', gap: 'clamp(24px, 4vw, 48px)', flexWrap: 'wrap' }}>
+            {ADVISORS.map(a => (
+              <div key={a.name} style={{ display: 'flex', flexDirection: 'column', width: 'clamp(130px, 16vw, 180px)' }}>
+                <div style={{ width: 'clamp(130px, 16vw, 180px)', aspectRatio: '3 / 4', overflow: 'hidden', marginBottom: '12px' }}>
+                  <img
+                    src={a.photo}
+                    alt={a.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'grayscale(0.25) brightness(0.9)' }}
+                  />
+                </div>
+                <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: '0.95rem', color: 'rgba(232,224,208,0.75)', lineHeight: 1.2 }}>
+                  {a.name}
+                </p>
+                <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6rem', color: 'rgba(232,224,208,0.3)', marginTop: '4px', letterSpacing: '0.04em', lineHeight: 1.5 }}>
+                  {a.title}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   )

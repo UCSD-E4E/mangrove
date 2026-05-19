@@ -47,8 +47,18 @@ const ENGINEERS = [
 ]
 
 const ADVISORS = [
-  { name: 'Prof. Ryan Kastner',   role: 'Faculty Advisor', affiliation: 'UC San Diego CSE' },
-  { name: 'Prof. Curt Schurgers', role: 'Faculty Advisor', affiliation: 'UC San Diego ECE' },
+  {
+    name: 'Ryan Kastner',
+    title: 'Professor, Computer Science and Engineering',
+    note: 'William Nachbar Endowed Chair · IEEE Fellow',
+    photo: `${BASE}/team/ryan-kastner.jpg`,
+  },
+  {
+    name: 'Curt Schurgers',
+    title: 'Teaching Professor, Electrical and Computer Engineering',
+    note: '',
+    photo: `${BASE}/team/curt-schurgers.jpg`,
+  },
 ]
 
 export function TeamPage() {
@@ -266,40 +276,40 @@ export function TeamPage() {
           </p>
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1px',
-              background: 'var(--border)',
-              maxWidth: '560px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+              gap: 'clamp(24px, 4vw, 40px)',
             }}
           >
             {ADVISORS.map(a => (
-              <div
-                key={a.name}
-                style={{
-                  background: 'var(--bg-page)',
-                  padding: '20px 24px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                }}
-              >
-                <div>
-                  <p style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{a.name}</p>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{a.role}</p>
+              <div key={a.name} style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ aspectRatio: '3 / 4', overflow: 'hidden', marginBottom: '20px' }}>
+                  <img
+                    src={a.photo}
+                    alt={a.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                      transition: 'transform 0.5s ease',
+                    }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLImageElement).style.transform = 'scale(1.03)')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLImageElement).style.transform = 'scale(1)')}
+                  />
                 </div>
-                <span
-                  style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.65rem',
-                    color: 'var(--text-muted)',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  {a.affiliation}
-                </span>
+                <p style={{ fontFamily: "'Instrument Serif', serif", fontSize: '1.25rem', color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '4px' }}>
+                  {a.name}
+                </p>
+                <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3d6b4a', marginBottom: '8px' }}>
+                  Co-Director, Engineers for Exploration
+                </p>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '6px' }}>
+                  {a.title}
+                </p>
+                <p style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.65rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                  {a.note}
+                </p>
               </div>
             ))}
           </div>
