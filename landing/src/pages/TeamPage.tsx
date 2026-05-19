@@ -14,10 +14,10 @@ const LEADS = [
   },
   {
     id: 'wyre',
-    name: 'Gage Wyre',
+    name: 'Gage Wrye',
     role: 'Project Lead',
     affiliation: 'UC San Diego',
-    bio: 'Pioneered the aerial segmentation pipeline from the ground up, architecting and benchmarking multiple deep learning models including SegFormer and DeepLab on drone imagery. Led the binary mangrove classification research that formed the project\'s technical foundation, and worked on the multiclass aerial gated ensemble that extended coverage to human infrastructure classification.',
+    bio: 'Led the team\'s technical vision and independently developed the project\'s core infrastructure, including data processing pipelines, deep learning models for aerial segmentation, custom loss functions, and ArcGIS toolbox integration.',
     photo: `${BASE}/team/gage-wyre.png`,
   },
   {
